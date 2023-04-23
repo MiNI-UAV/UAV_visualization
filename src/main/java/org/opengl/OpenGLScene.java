@@ -5,6 +5,7 @@ import org.lwjgl.system.*;
 import org.opengl.scene.Scene;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.*;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -19,7 +20,7 @@ public class OpenGLScene {
     private static final int WINDOW_WIDTH = 1200;
     private static final int WINDOW_HEIGHT = 900;
 
-    public void run() throws IOException {
+    public void run() throws IOException, URISyntaxException {
 
         init();
         Scene scene = new Scene(window, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -51,7 +52,7 @@ public class OpenGLScene {
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
-        // Setup a key callback. It will be called every time a key is pressed, repeated or released.
+        // Set up a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
@@ -86,7 +87,7 @@ public class OpenGLScene {
         glfwShowWindow(window);
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, URISyntaxException {
         new OpenGLScene().run();
     }
 

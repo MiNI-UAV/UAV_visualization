@@ -3,23 +3,23 @@ package org.opengl.drawable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import org.opengl.model.Model;
+import org.opengl.model.ModelOld;
 import org.opengl.shader.Shader;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class DrawableStars implements Drawable {
+public class DrawableStars extends Drawable {
 
     private final Random random;
-    private final Model objectModel;
+    private final ModelOld objectModel;
     private final int starCount;
     private final int shaderOffset;
     public final List<Vector3f> lightPositions;
 
 
-    public DrawableStars(Model model, int starCount, int shaderOffset) {
+    public DrawableStars(ModelOld model, int starCount, int shaderOffset) {
         random = new Random();
         objectModel = model;
         this.starCount = starCount;
@@ -38,8 +38,13 @@ public class DrawableStars implements Drawable {
                     .translate(getPosition(i))
                     .scale(.05f,.05f,.05f);
             shader.setMatrix4f(stack,"model", model);
-            objectModel.draw(shader);
+            objectModel.draw(stack, shader, model);
         }
+    }
+
+    @Override
+    public void draw(Vector3f parentTranslation, Vector3f parentScaling, MemoryStack stack, Shader shader) {
+
     }
 
     public Vector3f getPosition(int i) {

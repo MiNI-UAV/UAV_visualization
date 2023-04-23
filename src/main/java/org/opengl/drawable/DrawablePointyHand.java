@@ -3,18 +3,18 @@ package org.opengl.drawable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import org.opengl.model.Model;
+import org.opengl.model.ModelOld;
 import org.opengl.shader.Shader;
 
 import static org.joml.Math.*;
 import static org.joml.Math.cos;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-public class DrawablePointyHand implements Drawable {
+public class DrawablePointyHand extends Drawable {
 
-    private final Model objectModel;
+    private final ModelOld objectModel;
 
-    public DrawablePointyHand(Model model) {
+    public DrawablePointyHand(ModelOld model) {
         objectModel = model;
     }
 
@@ -32,8 +32,14 @@ public class DrawablePointyHand implements Drawable {
         shader.setVec3("material.specular", new Vector3f(0.1f, 0.1f, 0.1f));
         shader.setFloat("material.shininess", 16.0f);
         shader.setBool("useDirectionalLight", false);
-        objectModel.draw(shader);
+        objectModel.draw(stack, shader, model);
     }
+
+    @Override
+    public void draw(Vector3f parentTranslation, Vector3f parentScaling, MemoryStack stack, Shader shader) {
+
+    }
+
 
     @Override
     public Vector3f getPosition()  {

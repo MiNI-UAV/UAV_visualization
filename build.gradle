@@ -15,11 +15,13 @@ repositories {
 }
 
 project.ext.lwjglVersion = "3.3.1"
-project.ext.lwjglNatives = "natives-windows"
+project.ext.lwjglNatives = "natives-linux"
 
 dependencies {
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
+    implementation "de.javagl:jgltf-model:2.0.0"
+    implementation "org.zeromq:jeromq:0.5.3"
     implementation 'org.joml:joml:1.10.5'
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-assimp"

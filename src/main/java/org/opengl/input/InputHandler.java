@@ -15,12 +15,10 @@ public class InputHandler {
     }
 
     public void processInput(long window) {
-        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)  // Front Camera
-            configuration.type = CameraType.FrontCamera;
-        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) // Jupiter Camera
-            configuration.type = CameraType.JupiterCamera;
-        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)  // Gabriel Camera
-            configuration.type = CameraType.GabrielCamera;
+        if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)  // Gabriel Camera
+            configuration.type = CameraType.DroneCamera;
+        if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)  // Gabriel Camera
+            configuration.type = CameraType.FreeCamera;
 
         if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)  // Phong Shader
             configuration.shader = configuration.phongShader;

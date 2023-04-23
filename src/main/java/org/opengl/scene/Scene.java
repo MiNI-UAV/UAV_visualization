@@ -9,10 +9,16 @@ import org.opengl.camera.Camera;
 import org.opengl.config.Configuration;
 import org.opengl.drawable.*;
 import org.opengl.input.InputHandler;
+import org.opengl.model.DroneStatus;
 import org.opengl.model.Model;
+import org.opengl.model.ModelOld;
+import org.opengl.queue.PositionConsumer;
 import org.opengl.shader.Shader;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import static org.joml.Math.*;
@@ -20,6 +26,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.opengl.importer.GltfImporter.loadModel;
 
 public class Scene {
     private final long window;
@@ -28,22 +35,31 @@ public class Scene {
     private final Camera camera;
     private final Configuration configuration;
     private final InputHandler inputHandler;
-    private static final int STAR_COUNT = 50;
-    private static final int SHADER_OFFSET = 1;
 
     private final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
-    private float dayFactor = 0f;
-
-    private Drawable zeus, jupiter, candleLight, lightOfGabriel, pointyHand, cupcake;
-    private DrawableStars stars;
+    private float dayFactor = 1.0f;
+    //private DrawableDrone drone;
+    private DrawableEnvironment environment;
+    private DroneStatus droneStatus;
+    private Model droneModel, environmentModel;
     Shader lightSourceShader;
+    private PositionConsumer positionConsumer;
+    private PositionConsumer Consumer;
+
+    // camera movement
+
+    static float deltaTime = 0.0f;    // Time between current frame and last frame
+    static float lastTime = 0.0f; // Time of last frame
 
 
-    public Scene(long window, int windowWidth, int windowHeight) throws IOException {
+    public Scene(long window, int windowWidth, int windowHeight) throws IOException, URISyntaxException {
         this.window = window;
         this.windowHeight = windowHeight;
         this.windowWidth = windowWidth;
+
+        droneStatus = new DroneStatus();
+        positionConsumer = new PositionConsumer(droneStatus);
 
         camera = new Camera();
         configuration = new Configuration();
@@ -51,7 +67,7 @@ public class Scene {
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
-        glClearColor(NIGHT_COLOR.x, NIGHT_COLOR.y, NIGHT_COLOR.z, 0.0f);
+        glClearColor(DAY_COLOR.x, DAY_COLOR.y, DAY_COLOR.z, 0.0f);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         setUpDrawables();
@@ -77,39 +93,36 @@ public class Scene {
         lightSourceShader = new Shader(lightSourceVertexShaderSource, lightSourceFragmentShaderSource);
 
         configuration.phongShader.use();
-        configuration.phongShader.setVec3("backgroundColor", NIGHT_COLOR);
+        configuration.phongShader.setVec3("backgroundColor", DAY_COLOR);
         setUpFog(configuration.phongShader);
-        setUpLights(configuration.phongShader, stars, candleLight);
+        setUpLights(configuration.phongShader);
 
         configuration.gouraudShader.use();
-        configuration.gouraudShader.setVec3("backgroundColor", NIGHT_COLOR);
+        configuration.gouraudShader.setVec3("backgroundColor", DAY_COLOR);
         setUpFog(configuration.gouraudShader);
-        setUpLights(configuration.gouraudShader, stars, candleLight);
+        setUpLights(configuration.gouraudShader);
 
         configuration.flatShader.use();
-        configuration.flatShader.setVec3("backgroundColor", NIGHT_COLOR);
+        configuration.flatShader.setVec3("backgroundColor", DAY_COLOR);
         setUpFog(configuration.flatShader);
-        setUpLights(configuration.flatShader, stars, candleLight);
+        setUpLights(configuration.flatShader);
 
         lightSourceShader.use();
         lightSourceShader.setVec3("lightColor", new Vector3f(1.f, 	1.f, 1.f));
         setUpFog(lightSourceShader);
     }
 
-    private void setUpDrawables() {
-        Model zeusModel = new Model(Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("models/zeus.obj")).getPath());
-        Model jupiterModel = new Model(Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("models/jupiter.obj")).getPath());
-        Model star = new Model(Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("models/sun.obj")).getPath());
-        Model pointyHandModel = new Model(Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("models/pointyHand.obj")).getPath());
-        Model cupcakeModel = new Model(Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("models/cupcake.obj")).getPath());
+    private void setUpDrawables() throws URISyntaxException, IOException {
 
-        zeus = new DrawableZeus(zeusModel);
-        jupiter = new DrawableJupiter(jupiterModel, configuration);
-        candleLight = new DrawableCandleLight(star);
-        lightOfGabriel = new DrawableLightOfGabriel(star);
-        stars = new DrawableStars(star, STAR_COUNT, SHADER_OFFSET);
-        pointyHand = new DrawablePointyHand(pointyHandModel);
-        cupcake = new DrawableCupcake(cupcakeModel);
+        droneModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/scene.gltf");
+
+        environmentModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/field.gltf");
+        //var propellerModels = droneMeshes.subList(1,droneModels.size()).stream()
+        //        .map(m -> new DrawablePropellers(new Model(List.of(m))))
+        //        .toList();
+
+        //environment = new DrawableEnvironment(environmentModel);
+        //drone = new DrawableDrone(droneModelOld, Collections.emptyList());
     }
 
     public void loop() {
@@ -126,25 +139,17 @@ public class Scene {
 
             inputHandler.processInput(window);
 
-            moveLights(configuration.shader, stars);
-
             // BEGIN TRANSFORMATION
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 configuration.shader.setVec3("viewPos", camera.getCameraPos());
                 configuration.shader.setMatrix4f(stack,"view", view);
                 configuration.shader.setMatrix4f(stack,"projection", projection);
-                lightSourceShader.use();
-                lightSourceShader.setMatrix4f(stack,"view", view);
-                lightSourceShader.setMatrix4f(stack,"projection", projection);
-                lightSourceShader.setVec3("viewPos", camera.getCameraPos());
 
-                zeus.draw(stack, configuration.shader);
-                candleLight.draw(stack, lightSourceShader);
-                lightOfGabriel.draw(stack, lightSourceShader);
-                stars.draw(stack, lightSourceShader);
-                jupiter.draw(stack, configuration.shader);
-                pointyHand.draw(stack, configuration.shader);
-                cupcake.draw(stack, configuration.shader);
+                environmentModel.draw(stack, configuration.shader);
+                droneModel.draw(stack, configuration.shader);
+                //drone.draw(stack, configuration.shader);
+                //drone.position = droneStatus.position;
+                //drone.rotation = droneStatus.rotation;
             }
 
             glfwSwapBuffers(window);
@@ -154,18 +159,20 @@ public class Scene {
 
     private void changeCamera() {
         switch(configuration.type) {
-            case FrontCamera -> {
-                camera.setCameraPos(new Vector3f(0f,0f,-7f));
-                camera.setCameraFront(new Vector3f(0, 0, 1));
+            case DroneCamera -> {
+                Vector3f cameraPos = new Vector3f(3f,1f,2f);
+                camera.setCameraPos(new Vector3f(cameraPos));
+                camera.setCameraFront(new Vector3f(cameraPos).sub(new Vector3f()).normalize());
             }
-            case JupiterCamera -> {
-                camera.setCameraPos(new Vector3f(0f, 0f, -7f));
-                camera.setCameraFront(jupiter.getPosition().sub(new Vector3f(0f, 0f, -7f)));
+            case FreeCamera -> {
+                float currTime = (float) glfwGetTime();
+                deltaTime = currTime - lastTime;
+                lastTime = currTime;
+                camera.processInput(window, deltaTime);
+                //camera.startProcessingMouseMovement(window);
+
             }
-            case GabrielCamera -> {
-                camera.setCameraPos(pointyHand.getPosition());
-                camera.setCameraFront(zeus.getPosition().sub(pointyHand.getPosition()));
-            }
+
         }
     }
 
@@ -201,79 +208,18 @@ public class Scene {
 
     private void setUpFog(Shader shader) {
         shader.setBool("fog.useFog", configuration.useFog);
-        shader.setVec3("fog.color", NIGHT_COLOR);
+        shader.setVec3("fog.color", DAY_COLOR);
         shader.setFloat("fog.density", configuration.fogDensity);
     }
 
-    private void moveLights(Shader shader, DrawableStars stars) {
-        moveSpotlights(shader);
-        stars.moveStars(shader);
-    }
+    private void setUpLights(Shader shader) {
 
-    private void moveSpotlights(Shader shader) {
-        for( int i = 0; i< 3; i++)
-            shader.setVec3("spotLights[" + i + "].position",  new Vector3f(
-                    -2.25f*sin((float)glfwGetTime()),
-                    0.1f*sin((float)(PI*glfwGetTime())),
-                    -2.25f*cos((float)glfwGetTime())));
-
-        shader.setVec3("spotLights[0].direction",
-                new Vector3f(
-                        configuration.blueVector.x * sin((float)(glfwGetTime()%(2*PI)-(PI/2))),
-                        configuration.blueVector.y,
-                        configuration.blueVector.z *cos((float)(glfwGetTime()%(2*PI)-(PI/2))))
-                        .sub(new Vector3f(-2.25f*sin((float)glfwGetTime()),0,-2.25f*cos((float)glfwGetTime()))));
-        shader.setVec3("spotLights[1].direction",
-                new Vector3f(
-                        configuration.greenVector.x * sin((float)(glfwGetTime()%(2*PI)-(PI/2))),
-                        configuration.greenVector.y,
-                        configuration.greenVector.z *cos((float)(glfwGetTime()%(2*PI)-(PI/2))))
-                        .sub(new Vector3f(-2.25f*sin((float)glfwGetTime()),0,-2.25f*cos((float)glfwGetTime()))));
-        shader.setVec3("spotLights[2].direction",
-                new Vector3f(
-                        configuration.redVector.x * sin((float)(glfwGetTime()%(2*PI)-(PI/2))),
-                        configuration.redVector.y,
-                        configuration.redVector.z *cos((float)(glfwGetTime()%(2*PI)-(PI/2))))
-                        .sub(new Vector3f(-2.25f*sin((float)glfwGetTime()),0,-2.25f*cos((float)glfwGetTime()))));
-    }
-
-
-    private void setUpLights(Shader shader, DrawableStars stars, Drawable candleLight) {
-
-        shader.setVec3("dirLight.direction",  new Vector3f(-0.2f, -1.0f, -0.3f));
-        shader.setVec3("dirLight.ambient",  new Vector3f(0.005f, 0.005f, 0.005f));
+        shader.use();
+        shader.setVec3("dirLight.direction",  new Vector3f(-0.5f, -0.5f, 0.5f));
+        shader.setVec3("dirLight.ambient",  new Vector3f(0.5f, 0.5f, 0.5f));
         shader.setVec3("dirLight.diffuse",  new Vector3f(0.4f, 0.4f, 0.4f));
         shader.setVec3("dirLight.specular",  new Vector3f(0.5f, 0.5f, 0.5f));
-
-        for(int i=0; i < STAR_COUNT + SHADER_OFFSET; i++){
-            shader.setVec3("pointLights[" + i + "].position",
-                    i == 0 ? candleLight.getPosition() : stars.getPosition(i - SHADER_OFFSET)
-            );
-            shader.setVec3("pointLights[" + i + "].ambient", new Vector3f(0f, 0f, 0f));
-            shader.setVec3("pointLights[" + i + "].diffuse", new Vector3f(1.f, 	110/255.f, 199/255.f));
-            shader.setVec3("pointLights[" + i + "].specular", new Vector3f(1.f, 	110/255.f, 199/255.f));
-            shader.setFloat("pointLights[" + i + "].constant", 1.0f);
-            shader.setFloat("pointLights[" + i + "].linear", 0.14f);
-            shader.setFloat("pointLights[" + i + "].quadratic", 0.07f);
-        }
-
-        for(int i=0; i< 3; i++) {
-            shader.setVec3("spotLights[" + i + "].position",  new Vector3f(-2.25f*sin((float)glfwGetTime()),0,-2.25f*cos((float)glfwGetTime())));
-            shader.setVec3("spotLights[" + i + "].direction", new Vector3f(0f).sub(new Vector3f(-2.25f*sin((float)glfwGetTime()),0,-2.25f*cos((float)glfwGetTime()))));
-            shader.setFloat("spotLights[" + i + "].cutOff",   cos(toRadians(8.5f)));
-            shader.setFloat("spotLights[" + i + "].outerCutOff",   cos(toRadians(10.5f)));
-            shader.setVec3("spotLights[" + i + "].ambient",  new Vector3f(0.0f, 0.0f, 0.0f));
-            shader.setFloat("spotLights[" + i + "].constant", 1.0f);
-            shader.setFloat("spotLights[" + i + "].linear", 0.027f);
-            shader.setFloat("spotLights[" + i + "].quadratic", 0.0028f);
-        }
-
-        shader.setVec3("spotLights[0].diffuse",  new Vector3f(0.1f, 0.1f, 1f));
-        shader.setVec3("spotLights[0].specular",  new Vector3f(0.1f, 0.1f, 1f));
-        shader.setVec3("spotLights[1].diffuse",  new Vector3f(0.1f, 1f, 0.1f));
-        shader.setVec3("spotLights[1].specular",  new Vector3f(0.1f, 1f, 0.1f));
-        shader.setVec3("spotLights[2].diffuse",  new Vector3f(1f, 0.1f, 0.1f));
-        shader.setVec3("spotLights[2].specular",  new Vector3f(1f, 0.1f, 0.1f));
+        shader.setBool("useDirectionalLight", true);
     }
 
 }

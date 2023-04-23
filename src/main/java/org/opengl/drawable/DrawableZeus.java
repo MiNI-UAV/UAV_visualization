@@ -3,19 +3,19 @@ package org.opengl.drawable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import org.opengl.model.Model;
+import org.opengl.model.ModelOld;
 import org.opengl.shader.Shader;
 
 import static org.joml.Math.*;
 import static org.joml.Math.cos;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
-public class DrawableZeus implements Drawable {
+public class DrawableZeus extends Drawable {
 
-    private final Model objectModel;
+    private final ModelOld objectModel;
 
-    public DrawableZeus(Model model) {
-        objectModel = model;
+    public DrawableZeus(ModelOld model) {
+        this.objectModel = model;
     }
     
     @Override
@@ -30,8 +30,14 @@ public class DrawableZeus implements Drawable {
         shader.setVec3("material.specular", new Vector3f(1.f, 1.f, 1.f));
         shader.setFloat("material.shininess", 64.0f);
         shader.setBool("useDirectionalLight", true);
-        objectModel.draw(shader);
+        this.objectModel.draw(stack, shader, model);
     }
+
+    @Override
+    public void draw(Vector3f parentTranslation, Vector3f parentScaling, MemoryStack stack, Shader shader) {
+
+    }
+
     @Override
     public Vector3f getPosition()  {
         return new Vector3f(

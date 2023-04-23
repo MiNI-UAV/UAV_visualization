@@ -85,15 +85,15 @@ void main()
     // Directional Light
     result += (useDirectionalLight == true)? calcDirLight(dirLight, normNormal, viewDir): vec3(0.f);
     // Point Lights
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
-    result += calcPointLight(pointLights[i], normNormal, fragPos, viewDir);
+    //for(int i = 0; i < NR_POINT_LIGHTS; i++)
+    //result += calcPointLight(pointLights[i], normNormal, fragPos, viewDir);
     // Spot Lights
-    for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-    result += calcSpotLight(spotLights[i], normNormal, fragPos, viewDir);
+    //for(int i = 0; i < NR_SPOT_LIGHTS; i++)
+    //result += calcSpotLight(spotLights[i], normNormal, fragPos, viewDir);
 
-    result *= objectColor.xyz;
+    result *= objectColor.xyz; // TODO: texture
     if(fog.useFog == true)
-    result = mix(result, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
+        result = mix(result, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
     fragColor = vec4(result, 1.f);
 }
 

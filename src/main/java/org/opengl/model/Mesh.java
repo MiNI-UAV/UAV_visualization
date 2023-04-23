@@ -1,5 +1,8 @@
 package org.opengl.model;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjgl.system.MemoryStack;
 import org.opengl.shader.Shader;
 
 import java.util.List;
@@ -41,7 +44,7 @@ public class Mesh {
         setupMesh();
     }
 
-    public void draw(Shader shader) {
+    public void draw(MemoryStack stack, Shader shader, Matrix4f modelMatrix) {
         int diffuseNr = 1;
         int specularNr = 1;
         shader.use();
@@ -58,8 +61,14 @@ public class Mesh {
             glBindTexture(GL_TEXTURE_2D, textures.get(i).getId());
             shader.setInt("useTexture", 1);
         }
+
+        // TODO TEXCOORD_1 2 3 4 ...
         // draw mesh
-        shader.setVec3("material.diffuseColor", material.getDiffuse());
+        shader.setMatrix4f(stack,"model", modelMatrix);
+        shader.setVec3("material.ambient", material.getDiffuse());
+        shader.setVec3("material.diffuse", material.getDiffuse());
+        shader.setVec3("material.specular", material.getDiffuse());
+        shader.setFloat("material.shininess", 16.0f);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         shader.setInt("useTexture", 0);

@@ -3,14 +3,14 @@ package org.opengl.drawable;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import org.opengl.model.Model;
+import org.opengl.model.ModelOld;
 import org.opengl.shader.Shader;
 
-public class DrawableCandleLight implements Drawable {
+public class DrawableCandleLight extends Drawable {
 
-    private final Model objectModel;
+    private final ModelOld objectModel;
 
-    public DrawableCandleLight(Model model) {
+    public DrawableCandleLight(ModelOld model) {
         objectModel = model;
     }
 
@@ -22,8 +22,14 @@ public class DrawableCandleLight implements Drawable {
                 .scale(.01f,.01f,.01f);
         shader.setMatrix4f(stack,"model", model);
         shader.setVec3("lightColor", new Vector3f(1.f, 	1.f, 1.f));
-        objectModel.draw(shader);
+        objectModel.draw(stack, shader, model);
     }
+
+    @Override
+    public void draw(Vector3f parentTranslation, Vector3f parentScaling, MemoryStack stack, Shader shader) {
+
+    }
+
 
     @Override
     public Vector3f getPosition()  {
