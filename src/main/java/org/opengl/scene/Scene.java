@@ -42,7 +42,7 @@ public class Scene {
     //private DrawableDrone drone;
     private DrawableEnvironment environment;
     private DroneStatus droneStatus;
-    private Model droneModel, environmentModel;
+    private Model droneModel, environmentModel, busterModel;
     Shader lightSourceShader;
     private PositionConsumer positionConsumer;
     private PositionConsumer Consumer;
@@ -114,15 +114,9 @@ public class Scene {
 
     private void setUpDrawables() throws URISyntaxException, IOException {
 
-        droneModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/scene.gltf");
-
+        //droneModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/drone.gltf");
+        busterModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/buster.gltf");
         environmentModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/field.gltf");
-        //var propellerModels = droneMeshes.subList(1,droneModels.size()).stream()
-        //        .map(m -> new DrawablePropellers(new Model(List.of(m))))
-        //        .toList();
-
-        //environment = new DrawableEnvironment(environmentModel);
-        //drone = new DrawableDrone(droneModelOld, Collections.emptyList());
     }
 
     public void loop() {
@@ -146,10 +140,12 @@ public class Scene {
                 configuration.shader.setMatrix4f(stack,"projection", projection);
 
                 environmentModel.draw(stack, configuration.shader);
-                droneModel.draw(stack, configuration.shader);
-                //drone.draw(stack, configuration.shader);
-                //drone.position = droneStatus.position;
-                //drone.rotation = droneStatus.rotation;
+                //droneModel.draw(stack, configuration.shader);
+                busterModel.draw(stack, configuration.shader);
+
+                busterModel.position = droneStatus.position;
+                busterModel.position = new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z - 10);
+                busterModel.rotation = droneStatus.rotation;
             }
 
             glfwSwapBuffers(window);
@@ -160,17 +156,16 @@ public class Scene {
     private void changeCamera() {
         switch(configuration.type) {
             case DroneCamera -> {
-                Vector3f cameraPos = new Vector3f(3f,1f,2f);
-                camera.setCameraPos(new Vector3f(cameraPos));
-                camera.setCameraFront(new Vector3f(cameraPos).sub(new Vector3f()).normalize());
+                var cameraOffset = new Vector3f(-0.6f,0,-0.35f);
+                var cameraPos = new Vector3f(busterModel.getPosition()).add(cameraOffset);
+                camera.setCameraPos(cameraPos);
+                camera.setCameraFront(new Vector3f(busterModel.getPosition()).sub(cameraPos).normalize());
             }
             case FreeCamera -> {
                 float currTime = (float) glfwGetTime();
                 deltaTime = currTime - lastTime;
                 lastTime = currTime;
                 camera.processInput(window, deltaTime);
-                //camera.startProcessingMouseMovement(window);
-
             }
 
         }

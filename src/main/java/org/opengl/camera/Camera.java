@@ -11,13 +11,13 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 public class Camera {
 
-    private Vector3f cameraPos = new Vector3f(0f,5f,0.7f);
-    private final Vector3f cameraUp = new Vector3f(0, -0.95f, 0.2f).normalize();
-    private Vector3f cameraFront = new Vector3f(0, 1, 0);
+    private Vector3f cameraPos = new Vector3f(0f,5f,0f);
+    private final Vector3f cameraUp = new Vector3f(0, 0, -1f).normalize();
+    private Vector3f cameraFront = new Vector3f(1, 0, 0);
     private final float fov = 45;
 
     // Movement
-    private float yaw = -90f, pitch = 0;
+    private float yaw = (float) atan2(cameraFront.y, cameraFront.x), pitch = 0;
     private float lastX = 400, lastY = 300;
     private float movementSpeed = 2.5f;
     private float mouseSensitivity = 0.1f;
@@ -63,29 +63,26 @@ public class Camera {
             cameraPos.add(new Vector3f(cameraFront).cross(cameraUp).normalize().mul(cameraSpeed));
 
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-            pitch -= 0.015;
-        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
             pitch += 0.015;
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+            pitch -= 0.015;
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            yaw += 0.015;
-        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
             yaw -= 0.015;
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+            yaw += 0.015;
 
-        if (pitch > 89.0f)
-            pitch = 89.0f;
-        if (pitch < -89.0f)
-            pitch = -89.0f;
-
-
+        if (pitch > PI/2)
+            pitch = (float)PI/2 -0.01f;
+        if (pitch < -PI/2)
+            pitch = -(float)PI/2 +0.01f;
 
         cameraFront.set(
-                new Vector3f(1,0,0)
-                        .rotateZ(yaw)
-                        .rotateX(pitch)
-                        .normalize()
+                new Vector3f(
+                        (float) (cos(yaw) * cos(pitch)),
+                        (float) (sin(yaw) * cos(pitch)),
+                        (float) sin(pitch)
+                )
         );
-
-        //System.out.println("pos: " + cameraPos.x + " " +  + cameraPos.y + " " +  + cameraPos.z);
     }
 
     public void startProcessingMouseMovement(long window) {
