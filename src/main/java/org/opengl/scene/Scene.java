@@ -114,7 +114,7 @@ public class Scene {
 
     private void setUpDrawables() throws URISyntaxException, IOException {
 
-        //droneModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/drone.gltf");
+        droneModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/drone.gltf");
         busterModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/buster.gltf");
         environmentModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/field.gltf");
     }
@@ -140,13 +140,14 @@ public class Scene {
                 configuration.shader.setMatrix4f(stack,"projection", projection);
 
                 environmentModel.draw(stack, configuration.shader);
-                //droneModel.draw(stack, configuration.shader);
+                droneModel.draw(stack, configuration.shader);
                 busterModel.draw(stack, configuration.shader);
-
-                busterModel.position = droneStatus.position;
-                busterModel.position = new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z - 10);
-                busterModel.rotation = droneStatus.rotation;
             }
+            busterModel.position = new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z - 10);
+            busterModel.rotation = droneStatus.rotation;
+
+            droneModel.position = new Vector3f(droneStatus.position.x + 1 , droneStatus.position.y, droneStatus.position.z - 10);
+            droneModel.rotation = droneStatus.rotation;
 
             glfwSwapBuffers(window);
             glfwPollEvents();

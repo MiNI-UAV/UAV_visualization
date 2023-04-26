@@ -82,6 +82,10 @@ void main()
     vec3 normNormal = normalize(normal);
     vec3 result = backgroundColor;
 
+    // gloss = 1.0-roughness
+    //diffuseColor = lerp(baseColor, 0.0, metallic); TODO PBR Model
+    //specularColor = lerp(1.0, baseColor, metallic)
+
     // Directional Light
     result += (useDirectionalLight == true)? calcDirLight(dirLight, normNormal, viewDir): vec3(0.f);
     // Point Lights

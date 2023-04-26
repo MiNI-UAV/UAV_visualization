@@ -12,24 +12,20 @@ public class Model {
 
     public final ModelNode rootNode;
     public Vector3f position = new Vector3f();
-    public Vector3f rotation = new Vector3f();
+    public Vector3f rotation = new Vector3f(); // Immutability principle - setters and getters
 
     public Model(ModelNode rootNode) {
         this.rootNode = rootNode;
     }
 
     public void draw(MemoryStack stack, Shader shader) {
-        //rootNode.localTranslation = position;
-        //rootNode.localScale = new Vector3f(0.1f);
-        rootNode.customTransform = new Matrix4f()
-                .scale(0.1f)
-                .translate(position)//.rotate(new Quaternionf(0,0,0,1));
-                .rotate(toQuaterion(rotation))
-                .rotate(new Quaternionf(-0.7071f,0f,0, 0.7071f));
-        rootNode.draw(stack, shader/*, position, new Quaternionf(), new Vector3f(0.1f)*/, new Matrix4f());
+        rootNode.customTranslation = position;
+        rootNode.customRotation = toQuaterion(rotation);
+        rootNode.customScale = new Vector3f(0.1f);
+        rootNode.draw(stack, shader, new Matrix4f());
     }
 
-    private static Quaternionfc toQuaterion(Vector3f rotation) {
+    private static Quaternionf toQuaterion(Vector3f rotation) {
         var roll = rotation.z;
         var pitch = rotation.y;
         var yaw = rotation.x;
@@ -49,6 +45,6 @@ public class Model {
     }
 
     public Vector3f getPosition() {
-    return new Vector3f(position).mul(0.1f);
+    return new Vector3f(position);
     };
 }

@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import static org.joml.Math.lerp;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
@@ -44,7 +45,15 @@ public class GltfImporter {
         }
 
         // TODO: glTF defines +Y as up, +Z as forward, and -X as right
-        return new Model(new ModelNode("RootNode", Collections.emptyList(), children, new Vector3f(), new Quaternionf(-1,0,0,0), new Vector3f(1f), new Matrix4f()));
+        return new Model(
+                new ModelNode("RootNode",
+                        Collections.emptyList(),
+                        children,
+                        new Vector3f(),
+                        new Quaternionf(-0.7071f,0f,0, 0.7071f),
+                        new Vector3f(1f)
+                )
+        );
     }
 
     private static ModelNode getChildModelNode(NodeModel nodeModel) {
@@ -56,28 +65,36 @@ public class GltfImporter {
             children.add(getChildModelNode(childrenNode));
         }
         Matrix4f localTransform = floatToMatrix4f(nodeModel.computeLocalTransform(null));
-        if(nodeModel.getMatrix() != null) // TODO: Matrices get priority. Check if that's true on asset basis
+        if(nodeModel.getMatrix() != null) // TODO: Matrices  get priority. Check if that's true on asset basis
         {
             float[] m = nodeModel.getMatrix();
-            float[] localTranslation = new float[]{m[12],m[13],m[14]};
-            float[] localScale = new float[]{1,1,1}; // TODO
-            Quaternionf localRotation = new Quaternionf(0,0,0,1); // TODO
+            Vector3f localTranslation = new Vector3f(new float[]{m[12],m[13],m[14]});
+            Vector3f localScale = new Vector3f(new float[]{0,0,0}); // TODO
+            Quaternionf localRotation = new Quaternionf(); // TODO
             //return new ModelNode0(nodeModel.getName(), meshes, children, new Vector3f(localTranslation), localRotation, new Vector3f(localScale), localTransform);
-            return new ModelNode(nodeModel.getName(), meshes, children, new Vector3f(), new Quaternionf(), new Vector3f(1f), localTransform);
+            return new ModelNode(nodeModel.getName(), meshes, children, localTranslation , localRotation, localScale);
         }
-        float[] translation = nodeModel.getTranslation() != null ? nodeModel.getTranslation(): new float[]{0f, 0f, 0f};
+        float[] translation = nodeModel.getTranslation() != null ? nodeModel.getTranslation(): new float[]{0, 0, 0};
         Vector3f localTranslation = new Vector3f(translation);
-        float[] rotation = nodeModel.getRotation() != null ? nodeModel.getRotation(): new float[]{0f, 0f, 0f, 1f};
+        float[] rotation = nodeModel.getRotation() != null ? nodeModel.getRotation(): new float[]{0, 0, 0, 1};
         float x = rotation[0];
         float y = rotation[1];
         float z = rotation[2];
         float w = rotation[3];
         Quaternionf localRotation = new Quaternionf(x, y, z, w);
-        float[] scale = nodeModel.getScale() != null ? nodeModel.getScale(): new float[]{1f, 1f, 1f};
+        float[] scale = nodeModel.getScale() != null ? nodeModel.getScale(): new float[]{1, 1, 1};
         Vector3f localScale = new Vector3f(scale);
 
+        Matrix4f localTransformation = new Matrix4f()
+                .translate(localTranslation)
+                .rotate(localRotation)
+                .scale(localScale);
+        float[] res = new float[16];
+        nodeModel.computeLocalTransform(res);
+        // TODO: nie zgadza się
+
         //return new ModelNode(nodeModel.getName(), meshes, children, localTranslation, localRotation, localScale, localTransform);
-        return new ModelNode(nodeModel.getName(), meshes, children, new Vector3f(), new Quaternionf(), new Vector3f(1), localTransform);
+        return new ModelNode(nodeModel.getName(), meshes, children, localTranslation, localRotation, localScale);
     }
 
     private static Matrix4f floatToMatrix4f(float[] f) {
@@ -109,6 +126,10 @@ public class GltfImporter {
                 float[] bcf = (float[]) materialModel.getValues().get("baseColorFactor");
                 Material material = new Material(new Vector3f(0.5f,0.5f,0.5f)); // TODO
 
+                /*if(!materialModel.getValues().containsKey("baseColorTexture")) {
+                    meshes.add(new Mesh(vertices, ind, List.of(), material));
+                    continue;
+                }*/
                 TextureModel textureModel = textureModels.get((Integer) materialModel.getValues().get("baseColorTexture")); // TODO Crash null when no texture on model
                 Texture texture = loadTexture(textureModel);
                 meshes.add(new Mesh(vertices, ind, List.of(texture), material));
