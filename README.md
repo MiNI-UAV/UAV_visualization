@@ -18,10 +18,10 @@ Run `gradle run` in the root directory.
 - `a` Move camera left.
 - `w` Move camera forward.
 - `s` Move camera backward.
-- 
+
 ### Move The Camera Front in Free Mode
- - `🢂` Rotate camera right.
- - `🡸` Rotate camera left.
- - `🡹` Rotate camera up.
- - `🢃` Rotate camera down.
+ - `→` Rotate camera right.
+ - `←` Rotate camera left.
+ - `↑` Rotate camera up.
+ - `↓` Rotate camera down.
  
