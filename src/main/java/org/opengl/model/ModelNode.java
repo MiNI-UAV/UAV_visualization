@@ -18,7 +18,6 @@ public class ModelNode {
     private Vector3f localTranslation;
     private Quaternionf localRotation;
     private Vector3f localScale;
-*/
     private Supplier<Vector3f> customTranslationSupplier;
     private Supplier<Quaternionf> customRotationSupplier;
     private Supplier<Vector3f> customScaleSupplier;
