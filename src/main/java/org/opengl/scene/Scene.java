@@ -1,31 +1,34 @@
 package org.opengl.scene;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.opengl.OpenGLScene;
 import org.opengl.camera.Camera;
 import org.opengl.config.Configuration;
-import org.opengl.drawable.*;
 import org.opengl.input.InputHandler;
 import org.opengl.model.DroneStatus;
 import org.opengl.model.Model;
-import org.opengl.model.ModelOld;
 import org.opengl.queue.PositionConsumer;
+import org.opengl.queue.PropellerConsumer;
 import org.opengl.shader.Shader;
+import org.zeromq.ZContext;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 
-import static org.joml.Math.*;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
+import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.opengl.importer.GltfImporter.loadModel;
 
 public class Scene {
@@ -39,13 +42,11 @@ public class Scene {
     private final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
     private float dayFactor = 1.0f;
-    //private DrawableDrone drone;
-    private DrawableEnvironment environment;
     private DroneStatus droneStatus;
     private Model droneModel, environmentModel, busterModel;
     Shader lightSourceShader;
-    private PositionConsumer positionConsumer;
-    private PositionConsumer Consumer;
+    private final PositionConsumer positionConsumer;
+    private final PropellerConsumer propellerConsumer;
 
     // camera movement
 
@@ -58,12 +59,16 @@ public class Scene {
         this.windowHeight = windowHeight;
         this.windowWidth = windowWidth;
 
+        ZContext context = new ZContext();
         droneStatus = new DroneStatus();
-        positionConsumer = new PositionConsumer(droneStatus);
+        positionConsumer = new PositionConsumer(context, droneStatus);
+        propellerConsumer = new PropellerConsumer(context, droneStatus);
+        positionConsumer.start();
+        propellerConsumer.start();
 
         camera = new Camera();
         configuration = new Configuration();
-        inputHandler = new InputHandler(configuration);
+        inputHandler = new InputHandler(configuration, context);
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
@@ -114,10 +119,20 @@ public class Scene {
 
     private void setUpDrawables() throws URISyntaxException, IOException {
 
-        droneModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/drone.gltf");
-        busterModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/buster.gltf");
-        environmentModel = loadModel("file:///home/faliszewskii/Repositories/opengl-scene/src/main/resources/models/field.gltf");
+        Supplier<Quaternionf> clockwiseRotation =
+                () -> new Quaternionf(0,1 * sin(glfwGetTime()*1000),0,-cos(glfwGetTime()*100)).normalize();
+        Supplier<Quaternionf> counterClockwiseRotation =
+                () -> new Quaternionf(0,1 * sin(glfwGetTime()*1000),0,cos(glfwGetTime()*100)).normalize();
+        droneModel = loadModel("models/drone.gltf", "textures/drone");
+        droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
+        droneModel.setAnimation(null, counterClockwiseRotation, null, List.of("propeller.1", "propeller.4"));
+        busterModel = loadModel("models/buster.gltf", "textures/buster");
+        busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
+        busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
+        environmentModel = loadModel("models/sand.gltf", "textures/sand");
+        //environmentModel = loadModel("models/field.gltf", "textures/field");
     }
+
 
     public void loop() {
 
@@ -133,7 +148,7 @@ public class Scene {
 
             inputHandler.processInput(window);
 
-            // BEGIN TRANSFORMATION
+            // Drawing
             try (MemoryStack stack = MemoryStack.stackPush()) {
                 configuration.shader.setVec3("viewPos", camera.getCameraPos());
                 configuration.shader.setMatrix4f(stack,"view", view);
@@ -141,13 +156,16 @@ public class Scene {
 
                 environmentModel.draw(stack, configuration.shader);
                 droneModel.draw(stack, configuration.shader);
-                busterModel.draw(stack, configuration.shader);
+                //busterModel.draw(stack, configuration.shader);
             }
-            busterModel.position = new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z - 10);
-            busterModel.rotation = droneStatus.rotation;
 
-            droneModel.position = new Vector3f(droneStatus.position.x + 1 , droneStatus.position.y, droneStatus.position.z - 10);
-            droneModel.rotation = droneStatus.rotation;
+            // Update state
+            busterModel.setPosition(new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z));
+            busterModel.setRotation(droneStatus.rotation);
+
+            droneModel.setPosition(new Vector3f(droneStatus.position.x + 1 , droneStatus.position.y, droneStatus.position.z));
+            droneModel.setRotation(droneStatus.rotation);
+
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -157,7 +175,7 @@ public class Scene {
     private void changeCamera() {
         switch(configuration.type) {
             case DroneCamera -> {
-                var cameraOffset = new Vector3f(-0.6f,0,-0.35f);
+                var cameraOffset = new Vector3f(-3.0f,0,-1.5f);
                 var cameraPos = new Vector3f(busterModel.getPosition()).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
                 camera.setCameraFront(new Vector3f(busterModel.getPosition()).sub(cameraPos).normalize());

@@ -15,6 +15,8 @@ struct Material {
     vec3 diffuse;
     vec3 specular;
     float shininess;
+    vec3 metallic;
+    float roughness;
 };
 uniform Material material;
 
@@ -70,7 +72,7 @@ struct Fog {
 };
 uniform Fog fog;
 
-vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir);
+vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 float getFogFactor(Fog fog, float fogCoordinate);
@@ -82,12 +84,8 @@ void main()
     vec3 normNormal = normalize(normal);
     vec3 result = backgroundColor;
 
-    // gloss = 1.0-roughness
-    //diffuseColor = lerp(baseColor, 0.0, metallic); TODO PBR Model
-    //specularColor = lerp(1.0, baseColor, metallic)
-
     // Directional Light
-    result += (useDirectionalLight == true)? calcDirLight(dirLight, normNormal, viewDir): vec3(0.f);
+    result += (useDirectionalLight == true)? calcDirLight(dirLight, normNormal, viewDir, objectColor): vec3(0.f);
     // Point Lights
     //for(int i = 0; i < NR_POINT_LIGHTS; i++)
     //result += calcPointLight(pointLights[i], normNormal, fragPos, viewDir);
@@ -101,7 +99,7 @@ void main()
     fragColor = vec4(result, 1.f);
 }
 
-vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor)
 {
     vec3 lightDir = normalize(-light.direction);
     // diffuse shading
@@ -109,10 +107,19 @@ vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // PBR
+    float gloss = 1.0-material.roughness;
+    vec3 diffuseColor = mix(objectColor.xyz, vec3(0), material.metallic);
+    vec3 specularColor = mix(vec3(1), objectColor.xyz, material.metallic);
+
     // combine results
     vec3 ambient  = light.ambient  * material.ambient;
     vec3 diffuse  = light.diffuse  * diff * material.diffuse;
     vec3 specular = light.specular * spec * material.specular;
+    //vec3 ambient = light.ambient;
+    //vec3 diffuse = light.diffuse * diff * diffuseColor;
+    //vec3 specular = light.specular * spec * specularColor; // TODO PBR model
+
     return (ambient + diffuse + specular);
 }
 

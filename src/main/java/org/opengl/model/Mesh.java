@@ -69,6 +69,8 @@ public class Mesh {
         shader.setVec3("material.diffuse", material.getDiffuse());
         shader.setVec3("material.specular", material.getDiffuse());
         shader.setFloat("material.shininess", 16.0f);
+        shader.setFloat("material.roughness", material.roughness);
+        shader.setFloat("material.metallic", material.metallic);
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         shader.setInt("useTexture", 0);

@@ -5,14 +5,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.opengl.shader.Shader;
-import de.javagl.jgltf.model.*;
 
 import java.util.List;
-
-import static java.lang.Math.cos;
-import static org.joml.Math.sin;
-import static org.joml.Math.toRadians;
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import java.util.function.Supplier;
 
 public class ModelNode {
 
@@ -20,13 +15,13 @@ public class ModelNode {
     private final List<Mesh> meshes;
     private final List<ModelNode> children;
 
-    public Vector3f localTranslation;
-    public Quaternionf localRotation;
-    public Vector3f localScale;
-    public Vector3f customTranslation;
-    public Quaternionf customRotation;
-    public Vector3f customScale;
-
+    private Vector3f localTranslation;
+    private Quaternionf localRotation;
+    private Vector3f localScale;
+*/
+    private Supplier<Vector3f> customTranslationSupplier;
+    private Supplier<Quaternionf> customRotationSupplier;
+    private Supplier<Vector3f> customScaleSupplier;
 
     public ModelNode(String name, List<Mesh> meshes, List<ModelNode> children, Vector3f localTranslation, Quaternionf localRotation, Vector3f localScale) {
         this.name = name;
@@ -35,18 +30,15 @@ public class ModelNode {
         this.localTranslation = localTranslation;
         this.localRotation = localRotation;
         this.localScale = localScale;
-        this.customTranslation = new Vector3f();
-        this.customRotation = new Quaternionf();
-        this.customScale = new Vector3f(1);
+        this.customTranslationSupplier = Vector3f::new;
+        this.customRotationSupplier = Quaternionf::new;
+        this.customScaleSupplier = () -> new Vector3f(1);
     }
 
     public void draw(MemoryStack stack, Shader shader, Matrix4f parentTransform) {
-        if(name.equals("Drone_Turb_Blade_L_body_0") || name.startsWith("propeller"))
-            customRotation = new Quaternionf(0,1 * sin(glfwGetTime()*100),0,-cos(glfwGetTime()*100)).normalize();
-        if(name.equals("Drone_Turb_Blade_R_body_0"))
-            customRotation = new Quaternionf(0,1 * sin(glfwGetTime()*100),0,cos(glfwGetTime()*100)).normalize();
-        Vector3f translation = new Vector3f().add(localTranslation).add(customTranslation);
-        Quaternionf rotation = new Quaternionf().mul(localRotation).mul(customRotation);
+        Vector3f translation = new Vector3f().add(localTranslation).add(customTranslationSupplier.get());
+        Quaternionf rotation = new Quaternionf().mul(localRotation).mul(customRotationSupplier.get());
+        var customScale = customScaleSupplier.get();
         Vector3f scale = new Vector3f(localScale.x * customScale.x, localScale.y * customScale.y, localScale.z * customScale.z);
 
         Matrix4f localTransformation = new Matrix4f()
@@ -57,5 +49,29 @@ public class ModelNode {
 
         meshes.forEach(m -> m.draw(stack, shader, globalTransformation));
         children.forEach(n -> n.draw(stack, shader, globalTransformation));
+    }
+
+    public void setCustomTranslationSupplier(Supplier<Vector3f> customTranslationSupplier) {
+        this.customTranslationSupplier = customTranslationSupplier;
+    }
+
+    public void setCustomRotationSupplier(Supplier<Quaternionf> customRotationSupplier) {
+        this.customRotationSupplier = customRotationSupplier;
+    }
+
+    public void setAnimation(
+            Supplier<Vector3f> translation,
+            Supplier<Quaternionf> rotation,
+            Supplier<Vector3f> scale,
+            List<String> targetNodeName
+    ) {
+        if(targetNodeName.stream().anyMatch(n -> n.equals(name))){
+            if(translation != null) customTranslationSupplier = translation;
+            if(rotation != null) customRotationSupplier = rotation;
+            if(scale != null) customScaleSupplier = scale;
+        }
+        else for (ModelNode child : children) {
+            child.setAnimation(translation, rotation, scale, targetNodeName);
+        }
     }
 }

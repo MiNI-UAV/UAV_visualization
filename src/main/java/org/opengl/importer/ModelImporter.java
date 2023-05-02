@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
 import static org.lwjgl.stb.STBImage.stbi_load;
 
+@Deprecated
 public class ModelImporter {
 
     private static String directory;
@@ -126,7 +127,7 @@ public class ModelImporter {
         Vector3f diffuse = new Vector3f();
         var result = Assimp.aiGetMaterialColor(material, Assimp.AI_MATKEY_COLOR_DIFFUSE, Assimp.aiTextureType_NONE, 0, colour);
         if (result == 0) {
-            return new Material(new Vector3f(colour.r(), colour.g(), colour.b()));
+            return new Material(new Vector3f(colour.r(), colour.g(), colour.b()), 0, 0);
         }
         return Material.DEFAULT_MATERIAL;
     }

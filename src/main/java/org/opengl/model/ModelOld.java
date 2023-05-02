@@ -5,7 +5,7 @@ import org.lwjgl.system.MemoryStack;
 import org.opengl.shader.Shader;
 
 import java.util.List;
-
+@Deprecated
 public class ModelOld {
 
     public final List<Mesh> meshes;

@@ -9,6 +9,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.opengl.OpenGLScene;
 import org.opengl.model.*;
+import org.opengl.model.Model;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,6 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import static org.joml.Math.lerp;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 import static org.lwjgl.stb.STBImage.stbi_image_free;
@@ -27,9 +27,11 @@ public class GltfImporter {
 
     private static List<TextureModel> textureModels;
     private static Map<String, Texture> loadedTextures;
+    private static String textureDirectory;
 
-    public static Model loadModel(String path) throws URISyntaxException, IOException {
-
+    public static Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
+        textureDirectory = textureDir;
+        String path = "file://" + Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource(resourceFile)).getFile();
         GltfModelReader reader = new GltfModelReader();
         GltfModelV2 model = (GltfModelV2) reader.read(new URI(path));
         textureModels = model.getTextureModels();
@@ -123,8 +125,13 @@ public class GltfImporter {
 
                 MaterialModel materialModel = meshPrimitiveModel.getMaterialModel();
 
-                float[] bcf = (float[]) materialModel.getValues().get("baseColorFactor");
-                Material material = new Material(new Vector3f(0.5f,0.5f,0.5f)); // TODO
+                //float[] bcf = (float[]) materialModel.getValues().get("baseColorFactor");
+                Material material = new Material(
+                        new Vector3f(0.5f,0.5f,0.5f),
+                        0.1f,//(float) materialModel.getValues().get("roughnessFactor"),
+                        0.5f//(float) materialModel.getValues().get("metallicFactor")
+                        );
+
 
                 /*if(!materialModel.getValues().containsKey("baseColorTexture")) {
                     meshes.add(new Mesh(vertices, ind, List.of(), material));
@@ -144,8 +151,8 @@ public class GltfImporter {
 
         ImageModel imageModel = textureModel.getImageModel();
         String s = imageModel.getUri();
-        String fileName = s.substring(s.lastIndexOf('/') + 1, s.length());
-        String path = "textures/"+fileName;
+        String fileName = s.substring(s.lastIndexOf('/') + 1);
+        String path = textureDirectory + "/" + fileName;
         int[] w = new int[1];
         int[] h = new int[1];
         int[] components = new int[1];

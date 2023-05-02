@@ -8,7 +8,8 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				0
+				0,
+				1
 			]
 		}
 	],
@@ -17,19 +18,39 @@
 			"mesh":0,
 			"name":"Cube",
 			"rotation":[
+				-0.4999998211860657,
+				0.5000001788139343,
+				0.4999998211860657,
+				0.5000002384185791
+			],
+			"scale":[
+				4.16530704498291,
+				2.272753953933716,
+				6.658382892608643
+			],
+			"translation":[
+				63,
+				-64.5,
+				0
+			]
+		},
+		{
+			"mesh":1,
+			"name":"Cube.001",
+			"rotation":[
 				0,
 				0.707106351852417,
 				0,
 				0.7071071863174438
 			],
 			"scale":[
-				0.8330613970756531,
+				4.16530704498291,
 				2.272753953933716,
-				1.3316766023635864
+				6.658382892608643
 			],
 			"translation":[
 				0,
-				-0.5,
+				-1.5,
 				0
 			]
 		}
@@ -41,6 +62,17 @@
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
 					"index":0
+				},
+				"metallicFactor":0,
+				"roughnessFactor":0.5
+			}
+		},
+		{
+			"doubleSided":true,
+			"name":"Material.001",
+			"pbrMetallicRoughness":{
+				"baseColorTexture":{
+					"index":1
 				},
 				"metallicFactor":0,
 				"roughnessFactor":0.5
@@ -61,9 +93,27 @@
 					"material":0
 				}
 			]
+		},
+		{
+			"name":"Cube.002",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":4,
+						"TEXCOORD_0":5,
+						"NORMAL":6
+					},
+					"indices":3,
+					"material":1
+				}
+			]
 		}
 	],
 	"textures":[
+		{
+			"sampler":0,
+			"source":0
+		},
 		{
 			"sampler":0,
 			"source":0
@@ -73,7 +123,7 @@
 		{
 			"mimeType":"image/png",
 			"name":"Untitled",
-			"uri":"../textures/Untitled.png"
+			"uri":"../textures/field/Untitled.png"
 		}
 	],
 	"accessors":[
@@ -110,6 +160,34 @@
 			"componentType":5123,
 			"count":36,
 			"type":"SCALAR"
+		},
+		{
+			"bufferView":4,
+			"componentType":5126,
+			"count":24,
+			"max":[
+				60.01958465576172,
+				0.21999740600585938,
+				37.546653747558594
+			],
+			"min":[
+				-60.01958465576172,
+				-0.21999740600585938,
+				-37.546653747558594
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":5,
+			"componentType":5126,
+			"count":24,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":6,
+			"componentType":5126,
+			"count":24,
+			"type":"VEC3"
 		}
 	],
 	"bufferViews":[
@@ -136,6 +214,24 @@
 			"byteLength":72,
 			"byteOffset":768,
 			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":288,
+			"byteOffset":840,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":192,
+			"byteOffset":1128,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":288,
+			"byteOffset":1320,
+			"target":34962
 		}
 	],
 	"samplers":[
@@ -146,7 +242,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":840,
+			"byteLength":1608,
 			"uri":"field.bin"
 		}
 	]

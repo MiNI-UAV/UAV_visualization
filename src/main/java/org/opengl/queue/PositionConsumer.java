@@ -1,8 +1,7 @@
 package org.opengl.queue;
 
-import org.joml.Vector3f;
 import org.opengl.model.DroneStatus;
-import org.opengl.parser.MessageParserDroneStatus;
+import org.opengl.parser.PositionMessageParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -13,18 +12,26 @@ public class PositionConsumer {
 
     private ZContext context;
     private ZMQ.Socket socket;
-    private MessageParserDroneStatus messageParser;
+    private PositionMessageParser messageParser;
+    private Thread thread;
 
 
-    public PositionConsumer(DroneStatus droneStatus) {
+    public PositionConsumer(ZContext context, DroneStatus droneStatus) {
+        this.context = context;
         this.droneStatus = droneStatus;
-        messageParser = new MessageParserDroneStatus();
+        messageParser = new PositionMessageParser();
         context = new ZContext();
-        socket = context. createSocket(SocketType.SUB);
-        socket.connect("tcp://localhost:5555");
+                //String response = "Hello, world!";
+                //socket.send(response.getBytes(ZMQ.CHARSET), 0);
+        socket = context.createSocket(SocketType.SUB);
+        socket.connect("tcp://localhost:9090");
         socket.subscribe("pos:");
-        var thread = new PositionThread();
-        thread.start();
+        thread = new PositionThread();
+    }
+
+    public void start() {
+        if(!thread.isAlive())
+            thread.start();
     }
 
     class PositionThread extends Thread {
@@ -32,9 +39,7 @@ public class PositionConsumer {
             while (!Thread.currentThread().isInterrupted()) {
                 byte[] reply = socket.recv(0);
                 String message = new String(reply, ZMQ.CHARSET);
-                System.out.println("Received: [" + message + "]");
-                //String response = "Hello, world!";
-                //socket.send(response.getBytes(ZMQ.CHARSET), 0);
+                //System.out.println("Received: [" + message + "]");
                 var newStatus = messageParser.parse(message);
                 droneStatus.position = newStatus.position;
                 droneStatus.rotation = newStatus.rotation;

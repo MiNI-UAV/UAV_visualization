@@ -8,7 +8,7 @@
 		{
 			"name":"Scene",
 			"nodes":[
-				5
+				4
 			]
 		}
 	],
@@ -55,23 +55,6 @@
 		},
 		{
 			"mesh":2,
-			"name":"Cube",
-			"scale":[
-				7.4246296882629395,
-				9.842849731445312,
-				9.999999046325684
-			],
-			"translation":[
-				26.790836334228516,
-				29.09635353088379,
-				-0.7894942760467529
-			]
-		},
-		{
-			"children":[
-				2
-			],
-			"mesh":3,
 			"name":"propeller.3",
 			"rotation":[
 				0.7071068286895752,
@@ -91,7 +74,7 @@
 			]
 		},
 		{
-			"mesh":4,
+			"mesh":3,
 			"name":"propeller.4",
 			"rotation":[
 				0.7071068286895752,
@@ -114,10 +97,10 @@
 			"children":[
 				0,
 				1,
-				3,
-				4
+				2,
+				3
 			],
-			"mesh":5,
+			"mesh":4,
 			"name":"body",
 			"rotation":[
 				-0.7071068286895752,
@@ -126,9 +109,9 @@
 				0.7071068286895752
 			],
 			"scale":[
-				0.10000000149011612,
-				0.10000000149011612,
-				0.10000000149011612
+				0.002778194611892104,
+				0.0027777778450399637,
+				0.0031250000465661287
 			]
 		}
 	],
@@ -175,7 +158,7 @@
 			]
 		},
 		{
-			"name":"Cube",
+			"name":"Cube.004",
 			"primitives":[
 				{
 					"attributes":{
@@ -189,7 +172,7 @@
 			]
 		},
 		{
-			"name":"Cube.004",
+			"name":"Cube.003",
 			"primitives":[
 				{
 					"attributes":{
@@ -203,7 +186,7 @@
 			]
 		},
 		{
-			"name":"Cube.003",
+			"name":"uav",
 			"primitives":[
 				{
 					"attributes":{
@@ -211,21 +194,7 @@
 						"TEXCOORD_0":14,
 						"NORMAL":15
 					},
-					"indices":3,
-					"material":0
-				}
-			]
-		},
-		{
-			"name":"uav",
-			"primitives":[
-				{
-					"attributes":{
-						"POSITION":16,
-						"TEXCOORD_0":17,
-						"NORMAL":18
-					},
-					"indices":19,
+					"indices":16,
 					"material":0
 				}
 			]
@@ -240,8 +209,8 @@
 	"images":[
 		{
 			"mimeType":"image/png",
-			"name":"Untitled",
-			"uri":"../textures/Untitled.png"
+			"name":"droneTex",
+			"uri":"../textures/drone/droneTex.png"
 		}
 	],
 	"accessors":[
@@ -312,14 +281,14 @@
 			"componentType":5126,
 			"count":24,
 			"max":[
-				0.4872560501098633,
-				2.8200936317443848,
-				0.2182447910308838
+				33.86076354980469,
+				1.3385963439941406,
+				2.9719467163085938
 			],
 			"min":[
-				-0.4872560501098633,
-				-2.8200936317443848,
-				-0.2182447910308838
+				-33.86075973510742,
+				-1.3386001586914062,
+				-2.9719467163085938
 			],
 			"type":"VEC3"
 		},
@@ -341,13 +310,13 @@
 			"count":24,
 			"max":[
 				33.86076354980469,
-				1.3385963439941406,
-				2.9719467163085938
+				1.3385992050170898,
+				2.971942901611328
 			],
 			"min":[
-				-33.86075973510742,
-				-1.3386001586914062,
-				-2.9719467163085938
+				-33.86076354980469,
+				-1.3385992050170898,
+				-2.971942901611328
 			],
 			"type":"VEC3"
 		},
@@ -366,34 +335,6 @@
 		{
 			"bufferView":13,
 			"componentType":5126,
-			"count":24,
-			"max":[
-				33.86076354980469,
-				1.3385992050170898,
-				2.971942901611328
-			],
-			"min":[
-				-33.86076354980469,
-				-1.3385992050170898,
-				-2.971942901611328
-			],
-			"type":"VEC3"
-		},
-		{
-			"bufferView":14,
-			"componentType":5126,
-			"count":24,
-			"type":"VEC2"
-		},
-		{
-			"bufferView":15,
-			"componentType":5126,
-			"count":24,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":16,
-			"componentType":5126,
 			"count":4952,
 			"max":[
 				89.98649597167969,
@@ -408,19 +349,19 @@
 			"type":"VEC3"
 		},
 		{
-			"bufferView":17,
+			"bufferView":14,
 			"componentType":5126,
 			"count":4952,
 			"type":"VEC2"
 		},
 		{
-			"bufferView":18,
+			"bufferView":15,
 			"componentType":5126,
 			"count":4952,
 			"type":"VEC3"
 		},
 		{
-			"bufferView":19,
+			"bufferView":16,
 			"componentType":5123,
 			"count":7524,
 			"type":"SCALAR"
@@ -507,44 +448,26 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":288,
+			"byteLength":59424,
 			"byteOffset":3144,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":192,
-			"byteOffset":3432,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":288,
-			"byteOffset":3624,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":59424,
-			"byteOffset":3912,
-			"target":34962
-		},
-		{
-			"buffer":0,
 			"byteLength":39616,
-			"byteOffset":63336,
+			"byteOffset":62568,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":59424,
-			"byteOffset":102952,
+			"byteOffset":102184,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":15048,
-			"byteOffset":162376,
+			"byteOffset":161608,
 			"target":34963
 		}
 	],
@@ -556,7 +479,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":177424,
+			"byteLength":176656,
 			"uri":"drone.bin"
 		}
 	]
