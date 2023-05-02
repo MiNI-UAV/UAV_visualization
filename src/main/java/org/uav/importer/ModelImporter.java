@@ -149,7 +149,7 @@ public class ModelImporter {
     }
 
     private static int loadTextureFromFile(String s, String directory) {
-        String fileName = s.substring(s.indexOf('/') + 1, s.length());
+        String fileName = s.substring(s.indexOf('/') + 1);
         String path = "textures/" + fileName;
         return loadTexture(path);
     }

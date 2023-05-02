@@ -2,10 +2,8 @@ package org.uav.camera;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
 
 import static java.lang.Math.*;
-import static java.lang.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
@@ -18,11 +16,7 @@ public class Camera {
 
     // Movement
     private float yaw = (float) atan2(cameraFront.y, cameraFront.x), pitch = 0;
-    private float lastX = 400, lastY = 300;
-    private float movementSpeed = 2.5f;
-    private float mouseSensitivity = 0.1f;
-    private boolean firstMouse = true;
-    private GLFWCursorPosCallback mouseCallback;
+    private final float movementSpeed = 2.5f;
 
     public Camera() {}
 
@@ -84,46 +78,4 @@ public class Camera {
                 )
         );
     }
-
-    public void startProcessingMouseMovement(long window) {
-        if (mouseCallback != null) return;
-        mouseCallback = glfwSetCursorPosCallback(window, (window1, xpos, ypos) -> {
-            if (firstMouse)
-            {
-                lastX = (float) xpos;
-                lastY = (float) ypos;
-                firstMouse = false;
-            }
-
-            float xoffset = (float) xpos - lastX;
-            float yoffset = lastY - (float) ypos; // reversed since y-coordinates range from bottom to top
-            lastX = (float) xpos;
-            lastY = (float) ypos;
-
-            float sensitivity = 0.1f;
-            xoffset *= sensitivity;
-            yoffset *= sensitivity;
-
-            yaw += xoffset;
-            pitch += yoffset;
-
-            if (pitch > 89.0f)
-                pitch = 89.0f;
-            if (pitch < -89.0f)
-                pitch = -89.0f;
-
-            cameraFront.set(cos(toRadians(yaw)) * cos(toRadians(pitch)),
-                    sin(toRadians(yaw)) * cos(toRadians(pitch)),
-                    sin(toRadians(pitch))).normalize();
-        });
-    }
-
-    public void stopProcessingMouseMovement(long window) {
-        if (mouseCallback != null) {
-            mouseCallback.close();
-            glfwSetCursorPosCallback(window, null);
-            mouseCallback = null;
-        }
-    }
-
 }

@@ -8,21 +8,15 @@ import org.zeromq.ZMQ;
 
 public class PositionConsumer {
 
-    private DroneStatus droneStatus;
-
-    private ZContext context;
-    private ZMQ.Socket socket;
-    private PositionMessageParser messageParser;
-    private Thread thread;
+    private final DroneStatus droneStatus;
+    private final ZMQ.Socket socket;
+    private final PositionMessageParser messageParser;
+    private final Thread thread;
 
 
     public PositionConsumer(ZContext context, DroneStatus droneStatus) {
-        this.context = context;
         this.droneStatus = droneStatus;
         messageParser = new PositionMessageParser();
-        context = new ZContext();
-                //String response = "Hello, world!";
-                //socket.send(response.getBytes(ZMQ.CHARSET), 0);
         socket = context.createSocket(SocketType.SUB);
         socket.connect("tcp://localhost:9090");
         socket.subscribe("pos:");

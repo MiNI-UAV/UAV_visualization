@@ -8,16 +8,13 @@ import org.zeromq.ZMQ;
 
 public class PropellerConsumer {
 
-    private DroneStatus droneStatus;
-
-    private ZContext context;
-    private ZMQ.Socket socket;
-    private PropellerMessageParser messageParser;
-    private Thread thread;
+    private final DroneStatus droneStatus;
+    private final ZMQ.Socket socket;
+    private final PropellerMessageParser messageParser;
+    private final Thread thread;
 
 
     public PropellerConsumer(ZContext context, DroneStatus droneStatus) {
-        this.context = context;
         this.droneStatus = droneStatus;
         messageParser = new PropellerMessageParser();
         socket = context.createSocket(SocketType.SUB);

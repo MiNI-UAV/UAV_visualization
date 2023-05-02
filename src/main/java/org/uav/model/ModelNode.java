@@ -15,9 +15,9 @@ public class ModelNode {
     private final List<Mesh> meshes;
     private final List<ModelNode> children;
 
-    private Vector3f localTranslation;
-    private Quaternionf localRotation;
-    private Vector3f localScale;
+    private final Vector3f localTranslation;
+    private final Quaternionf localRotation;
+    private final Vector3f localScale;
     private Supplier<Vector3f> customTranslationSupplier;
     private Supplier<Quaternionf> customRotationSupplier;
     private Supplier<Vector3f> customScaleSupplier;

@@ -8,16 +8,13 @@ import org.zeromq.ZMQ;
 
 public class JoystickProducer {
 
-    private ZContext context;
-    private ZMQ.Socket socket;
-    private JoystickMessageSerializer messageSerializer;
+    private final ZMQ.Socket socket;
+    private final JoystickMessageSerializer messageSerializer;
     private Thread thread;
 
 
     public JoystickProducer(ZContext context) {
-        this.context = context;
         messageSerializer = new JoystickMessageSerializer();
-        context = new ZContext();
         socket = context.createSocket(SocketType.PUB);
         socket.connect("tcp://localhost:10001");
     }
@@ -25,6 +22,6 @@ public class JoystickProducer {
     public void send(JoystickStatus joystickStatus) {
         String message = messageSerializer.serialize(joystickStatus);
         socket.send(message.getBytes(ZMQ.CHARSET), 0);
-        System.out.println("Sent: [" + message + "]");
+        //System.out.println("Sent: [" + message + "]");
     }
 }

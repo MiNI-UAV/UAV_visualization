@@ -42,7 +42,7 @@ public class Scene {
     private final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
     private float dayFactor = 1.0f;
-    private DroneStatus droneStatus;
+    private final DroneStatus droneStatus;
     private Model droneModel, environmentModel, busterModel;
     Shader lightSourceShader;
     private final PositionConsumer positionConsumer;

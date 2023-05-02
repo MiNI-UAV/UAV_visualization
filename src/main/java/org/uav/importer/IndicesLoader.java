@@ -7,7 +7,7 @@ import java.nio.IntBuffer;
 import java.util.List;
 
 public class IndicesLoader {
-    private List<Integer> indices;
+    private final List<Integer> indices;
 
     public IndicesLoader(List<Integer> indices) {
         this.indices = indices;

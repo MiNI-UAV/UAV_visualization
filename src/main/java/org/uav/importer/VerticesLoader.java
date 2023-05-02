@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 import java.util.List;
 
 public class VerticesLoader {
-    private List<Vertex> vertices;
+    private final List<Vertex> vertices;
 
     public VerticesLoader(List<Vertex> vertices) {
         this.vertices = vertices;
@@ -15,7 +15,7 @@ public class VerticesLoader {
 
     public FloatBuffer loadToFloatBuffer() {
         FloatBuffer fb = MemoryUtil.memAllocFloat(Vertex.NUMBER_OF_FLOATS * vertices.size());
-        vertices.stream().forEach(vertex -> vertex.insertIntoFloatBuffer(fb));
+        vertices.forEach(vertex -> vertex.insertIntoFloatBuffer(fb));
         fb.flip();
         return fb;
     }
