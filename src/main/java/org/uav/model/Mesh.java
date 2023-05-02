@@ -22,8 +22,6 @@ public class Mesh {
     private final List<Texture> textures;
     private final Material material;
     private int VAO;
-    private int VBO;
-    private int EBO;
 
     public List<Vertex> getVertices() {
         return vertices;
@@ -82,8 +80,8 @@ public class Mesh {
         VerticesLoader verticesLoader = new VerticesLoader(vertices);
         IndicesLoader indicesLoader = new IndicesLoader(indices);
         VAO = glGenVertexArrays();
-        VBO = glGenBuffers();
-        EBO = glGenBuffers();
+        int VBO = glGenBuffers();
+        int EBO = glGenBuffers();
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, verticesLoader.loadToFloatBuffer(), GL_STATIC_DRAW);

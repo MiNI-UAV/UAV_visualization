@@ -29,14 +29,6 @@ public class Vertex {
         this.normal = normal;
     }
 
-    public Vector2f getTexCoords() {
-        return texCoords;
-    }
-
-    public void setTexCoords(Vector2f texCoords) {
-        this.texCoords = texCoords;
-    }
-
     public Vertex(Vector3f position, Vector3f normal, Vector2f texCoords) {
         this.position = position;
         this.normal = normal;

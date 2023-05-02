@@ -10,8 +10,6 @@ public class JoystickProducer {
 
     private final ZMQ.Socket socket;
     private final JoystickMessageSerializer messageSerializer;
-    private Thread thread;
-
 
     public JoystickProducer(ZContext context) {
         messageSerializer = new JoystickMessageSerializer();

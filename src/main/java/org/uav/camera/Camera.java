@@ -12,11 +12,11 @@ public class Camera {
     private Vector3f cameraPos = new Vector3f(0f,0f,0f).add(new Vector3f(-6.0f,0,-3.5f)) ;
     private final Vector3f cameraUp = new Vector3f(0, 0, -1f).normalize();
     private Vector3f cameraFront = new Vector3f(1, 0, 0);
-    private final float fov = 90;
+    private static final float fov = 90;
 
     // Movement
     private float yaw = (float) atan2(cameraFront.y, cameraFront.x), pitch = 0;
-    private final float movementSpeed = 2.5f;
+    private static final float movementSpeed = 2.5f;
 
     public Camera() {}
 
