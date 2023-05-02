@@ -37,10 +37,6 @@ public class Camera {
                 .lookAt(cameraPos, new Vector3f(cameraPos).add(cameraFront), cameraUp);
     }
 
-    public Vector3f getCameraFront() {
-        return cameraFront;
-    }
-
     public float getFov() {
         return fov;
     }

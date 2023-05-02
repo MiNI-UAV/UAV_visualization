@@ -39,7 +39,8 @@ public class InputHandler {
             int count1 = 0;
             FloatBuffer floatBuffer = glfwGetJoystickAxes(joystick);
             //System.out.print("Axes:");
-            while (floatBuffer.hasRemaining()) {
+
+            while (floatBuffer != null && floatBuffer.hasRemaining()) {
                 float axes = floatBuffer.get();
                 //System.out.print(count1 + "," + axes + " ");
                 if(count1 == 0 )
@@ -52,17 +53,17 @@ public class InputHandler {
             int count2 = 0;
             //System.out.print("Button:");
             ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
-            while (byteBuffer.hasRemaining()) {
+            while (byteBuffer != null && byteBuffer.hasRemaining()) {
                 byte button = byteBuffer.get();
                 //System.out.print(count2 + "," + button + " ");
                 if(count2 == 8 && button == 1)
-                    joystickStatus.z += -0.1;
+                    joystickStatus.z -= 0.1;
                 if(count2 == 9 && button == 1)
                     joystickStatus.z += 0.1;
                 if(count2 == 10 && button == 1)
                     joystickStatus.yaw += 0.01;
                 if(count2 == 11 && button == 1)
-                    joystickStatus.yaw += -0.01;
+                    joystickStatus.yaw -= 0.01;
                 count2++;
             }
             //System.out.println();

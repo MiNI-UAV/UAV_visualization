@@ -31,7 +31,7 @@ import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.uav.importer.GltfImporter.loadModel;
 
-public class Scene {
+public class Scene implements AutoCloseable {
     private final long window;
     private final int windowHeight;
     private final int windowWidth;
@@ -236,4 +236,9 @@ public class Scene {
         shader.setBool("useDirectionalLight", true);
     }
 
+    @Override
+    public void close() {
+        positionConsumer.stop();
+        propellerConsumer.stop();
+    }
 }

@@ -5,6 +5,7 @@ import org.uav.parser.PositionMessageParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
 
 public class PositionConsumer {
 
@@ -28,15 +29,24 @@ public class PositionConsumer {
             thread.start();
     }
 
+    public void stop() {
+        thread.interrupt();
+    }
+
     class PositionThread extends Thread {
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] reply = socket.recv(0);
-                String message = new String(reply, ZMQ.CHARSET);
-                //System.out.println("Received: [" + message + "]");
-                var newStatus = messageParser.parse(message);
-                droneStatus.position = newStatus.position;
-                droneStatus.rotation = newStatus.rotation;
+                try {
+                    byte[] reply = socket.recv(0);
+                    String message = new String(reply, ZMQ.CHARSET);
+                    //System.out.println("Received: [" + message + "]");
+                    var newStatus = messageParser.parse(message);
+                    droneStatus.position = newStatus.position;
+                    droneStatus.rotation = newStatus.rotation;
+                } catch (ZMQException exception) {
+                    System.out.println("Thread " + this.getName() + " has been interrupted");
+                    break;
+                }
             }
         }
     }

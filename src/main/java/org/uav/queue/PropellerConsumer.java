@@ -5,6 +5,7 @@ import org.uav.parser.PropellerMessageParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQException;
 
 public class PropellerConsumer {
 
@@ -28,14 +29,23 @@ public class PropellerConsumer {
             thread.start();
     }
 
+    public void stop() {
+        thread.interrupt();
+    }
+
     class PropellerThread extends Thread {
-        public void run() {
+        public void run() throws ZMQException {
             while (!Thread.currentThread().isInterrupted()) {
-                byte[] reply = socket.recv(0);
-                String message = new String(reply, ZMQ.CHARSET);
-                //System.out.println("Received: [" + message + "]");
-                var propellerMessage = messageParser.parse(message);
-                droneStatus.propellers = propellerMessage.propellers;
+                try {
+                    byte[] reply = socket.recv(0);
+                    String message = new String(reply, ZMQ.CHARSET);
+                    //System.out.println("Received: [" + message + "]");
+                    var propellerMessage = messageParser.parse(message);
+                    droneStatus.propellers = propellerMessage.propellers;
+                } catch (ZMQException exception) {
+                    System.out.println("Thread " + this.getName() + " has been interrupted");
+                    break;
+                }
             }
         }
     }

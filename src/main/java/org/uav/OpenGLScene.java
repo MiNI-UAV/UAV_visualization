@@ -26,6 +26,7 @@ public class OpenGLScene {
         init();
         Scene scene = new Scene(window, WINDOW_WIDTH, WINDOW_HEIGHT);
         scene.loop();
+        scene.close();
 
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);

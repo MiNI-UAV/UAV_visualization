@@ -23,18 +23,6 @@ public class Mesh {
     private final Material material;
     private int VAO;
 
-    public List<Vertex> getVertices() {
-        return vertices;
-    }
-
-    public List<Integer> getIndices() {
-        return indices;
-    }
-
-    public List<Texture> getTextures() {
-        return textures;
-    }
-
     public Mesh(List<Vertex> vertices, List<Integer> indices, List<Texture> textures, Material material) {
         this.vertices = vertices;
         this.indices = indices;

@@ -9,25 +9,9 @@ import java.nio.FloatBuffer;
 public class Vertex {
 
     public static int NUMBER_OF_FLOATS = 8;
-    private Vector3f position;
-    private Vector3f normal;
-    private Vector2f texCoords;
-
-    public Vector3f getPosition() {
-        return position;
-    }
-
-    public void setPosition(Vector3f position) {
-        this.position = position;
-    }
-
-    public Vector3f getNormal() {
-        return normal;
-    }
-
-    public void setNormal(Vector3f normal) {
-        this.normal = normal;
-    }
+    private final Vector3f position;
+    private final Vector3f normal;
+    private final Vector2f texCoords;
 
     public Vertex(Vector3f position, Vector3f normal, Vector2f texCoords) {
         this.position = position;

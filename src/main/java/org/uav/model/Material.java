@@ -4,8 +4,6 @@ package org.uav.model;
 import org.joml.Vector3f;
 
 public class Material {
-
-    public static final Material DEFAULT_MATERIAL = new Material(new Vector3f(), 0, 0);
     private final Vector3f diffuse;
     public float roughness;
     public float metallic;

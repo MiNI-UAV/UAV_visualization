@@ -2,8 +2,8 @@ package org.uav.model;
 
 
 public class Texture {
-    private int id;
-    private String type;
+    private final int id;
+    private final String type;
 
     public Texture(int id, String type) {
         this.id = id;
@@ -16,9 +16,5 @@ public class Texture {
 
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }
