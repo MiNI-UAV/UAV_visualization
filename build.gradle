@@ -7,7 +7,7 @@ application {
     mainClass = 'org.opengl.OpenGLScene'
 }
 
-group 'org.opengl'
+group 'org.uav'
 version '1.0-SNAPSHOT'
 
 repositories {
