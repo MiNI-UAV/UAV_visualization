@@ -14,7 +14,7 @@ public class JoystickProducer {
     public JoystickProducer(ZContext context) {
         messageSerializer = new JoystickMessageSerializer();
         socket = context.createSocket(SocketType.PUB);
-        socket.connect("tcp://localhost:10001");
+        socket.connect("tcp://localhost:1234");
     }
 
     public void send(JoystickStatus joystickStatus) {

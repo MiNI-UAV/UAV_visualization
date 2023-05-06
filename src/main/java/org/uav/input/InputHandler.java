@@ -68,6 +68,6 @@ public class InputHandler {
         // axes is standardized to be in [-1,1]
         // Our standard requires [0,1024] and should take into account axis inversion
         Boolean inverted = configuration.joystickInversionMapping.get(index);
-        return (int)((inverted? 1: -1) * axes * 512 + 512);
+        return (int)((inverted? -1: 1) * axes * 512 + 512);
     }
 }
