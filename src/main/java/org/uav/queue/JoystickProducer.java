@@ -20,6 +20,6 @@ public class JoystickProducer {
     public void send(JoystickStatus joystickStatus) {
         String message = messageSerializer.serialize(joystickStatus);
         socket.send(message.getBytes(ZMQ.CHARSET), 0);
-        //System.out.println("Sent: [" + message + "]");
+        System.out.println("Sent: [" + message + "]");
     }
 }

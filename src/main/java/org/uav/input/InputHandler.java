@@ -18,7 +18,8 @@ public class InputHandler {
 
     public InputHandler(Configuration configuration, ZContext context) {
         this.configuration = configuration;
-        joystickStatus = new JoystickStatus();
+        int joystickAxisCount = 4;
+        joystickStatus = new JoystickStatus(joystickAxisCount);
         joystickProducer = new JoystickProducer(context);
     }
 
@@ -43,10 +44,8 @@ public class InputHandler {
             while (floatBuffer != null && floatBuffer.hasRemaining()) {
                 float axes = floatBuffer.get();
                 //System.out.print(count1 + "," + axes + " ");
-                if(count1 == 0 )
-                    joystickStatus.roll = axes*2;
-                if(count1 == 3 )
-                    joystickStatus.pitch = -axes;
+                if(configuration.joystickMapping.containsKey(count1))
+                    joystickStatus.rawData[configuration.joystickMapping.get(count1)] = convertToRawData(count1, axes);
                 count1++;
             }
 
@@ -56,18 +55,19 @@ public class InputHandler {
             while (byteBuffer != null && byteBuffer.hasRemaining()) {
                 byte button = byteBuffer.get();
                 //System.out.print(count2 + "," + button + " ");
-                if(count2 == 8 && button == 1)
-                    joystickStatus.z -= 0.1;
-                if(count2 == 9 && button == 1)
-                    joystickStatus.z += 0.1;
-                if(count2 == 10 && button == 1)
-                    joystickStatus.yaw += 0.01;
-                if(count2 == 11 && button == 1)
-                    joystickStatus.yaw -= 0.01;
+                //if(configuration.joystickMapping.containsKey(count2))
+                //    joystickStatus.rawData[configuration.joystickMapping.get(count1)] = convertToRawData(axes);
                 count2++;
             }
             //System.out.println();
             joystickProducer.send(joystickStatus);
         }
+    }
+
+    private int convertToRawData(int index, float axes) {
+        // axes is standardized to be in [-1,1]
+        // Our standard requires [0,1024] and should take into account axis inversion
+        Boolean inverted = configuration.joystickInversionMapping.get(index);
+        return (int)((inverted? 1: -1) * axes * 512 + 512);
     }
 }

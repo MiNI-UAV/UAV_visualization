@@ -11,7 +11,7 @@ public class JoystickMessageSerializer implements MessageSerializer<JoystickStat
     public String serialize(JoystickStatus status) {
         Locale.setDefault(Locale.US);
         return MessageFormat.format(
-                "Z:{0,number,#.###},F:{1,number,#.###},T:{2,number,#.###},P:{3,number,#.###}",
-                status.z, status.roll, status.pitch, status.yaw);
+                "j:{0,number,#.###},{1,number,#.###},{2,number,#.###},{3,number,#.###}",
+                status.rawData[0], status.rawData[1], status.rawData[2], status.rawData[3]);
     }
 }

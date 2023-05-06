@@ -18,6 +18,7 @@ import org.zeromq.ZContext;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -76,8 +77,23 @@ public class Scene implements AutoCloseable {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         setUpDrawables();
-
         setUpShaders();
+        setUpJoystick();
+    }
+
+    private void setUpJoystick() {
+        var joystickMapping = new HashMap<Integer, Integer>();
+        joystickMapping.put(5, 0);
+        joystickMapping.put(2, 1);
+        joystickMapping.put(0, 2);
+        joystickMapping.put(1, 3);
+        var joystickInversionMapping = new HashMap<Integer, Boolean>();
+        joystickInversionMapping.put(5, false);
+        joystickInversionMapping.put(2, true);
+        joystickInversionMapping.put(0, false);
+        joystickInversionMapping.put(1, true);
+        configuration.joystickMapping = joystickMapping;
+        configuration.joystickInversionMapping = joystickInversionMapping;
     }
 
     private void setUpShaders() throws IOException {

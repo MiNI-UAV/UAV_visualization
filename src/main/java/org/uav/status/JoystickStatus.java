@@ -1,9 +1,9 @@
 package org.uav.status;
 
 public class JoystickStatus {
-    public float yaw;
-    public float pitch;
-    public float roll;
+    public int[] rawData;
 
-    public float z;
+    public JoystickStatus(int size) {
+        rawData = new int[size];
+    }
 }
