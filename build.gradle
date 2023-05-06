@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass = 'org.opengl.OpenGLScene'
+    mainClass = 'org.uav.OpenGLScene'
 }
 
 group 'org.uav'
