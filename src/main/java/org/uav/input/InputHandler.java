@@ -29,6 +29,12 @@ public class InputHandler {
             configuration.type = CameraType.FreeCamera;
         if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
             configuration.type = CameraType.DroneCamera;
+        if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+            configuration.type = CameraType.ObserverCamera;
+        if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+            configuration.type = CameraType.RacingCamera;
+        if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+            configuration.type = CameraType.HorizontalCamera;
 
         int joystick = 0;
         while(!glfwJoystickPresent(joystick) && joystick < 10)

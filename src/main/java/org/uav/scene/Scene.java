@@ -14,6 +14,7 @@ import org.uav.model.Model;
 import org.uav.queue.PositionConsumer;
 import org.uav.queue.PropellerConsumer;
 import org.uav.shader.Shader;
+import org.uav.utils.Convert;
 import org.zeromq.ZContext;
 
 import java.io.IOException;
@@ -44,7 +45,7 @@ public class Scene implements AutoCloseable {
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
     private float dayFactor = 1.0f;
     private final DroneStatus droneStatus;
-    private Model droneModel, environmentModel, busterModel;
+    private Model droneModel, environmentModel, busterModel, axisModel;
     Shader lightSourceShader;
     private final PositionConsumer positionConsumer;
     private final PropellerConsumer propellerConsumer;
@@ -136,16 +137,17 @@ public class Scene implements AutoCloseable {
     private void setUpDrawables() throws URISyntaxException, IOException {
 
         Supplier<Quaternionf> clockwiseRotation =
-                () -> new Quaternionf(0,1 * sin(glfwGetTime()*1000),0,-cos(glfwGetTime()*100)).normalize();
+                () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),-cos(glfwGetTime()*1000)).normalize();
         Supplier<Quaternionf> counterClockwiseRotation =
-                () -> new Quaternionf(0,1 * sin(glfwGetTime()*1000),0,cos(glfwGetTime()*100)).normalize();
+                () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),cos(glfwGetTime()*1000)).normalize();
         droneModel = loadModel("models/drone.gltf", "textures/drone");
         droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
         droneModel.setAnimation(null, counterClockwiseRotation, null, List.of("propeller.1", "propeller.4"));
-        busterModel = loadModel("models/buster.gltf", "textures/buster");
-        busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
-        busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
+        //busterModel = loadModel("models/buster.gltf", "textures/buster");
+        //busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
+        //busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
         environmentModel = loadModel("models/sand.gltf", "textures/sand");
+        axisModel = loadModel("models/axis.gltf", "textures/axis");
         //environmentModel = loadModel("models/field.gltf", "textures/field");
     }
 
@@ -172,14 +174,15 @@ public class Scene implements AutoCloseable {
 
                 environmentModel.draw(stack, configuration.shader);
                 droneModel.draw(stack, configuration.shader);
+                axisModel.draw(stack, configuration.shader);
                 //busterModel.draw(stack, configuration.shader);
             }
 
             // Update state
-            busterModel.setPosition(new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z));
-            busterModel.setRotation(droneStatus.rotation);
+            //busterModel.setPosition(new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z));
+            //busterModel.setRotation(droneStatus.rotation);
 
-            droneModel.setPosition(new Vector3f(droneStatus.position.x + 1 , droneStatus.position.y, droneStatus.position.z));
+            droneModel.setPosition(new Vector3f(droneStatus.position.x, droneStatus.position.y, droneStatus.position.z));
             droneModel.setRotation(droneStatus.rotation);
 
 
@@ -189,20 +192,46 @@ public class Scene implements AutoCloseable {
     }
 
     private void changeCamera() {
+        float currTime = (float) glfwGetTime();
+        deltaTime = currTime - lastTime;
+        lastTime = currTime;
         switch(configuration.type) {
             case DroneCamera -> {
                 var cameraOffset = new Vector3f(-3.0f,0,-1.5f);
-                var cameraPos = new Vector3f(busterModel.getPosition()).add(cameraOffset);
+                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
-                camera.setCameraFront(new Vector3f(busterModel.getPosition()).sub(cameraPos).normalize());
+                camera.setCameraFront(new Vector3f(droneModel.getPosition()).sub(cameraPos).normalize());
+                camera.setCameraUp(new Vector3f(0,0,-1));
             }
             case FreeCamera -> {
-                float currTime = (float) glfwGetTime();
                 deltaTime = currTime - lastTime;
                 lastTime = currTime;
                 camera.processInput(window, deltaTime);
+                camera.setCameraUp(new Vector3f(0,0,-1));
             }
-
+            case RacingCamera -> {
+                var rot = new Vector3f(droneModel.getRotation());
+                var cameraOffset = new Vector3f(-3,0,-1.5f).rotate(Convert.toQuaternion(rot));
+                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
+                camera.setCameraPos(cameraPos);
+                camera.setCameraFront(droneModel.getPosition().sub(cameraPos).normalize());
+                camera.setCameraUp(new Vector3f(0,0,-1).rotate(Convert.toQuaternion(rot)));
+            }
+            case HorizontalCamera -> {
+                var rot = new Vector3f(droneModel.getRotation());
+                rot.x = 0;
+                rot.y = 0;
+                var cameraOffset = new Vector3f(-3,0,-1.5f).rotate(Convert.toQuaternion(rot));
+                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
+                camera.setCameraPos(cameraPos);
+                camera.setCameraFront(droneModel.getPosition().sub(cameraPos).normalize());
+                camera.setCameraUp(new Vector3f(0,0,-1));
+            }
+            case ObserverCamera -> {
+                camera.setCameraPos(new Vector3f());
+                camera.setCameraFront(droneModel.getPosition().normalize());
+                camera.setCameraUp(new Vector3f(0,0,-1));
+            }
         }
     }
 

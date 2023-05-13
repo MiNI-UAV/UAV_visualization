@@ -3,7 +3,6 @@ package org.uav.importer;
 import de.javagl.jgltf.model.*;
 import de.javagl.jgltf.model.io.GltfModelReader;
 import de.javagl.jgltf.model.v2.GltfModelV2;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -52,7 +51,7 @@ public class GltfImporter {
                         children,
                         new Vector3f(),
                         //new Quaternionf(-0.7071f,0f,0, 0.7071f),
-                        new Quaternionf(-0.5,0.5,0.5,0.5),
+                        new Quaternionf(-0,0,0,1),
                         new Vector3f(1f)
                 )
         );

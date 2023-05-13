@@ -9,7 +9,7 @@ import org.uav.shader.Shader;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static org.uav.utils.Convert.toQuaterion;
+import static org.uav.utils.Convert.toQuaternion;
 
 public class Model {
 
@@ -23,7 +23,7 @@ public class Model {
         rotation = new Vector3f();
         this.rootNode = rootNode;
         this.rootNode.setCustomTranslationSupplier(()->position);
-        this.rootNode.setCustomRotationSupplier(()->toQuaterion(rotation));
+        this.rootNode.setCustomRotationSupplier(()-> toQuaternion(rotation));
     }
 
     public void draw(MemoryStack stack, Shader shader) {

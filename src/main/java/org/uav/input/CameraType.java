@@ -2,5 +2,8 @@ package org.uav.input;
 
 public enum CameraType {
     DroneCamera,
-    FreeCamera
+    FreeCamera,
+    RacingCamera,
+    ObserverCamera,
+    HorizontalCamera
 }

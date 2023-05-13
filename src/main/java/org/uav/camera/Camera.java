@@ -9,9 +9,9 @@ import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 public class Camera {
 
-    private Vector3f cameraPos = new Vector3f(0f,0f,0f).add(new Vector3f(-6.0f,0,-3.5f)) ;
-    private final Vector3f cameraUp = new Vector3f(0, 0, -1f).normalize();
-    private Vector3f cameraFront = new Vector3f(1, 0, 0);
+    private Vector3f cameraPos = new Vector3f(10f,10f,-10f);//.add(new Vector3f(-6.0f,0,-3.5f)) ;
+    private Vector3f cameraUp = new Vector3f(0, 0, -1f).normalize();
+    private Vector3f cameraFront = new Vector3f(-1, -1, 1).normalize();
     private static final float fov = 90;
 
     // Movement
@@ -30,6 +30,10 @@ public class Camera {
 
     public void setCameraFront(Vector3f cameraFront) {
         this.cameraFront = cameraFront;
+    }
+
+    public void setCameraUp(Vector3f cameraUp) {
+        this.cameraUp = cameraUp;
     }
 
     public Matrix4f getViewMatrix() {
