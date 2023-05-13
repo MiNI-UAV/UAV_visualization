@@ -182,6 +182,8 @@ public class Scene implements AutoCloseable {
             //busterModel.setPosition(new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z));
             //busterModel.setRotation(droneStatus.rotation);
 
+            axisModel.setPosition(new Vector3f(0,0,1));
+
             droneModel.setPosition(new Vector3f(droneStatus.position.x, droneStatus.position.y, droneStatus.position.z));
             droneModel.setRotation(droneStatus.rotation);
 
@@ -204,10 +206,8 @@ public class Scene implements AutoCloseable {
                 camera.setCameraUp(new Vector3f(0,0,-1));
             }
             case FreeCamera -> {
-                deltaTime = currTime - lastTime;
-                lastTime = currTime;
-                camera.processInput(window, deltaTime);
                 camera.setCameraUp(new Vector3f(0,0,-1));
+                camera.processInput(window, deltaTime);
             }
             case RacingCamera -> {
                 var rot = new Vector3f(droneModel.getRotation());
