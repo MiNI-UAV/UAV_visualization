@@ -51,7 +51,8 @@ public class GltfImporter {
                         Collections.emptyList(),
                         children,
                         new Vector3f(),
-                        new Quaternionf(-0.7071f,0f,0, 0.7071f),
+                        //new Quaternionf(-0.7071f,0f,0, 0.7071f),
+                        new Quaternionf(-0.5,0.5,0.5,0.5),
                         new Vector3f(1f)
                 )
         );
