@@ -146,7 +146,7 @@ public class Scene implements AutoCloseable {
         //busterModel = loadModel("models/buster.gltf", "textures/buster");
         //busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
         //busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
-        environmentModel = loadModel("models/sand.gltf", "textures/sand");
+        environmentModel = loadModel("models/dust.gltf", "textures/dust");
         axisModel = loadModel("models/axis.gltf", "textures/axis");
         //environmentModel = loadModel("models/field.gltf", "textures/field");
     }
