@@ -84,15 +84,27 @@ public class Scene implements AutoCloseable {
 
     private void setUpJoystick() {
         var joystickMapping = new HashMap<Integer, Integer>();
-        joystickMapping.put(5, 0);
-        joystickMapping.put(2, 1);
-        joystickMapping.put(0, 2);
-        joystickMapping.put(1, 3);
+        //HOTAS
+        // joystickMapping.put(5, 0);
+        // joystickMapping.put(2, 1);
+        // joystickMapping.put(0, 2);
+        // joystickMapping.put(1, 3);
+        //XBOX controller
+        joystickMapping.put(0, 0);
+        joystickMapping.put(1, 1);
+        joystickMapping.put(2, 2);
+        joystickMapping.put(3, 3);
         var joystickInversionMapping = new HashMap<Integer, Boolean>();
-        joystickInversionMapping.put(5, false);
-        joystickInversionMapping.put(2, true);
+        //HOTAS
+        // joystickInversionMapping.put(5, false);
+        // joystickInversionMapping.put(2, true);
+        // joystickInversionMapping.put(0, false);
+        // joystickInversionMapping.put(1, true);
+        //XBOX controller
         joystickInversionMapping.put(0, false);
         joystickInversionMapping.put(1, true);
+        joystickInversionMapping.put(2, false);
+        joystickInversionMapping.put(3, true);
         configuration.joystickMapping = joystickMapping;
         configuration.joystickInversionMapping = joystickInversionMapping;
     }
