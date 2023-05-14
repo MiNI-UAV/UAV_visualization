@@ -22,4 +22,10 @@ public class JoystickProducer {
         socket.send(message.getBytes(ZMQ.CHARSET), 0);
         //System.out.println("Sent: [" + message + "]");
     }
+
+    public void send(ControlModes mode) {
+        String message = messageSerializer.serialize(mode);
+        socket.send(message.getBytes(ZMQ.CHARSET), 0);
+        System.out.println("Sent: [" + message + "]");
+    }
 }

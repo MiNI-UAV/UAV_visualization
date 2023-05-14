@@ -9,6 +9,7 @@ import org.uav.OpenGLScene;
 import org.uav.camera.Camera;
 import org.uav.config.Configuration;
 import org.uav.input.InputHandler;
+import org.uav.input.JoystickButtonFunctions;
 import org.uav.status.DroneStatus;
 import org.uav.model.Model;
 import org.uav.queue.PositionConsumer;
@@ -94,6 +95,7 @@ public class Scene implements AutoCloseable {
         joystickMapping.put(1, 1);
         joystickMapping.put(2, 2);
         joystickMapping.put(3, 3);
+
         var joystickInversionMapping = new HashMap<Integer, Boolean>();
         //HOTAS
         // joystickInversionMapping.put(5, false);
@@ -105,8 +107,17 @@ public class Scene implements AutoCloseable {
         joystickInversionMapping.put(1, true);
         joystickInversionMapping.put(2, false);
         joystickInversionMapping.put(3, true);
+
+        var joystickButtonMapping = new HashMap<Integer, JoystickButtonFunctions>();
+        //XBOX controller
+        joystickButtonMapping.put(0,JoystickButtonFunctions.nextCamera);
+        joystickButtonMapping.put(1,JoystickButtonFunctions.prevCamera);
+        joystickButtonMapping.put(6,JoystickButtonFunctions.angleMode);
+        joystickButtonMapping.put(7,JoystickButtonFunctions.acroMode);
+
         configuration.joystickMapping = joystickMapping;
         configuration.joystickInversionMapping = joystickInversionMapping;
+        configuration.joystickButtonsMapping = joystickButtonMapping;
     }
 
     private void setUpShaders() throws IOException {

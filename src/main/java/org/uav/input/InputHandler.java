@@ -1,6 +1,7 @@
 package org.uav.input;
 
 import org.uav.config.Configuration;
+import org.uav.queue.ControlModes;
 import org.uav.status.JoystickStatus;
 import org.uav.queue.JoystickProducer;
 import org.zeromq.ZContext;
@@ -14,6 +15,8 @@ public class InputHandler {
     public Configuration configuration;
     private final JoystickStatus joystickStatus;
     private final JoystickProducer joystickProducer;
+
+    byte[] prevButtonsState = new byte[32];
 
 
     public InputHandler(Configuration configuration, ZContext context) {
@@ -58,16 +61,29 @@ public class InputHandler {
             int count2 = 0;
             //System.out.print("Button:");
             ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
-            while (byteBuffer != null && byteBuffer.hasRemaining()) {
-                byte button = byteBuffer.get();
-                //System.out.print(count2 + "," + button + " ");
-                //if(configuration.joystickMapping.containsKey(count2))
-                //    joystickStatus.rawData[configuration.joystickMapping.get(count1)] = convertToRawData(axes);
-                count2++;
-            }
-            //System.out.println();
+            byte[] arr = new byte[byteBuffer.remaining()];
+            byteBuffer.get(arr);
+            handleButtons(arr);
             joystickProducer.send(joystickStatus);
         }
+    }
+
+    private void handleButtons(byte[] buttonState) {
+
+        for (int i = 0; i < buttonState.length; i++) {
+            if(buttonState[i] == 0 || buttonState[i] == prevButtonsState[i]) continue;
+            if(!configuration.joystickButtonsMapping.containsKey(i)) continue;
+            switch(configuration.joystickButtonsMapping.getOrDefault(i,JoystickButtonFunctions.unused))
+            {
+                case nextCamera -> configuration.type = configuration.type.next();
+                case prevCamera -> configuration.type = configuration.type.prev();
+                case acroMode -> joystickProducer.send(ControlModes.acro);
+                case angleMode -> joystickProducer.send(ControlModes.angle);
+                case unused -> {}
+            }
+        }
+
+        prevButtonsState = buttonState;
     }
 
     private int convertToRawData(int index, float axes) {
