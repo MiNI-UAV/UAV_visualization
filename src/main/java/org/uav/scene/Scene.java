@@ -258,12 +258,12 @@ public class Scene implements AutoCloseable {
             }
             //TODO: SoftFPV is not implemented yet, now its copy of hardFPV
             case HardFPV, SoftFPV  -> {
+                var modelPos = droneModel.getPosition();
                 var rot = new Vector3f(droneModel.getRotation());
-                var cameraOffset = new Vector3f(-0.01f,0f,0.15f).rotate(Convert.toQuaternion(rot));
-                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
+                var cameraOffset = new Vector3f(1.0f,0f,0.1f).rotate(Convert.toQuaternion(rot));
+                var cameraPos = new Vector3f(modelPos).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
-                //camera.setCameraFront(cameraPos.sub(droneModel.getPosition().add(0f,0f,cameraOffset.z)).normalize());
-                camera.setCameraFront(droneModel.getPosition().add(0f,0f,cameraOffset.z).sub(cameraPos).normalize());
+                camera.setCameraFront(cameraOffset.normalize());
                 camera.setCameraUp(new Vector3f(0,0,-1).rotate(Convert.toQuaternion(rot)));
             }
 
