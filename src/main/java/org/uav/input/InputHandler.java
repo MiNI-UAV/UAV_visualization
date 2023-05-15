@@ -95,10 +95,10 @@ public class InputHandler {
         // axes is standardized to be in [-1,1]
         // Our standard requires [0,1024] and should take into account axis inversion
         Boolean inverted = configuration.joystickInversionMapping.get(index);
-        return (int)((inverted? -1.0: 1.0) * deadZone(axes) * 512.0 + 512.0);
+        return (int)((inverted? -1.0f: 1.0f) * deadZone(axes) * 512.0f + 512.0f);
     }
 
-    private double deadZone(float axes) {
-        return abs(axes) < configuration.deadZoneFactor ? 0.0 : axes;
+    private float deadZone(float axes) {
+        return abs(axes) < configuration.deadZoneFactor ? 0.0f : axes;
     }
 }
