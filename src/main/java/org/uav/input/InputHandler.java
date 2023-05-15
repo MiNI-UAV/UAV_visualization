@@ -9,6 +9,7 @@ import org.zeromq.ZContext;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import static java.lang.Math.abs;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class InputHandler {
@@ -94,6 +95,10 @@ public class InputHandler {
         // axes is standardized to be in [-1,1]
         // Our standard requires [0,1024] and should take into account axis inversion
         Boolean inverted = configuration.joystickInversionMapping.get(index);
-        return (int)((inverted? -1: 1) * axes * 512 + 512);
+        return (int)((inverted? -1.0: 1.0) * deadZone(axes) * 512.0 + 512.0);
+    }
+
+    private double deadZone(float axes) {
+        return abs(axes) < configuration.deadZoneFactor ? 0.0 : axes;
     }
 }
