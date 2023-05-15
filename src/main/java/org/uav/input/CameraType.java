@@ -5,7 +5,10 @@ public enum CameraType {
     FreeCamera,
     RacingCamera,
     ObserverCamera,
-    HorizontalCamera;
+    HorizontalCamera,
+    HardFPV,
+    SoftFPV;
+
 
     private static final CameraType[] vals = values();
 

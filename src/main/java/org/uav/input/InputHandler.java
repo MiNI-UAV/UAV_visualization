@@ -38,6 +38,10 @@ public class InputHandler {
             configuration.type = CameraType.RacingCamera;
         if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
             configuration.type = CameraType.HorizontalCamera;
+        if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+            configuration.type = CameraType.HardFPV;
+        if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+            configuration.type = CameraType.SoftFPV;
 
         int joystick = 0;
         while(!glfwJoystickPresent(joystick) && joystick < 10)
