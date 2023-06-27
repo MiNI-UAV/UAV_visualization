@@ -1,11 +1,12 @@
 package org.uav.serializer;
 
+import org.uav.queue.ControlModes;
 import org.uav.status.JoystickStatus;
 
 import java.text.MessageFormat;
 import java.util.Locale;
 
-public class JoystickMessageSerializer implements MessageSerializer<JoystickStatus> {
+public class JoystickMessageSerializer implements MessageSerializer {
 
     @Override
     public String serialize(JoystickStatus status) {
@@ -13,5 +14,13 @@ public class JoystickMessageSerializer implements MessageSerializer<JoystickStat
         return MessageFormat.format(
                 "j:{0,number,#.###},{1,number,#.###},{2,number,#.###},{3,number,#.###}",
                 status.rawData[0], status.rawData[1], status.rawData[2], status.rawData[3]);
+    }
+
+    @Override
+    public String serialize(ControlModes mode) {
+        Locale.setDefault(Locale.US);
+        String msg = MessageFormat.format("m:{0}", mode.toString());
+        //System.out.println(msg);
+        return msg;
     }
 }

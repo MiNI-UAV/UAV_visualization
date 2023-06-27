@@ -1,5 +1,9 @@
 package org.uav.serializer;
 
-public interface MessageSerializer<T> {
-    String serialize(T obj);
+import org.uav.queue.ControlModes;
+import org.uav.status.JoystickStatus;
+
+public interface MessageSerializer {
+    String serialize(JoystickStatus status);
+    String serialize(ControlModes mode);
 }

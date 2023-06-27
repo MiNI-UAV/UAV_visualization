@@ -1,6 +1,7 @@
 package org.uav.input;
 
 import org.uav.config.Configuration;
+import org.uav.queue.ControlModes;
 import org.uav.status.JoystickStatus;
 import org.uav.queue.JoystickProducer;
 import org.zeromq.ZContext;
@@ -8,12 +9,15 @@ import org.zeromq.ZContext;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import static java.lang.Math.abs;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class InputHandler {
     public Configuration configuration;
     private final JoystickStatus joystickStatus;
     private final JoystickProducer joystickProducer;
+
+    byte[] prevButtonsState = new byte[32];
 
 
     public InputHandler(Configuration configuration, ZContext context) {
@@ -35,6 +39,10 @@ public class InputHandler {
             configuration.type = CameraType.RacingCamera;
         if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
             configuration.type = CameraType.HorizontalCamera;
+        if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+            configuration.type = CameraType.HardFPV;
+        if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+            configuration.type = CameraType.SoftFPV;
 
         int joystick = 0;
         while(!glfwJoystickPresent(joystick) && joystick < 10)
@@ -58,22 +66,39 @@ public class InputHandler {
             int count2 = 0;
             //System.out.print("Button:");
             ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
-            while (byteBuffer != null && byteBuffer.hasRemaining()) {
-                byte button = byteBuffer.get();
-                //System.out.print(count2 + "," + button + " ");
-                //if(configuration.joystickMapping.containsKey(count2))
-                //    joystickStatus.rawData[configuration.joystickMapping.get(count1)] = convertToRawData(axes);
-                count2++;
-            }
-            //System.out.println();
+            byte[] arr = new byte[byteBuffer.remaining()];
+            byteBuffer.get(arr);
+            handleButtons(arr);
             joystickProducer.send(joystickStatus);
         }
+    }
+
+    private void handleButtons(byte[] buttonState) {
+
+        for (int i = 0; i < buttonState.length; i++) {
+            if(buttonState[i] == 0 || buttonState[i] == prevButtonsState[i]) continue;
+            if(!configuration.joystickButtonsMapping.containsKey(i)) continue;
+            switch(configuration.joystickButtonsMapping.getOrDefault(i,JoystickButtonFunctions.unused))
+            {
+                case nextCamera -> configuration.type = configuration.type.next();
+                case prevCamera -> configuration.type = configuration.type.prev();
+                case acroMode -> joystickProducer.send(ControlModes.acro);
+                case angleMode -> joystickProducer.send(ControlModes.angle);
+                case unused -> {}
+            }
+        }
+
+        prevButtonsState = buttonState;
     }
 
     private int convertToRawData(int index, float axes) {
         // axes is standardized to be in [-1,1]
         // Our standard requires [0,1024] and should take into account axis inversion
         Boolean inverted = configuration.joystickInversionMapping.get(index);
-        return (int)((inverted? -1: 1) * axes * 512 + 512);
+        return (int)((inverted? -1.0f: 1.0f) * deadZone(axes) * 512.0f + 512.0f);
+    }
+
+    private float deadZone(float axes) {
+        return abs(axes) < configuration.deadZoneFactor ? 0.0f : axes;
     }
 }
