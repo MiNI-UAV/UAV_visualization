@@ -10,19 +10,18 @@ import org.uav.camera.Camera;
 import org.uav.config.Configuration;
 import org.uav.input.InputHandler;
 import org.uav.input.JoystickButtonFunctions;
+import org.uav.model.Drone;
+import org.uav.queue.DroneRequester;
 import org.uav.status.DroneStatus;
 import org.uav.model.Model;
-import org.uav.queue.PositionConsumer;
-import org.uav.queue.PropellerConsumer;
+import org.uav.queue.DroneStatusConsumer;
 import org.uav.shader.Shader;
 import org.uav.utils.Convert;
 import org.zeromq.ZContext;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static java.lang.Math.cos;
@@ -45,11 +44,12 @@ public class Scene implements AutoCloseable {
     private final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
     private float dayFactor = 1.0f;
-    private final DroneStatus droneStatus;
+    private Drone controlledDrone;
+    private final List<DroneStatus> droneStatuses;
     private Model droneModel, environmentModel, busterModel, axisModel;
     Shader lightSourceShader;
-    private final PositionConsumer positionConsumer;
-    private final PropellerConsumer propellerConsumer;
+    private final DroneStatusConsumer droneStatusConsumer;
+    private final DroneRequester droneRequester;
 
     // camera movement
 
@@ -63,15 +63,19 @@ public class Scene implements AutoCloseable {
         this.windowWidth = windowWidth;
 
         ZContext context = new ZContext();
-        droneStatus = new DroneStatus();
-        positionConsumer = new PositionConsumer(context, droneStatus);
-        propellerConsumer = new PropellerConsumer(context, droneStatus);
-        positionConsumer.start();
-        propellerConsumer.start();
+        droneStatuses = new ArrayList<>();
+        droneStatuses.add(new DroneStatus());
+        droneStatusConsumer = new DroneStatusConsumer(context, droneStatuses);
+        droneStatusConsumer.start();
+
+        droneRequester = new DroneRequester(context);
+        var rand = new Random(); // TODO add runtime parameter a config
+        var newDroneResult = droneRequester.requestNewDrone("Jacek"/*String.valueOf(rand.nextInt())*/);
+        controlledDrone = newDroneResult.orElseThrow();
 
         camera = new Camera();
         configuration = new Configuration();
-        inputHandler = new InputHandler(configuration, context);
+        inputHandler = new InputHandler(configuration, context, controlledDrone);
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
@@ -95,6 +99,11 @@ public class Scene implements AutoCloseable {
         joystickMapping.put(1, 1);
         joystickMapping.put(2, 2);
         joystickMapping.put(3, 3);
+        // XBOX Igor
+//        joystickMapping.put(5, 0);
+//        joystickMapping.put(2, 1);
+//        joystickMapping.put(0, 2);
+//        joystickMapping.put(1, 3);
 
         var joystickInversionMapping = new HashMap<Integer, Boolean>();
         //HOTAS
@@ -107,6 +116,11 @@ public class Scene implements AutoCloseable {
         joystickInversionMapping.put(1, true);
         joystickInversionMapping.put(2, false);
         joystickInversionMapping.put(3, true);
+        // XBOX Igor
+//        joystickInversionMapping.put(5, false);
+//        joystickInversionMapping.put(2, true);
+//        joystickInversionMapping.put(0, false);
+//        joystickInversionMapping.put(1, true);
 
         var joystickButtonMapping = new HashMap<Integer, JoystickButtonFunctions>();
         //XBOX controller
@@ -207,8 +221,8 @@ public class Scene implements AutoCloseable {
 
             axisModel.setPosition(new Vector3f(0,0,1));
 
-            droneModel.setPosition(new Vector3f(droneStatus.position.x, droneStatus.position.y, droneStatus.position.z));
-            droneModel.setRotation(droneStatus.rotation);
+            droneModel.setPosition(new Vector3f(droneStatuses.get(0).position.x, droneStatuses.get(0).position.y, droneStatuses.get(0).position.z));
+            droneModel.setRotation(droneStatuses.get(0).rotation);
 
 
             glfwSwapBuffers(window);
@@ -318,7 +332,6 @@ public class Scene implements AutoCloseable {
 
     @Override
     public void close() {
-        positionConsumer.stop();
-        propellerConsumer.stop();
+        droneStatusConsumer.stop();
     }
 }

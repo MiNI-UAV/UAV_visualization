@@ -1,6 +1,7 @@
 package org.uav.input;
 
 import org.uav.config.Configuration;
+import org.uav.model.Drone;
 import org.uav.queue.ControlModes;
 import org.uav.status.JoystickStatus;
 import org.uav.queue.JoystickProducer;
@@ -16,12 +17,14 @@ public class InputHandler {
     public Configuration configuration;
     private final JoystickStatus joystickStatus;
     private final JoystickProducer joystickProducer;
+    private final Drone drone;
 
     byte[] prevButtonsState = new byte[32];
 
 
-    public InputHandler(Configuration configuration, ZContext context) {
+    public InputHandler(Configuration configuration, ZContext context, Drone drone) {
         this.configuration = configuration;
+        this.drone = drone;
         int joystickAxisCount = 4;
         joystickStatus = new JoystickStatus(joystickAxisCount);
         joystickProducer = new JoystickProducer(context);
@@ -69,7 +72,7 @@ public class InputHandler {
             byte[] arr = new byte[byteBuffer.remaining()];
             byteBuffer.get(arr);
             handleButtons(arr);
-            joystickProducer.send(joystickStatus);
+            joystickProducer.send(drone, joystickStatus);
         }
     }
 
@@ -82,8 +85,8 @@ public class InputHandler {
             {
                 case nextCamera -> configuration.type = configuration.type.next();
                 case prevCamera -> configuration.type = configuration.type.prev();
-                case acroMode -> joystickProducer.send(ControlModes.acro);
-                case angleMode -> joystickProducer.send(ControlModes.angle);
+                case acroMode -> joystickProducer.send(drone, ControlModes.acro);
+                case angleMode -> joystickProducer.send(drone, ControlModes.angle);
                 case unused -> {}
             }
         }

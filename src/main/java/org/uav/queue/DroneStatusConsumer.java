@@ -1,26 +1,30 @@
 package org.uav.queue;
 
 import org.uav.status.DroneStatus;
-import org.uav.parser.PositionMessageParser;
+import org.uav.parser.DroneStatusMessageParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 
-public class PositionConsumer {
+import java.util.List;
 
-    private final DroneStatus droneStatus;
+public class DroneStatusConsumer {
+
+    private static final String address = "tcp://127.0.0.1:9090";
+
+    private final List<DroneStatus> droneStatuses;
     private final ZMQ.Socket socket;
-    private final PositionMessageParser messageParser;
+    private final DroneStatusMessageParser messageParser;
     private final Thread thread;
 
 
-    public PositionConsumer(ZContext context, DroneStatus droneStatus) {
-        this.droneStatus = droneStatus;
-        messageParser = new PositionMessageParser();
+    public DroneStatusConsumer(ZContext context, List<DroneStatus> droneStatus) {
+        this.droneStatuses = droneStatus;
+        messageParser = new DroneStatusMessageParser();
         socket = context.createSocket(SocketType.SUB);
-        socket.connect("tcp://localhost:9090");
-        socket.subscribe("pos:");
+        socket.connect(address);
+        socket.subscribe("");
         thread = new PositionThread();
     }
 
@@ -40,9 +44,14 @@ public class PositionConsumer {
                     byte[] reply = socket.recv(0);
                     String message = new String(reply, ZMQ.CHARSET);
                     //System.out.println("Received: [" + message + "]");
-                    var newStatus = messageParser.parse(message);
-                    droneStatus.position = newStatus.position;
-                    droneStatus.rotation = newStatus.rotation;
+                    var size = droneStatuses.size();
+                    droneStatuses.addAll(messageParser.parse(message));
+                    if (size > 0) {
+                        droneStatuses.subList(0, size).clear();
+                    }
+                    // TODO YOLO
+                    droneStatuses.addAll(messageParser.parse(message));
+
                 } catch (ZMQException exception) {
                     System.out.println("Thread " + this.getName() + " has been interrupted");
                     break;
