@@ -66,8 +66,6 @@ public class InputHandler {
                 count1++;
             }
 
-            int count2 = 0;
-            //System.out.print("Button:");
             ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
             byte[] arr = new byte[byteBuffer.remaining()];
             byteBuffer.get(arr);
@@ -87,6 +85,8 @@ public class InputHandler {
                 case prevCamera -> configuration.type = configuration.type.prev();
                 case acroMode -> joystickProducer.send(drone, ControlModes.acro);
                 case angleMode -> joystickProducer.send(drone, ControlModes.angle);
+                case posMode -> joystickProducer.send(drone, ControlModes.pos);
+                case noneMode -> joystickProducer.send(drone, ControlModes.none);
                 case unused -> {}
             }
         }

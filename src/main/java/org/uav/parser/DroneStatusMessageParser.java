@@ -16,6 +16,7 @@ public class DroneStatusMessageParser implements MessageParser<List<DroneStatus>
         var drone = new DroneStatus();
         Scanner scanner = new Scanner(input);
         scanner.useDelimiter(",");
+        scanner.next();
 
         drone.position.x = Float.parseFloat(scanner.next());
         drone.position.y = Float.parseFloat(scanner.next());

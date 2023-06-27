@@ -124,10 +124,12 @@ public class Scene implements AutoCloseable {
 
         var joystickButtonMapping = new HashMap<Integer, JoystickButtonFunctions>();
         //XBOX controller
-        joystickButtonMapping.put(0,JoystickButtonFunctions.nextCamera);
-        joystickButtonMapping.put(1,JoystickButtonFunctions.prevCamera);
-        joystickButtonMapping.put(6,JoystickButtonFunctions.angleMode);
-        joystickButtonMapping.put(7,JoystickButtonFunctions.acroMode);
+        joystickButtonMapping.put(6,JoystickButtonFunctions.nextCamera);
+        joystickButtonMapping.put(7,JoystickButtonFunctions.prevCamera);
+        joystickButtonMapping.put(3,JoystickButtonFunctions.angleMode);
+        joystickButtonMapping.put(1,JoystickButtonFunctions.acroMode);
+        joystickButtonMapping.put(4,JoystickButtonFunctions.posMode);
+        joystickButtonMapping.put(0,JoystickButtonFunctions.noneMode);
 
         configuration.joystickMapping = joystickMapping;
         configuration.joystickInversionMapping = joystickInversionMapping;

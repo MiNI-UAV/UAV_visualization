@@ -8,5 +8,9 @@ public enum JoystickButtonFunctions {
 
     acroMode,
 
+    posMode,
+
+    noneMode,
+
     unused;
 }

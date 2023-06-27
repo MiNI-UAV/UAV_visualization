@@ -17,7 +17,7 @@ public class JoystickProducer {
     public void send(Drone drone, JoystickStatus joystickStatus) {
         String message = messageSerializer.serialize(joystickStatus);
         drone.sendSteeringCommand(message);
-        System.out.println("Sent: [" + message + "]");
+        //System.out.println("Sent: [" + message + "]");
     }
 
     public void send(Drone drone, ControlModes mode) {
