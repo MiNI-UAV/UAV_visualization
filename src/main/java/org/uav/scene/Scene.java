@@ -22,6 +22,7 @@ import org.zeromq.ZContext;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 import static java.lang.Math.cos;
@@ -44,9 +45,13 @@ public class Scene implements AutoCloseable {
     private final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
     private float dayFactor = 1.0f;
-    private Drone controlledDrone;
+    private final Drone controlledDrone;
     private final List<DroneStatus> droneStatuses;
-    private Model droneModel, environmentModel, busterModel, axisModel;
+    private final ReentrantLock droneStatusesMutex;
+    private Model environmentModel;
+    //private Model busterModel;
+    private Model axisModel;
+    private List<Model> droneModels;
     Shader lightSourceShader;
     private final DroneStatusConsumer droneStatusConsumer;
     private final DroneRequester droneRequester;
@@ -63,18 +68,18 @@ public class Scene implements AutoCloseable {
         this.windowWidth = windowWidth;
 
         ZContext context = new ZContext();
-        droneStatuses = new ArrayList<>();
-        droneStatuses.add(new DroneStatus());
-        droneStatusConsumer = new DroneStatusConsumer(context, droneStatuses);
-        droneStatusConsumer.start();
-
-        droneRequester = new DroneRequester(context);
-        var rand = new Random(); // TODO add runtime parameter a config
-        var newDroneResult = droneRequester.requestNewDrone("Jacek"/*String.valueOf(rand.nextInt())*/);
-        controlledDrone = newDroneResult.orElseThrow();
-
         camera = new Camera();
         configuration = new Configuration();
+        droneStatuses = new ArrayList<>();
+        droneModels = new ArrayList<>();
+        droneStatusesMutex = new ReentrantLock();
+        droneStatusConsumer = new DroneStatusConsumer(context, droneStatuses, droneStatusesMutex, configuration);
+        droneStatusConsumer.start();
+
+        droneRequester = new DroneRequester(context, configuration);
+        var newDroneResult = droneRequester.requestNewDrone(configuration.droneName);
+        controlledDrone = newDroneResult.orElseThrow();
+
         inputHandler = new InputHandler(configuration, context, controlledDrone);
 
         GL.createCapabilities();
@@ -94,11 +99,11 @@ public class Scene implements AutoCloseable {
         // joystickMapping.put(2, 1);
         // joystickMapping.put(0, 2);
         // joystickMapping.put(1, 3);
-        //XBOX controller
+//        //XBOX controller
         joystickMapping.put(0, 0);
         joystickMapping.put(1, 1);
-        joystickMapping.put(2, 2);
-        joystickMapping.put(3, 3);
+        joystickMapping.put(3, 2);
+        joystickMapping.put(4, 3);
         // XBOX Igor
 //        joystickMapping.put(5, 0);
 //        joystickMapping.put(2, 1);
@@ -114,8 +119,8 @@ public class Scene implements AutoCloseable {
         //XBOX controller
         joystickInversionMapping.put(0, false);
         joystickInversionMapping.put(1, true);
-        joystickInversionMapping.put(2, false);
-        joystickInversionMapping.put(3, true);
+        joystickInversionMapping.put(4, true);
+        joystickInversionMapping.put(3, false);
         // XBOX Igor
 //        joystickInversionMapping.put(5, false);
 //        joystickInversionMapping.put(2, true);
@@ -175,13 +180,6 @@ public class Scene implements AutoCloseable {
 
     private void setUpDrawables() throws URISyntaxException, IOException {
 
-        Supplier<Quaternionf> clockwiseRotation =
-                () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),-cos(glfwGetTime()*1000)).normalize();
-        Supplier<Quaternionf> counterClockwiseRotation =
-                () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),cos(glfwGetTime()*1000)).normalize();
-        droneModel = loadModel("models/drone.gltf", "textures/drone");
-        droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
-        droneModel.setAnimation(null, counterClockwiseRotation, null, List.of("propeller.1", "propeller.4"));
         //busterModel = loadModel("models/buster.gltf", "textures/buster");
         //busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
         //busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
@@ -190,6 +188,16 @@ public class Scene implements AutoCloseable {
         //environmentModel = loadModel("models/field.gltf", "textures/field");
     }
 
+    private static Model createDroneModel() throws URISyntaxException, IOException {
+        Supplier<Quaternionf> clockwiseRotation =
+                () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),-cos(glfwGetTime()*1000)).normalize();
+        Supplier<Quaternionf> counterClockwiseRotation =
+                () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),cos(glfwGetTime()*1000)).normalize();
+        var droneModel = loadModel("models/drone.gltf", "textures/drone");
+        droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
+        droneModel.setAnimation(null, counterClockwiseRotation, null, List.of("propeller.1", "propeller.4"));
+        return droneModel;
+    }
 
     public void loop() {
 
@@ -198,7 +206,6 @@ public class Scene implements AutoCloseable {
 
             toggleDayNight(configuration.shader, lightSourceShader);
             changeFog(configuration.shader, lightSourceShader);
-            changeCamera();
 
             Matrix4f view = camera.getViewMatrix();
             Matrix4f projection = new Matrix4f().perspective(toRadians(camera.getFov()), (float) windowWidth / windowHeight, 0.1f, 1000f);
@@ -212,20 +219,36 @@ public class Scene implements AutoCloseable {
                 configuration.shader.setMatrix4f(stack,"projection", projection);
 
                 environmentModel.draw(stack, configuration.shader);
-                droneModel.draw(stack, configuration.shader);
+
+                for(Model drone: droneModels) {
+                    drone.draw(stack, configuration.shader);
+                }
+                droneStatusesMutex.lock();
+                if(droneModels.size() != droneStatuses.size()) {
+                    var newDroneModels = new ArrayList<Model>();
+                    while(newDroneModels.size() != droneStatuses.size()) {
+                        Model droneModel = createDroneModel();
+                        newDroneModels.add(droneModel);
+                    }
+                    droneModels = newDroneModels;
+                }
+                for(int i=0; i<droneStatuses.size(); i++) {
+                    droneModels.get(i).setPosition(droneStatuses.get(i).position);
+                    droneModels.get(i).setRotation(droneStatuses.get(i).rotation);
+                }
+                changeCamera();
+                droneStatusesMutex.unlock();
+
+                axisModel.setPosition(new Vector3f(0,0,1));
                 axisModel.draw(stack, configuration.shader);
                 //busterModel.draw(stack, configuration.shader);
+            } catch (URISyntaxException | IOException e) {
+                throw new RuntimeException(e);
             }
 
             // Update state
             //busterModel.setPosition(new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z));
             //busterModel.setRotation(droneStatus.rotation);
-
-            axisModel.setPosition(new Vector3f(0,0,1));
-
-            droneModel.setPosition(new Vector3f(droneStatuses.get(0).position.x, droneStatuses.get(0).position.y, droneStatuses.get(0).position.z));
-            droneModel.setRotation(droneStatuses.get(0).rotation);
-
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -233,15 +256,24 @@ public class Scene implements AutoCloseable {
     }
 
     private void changeCamera() {
+        Vector3f dronePosition, droneRotation;
+        if(controlledDrone.id < droneStatuses.size()) {
+            dronePosition = droneStatuses.get(controlledDrone.id).position;
+            droneRotation = droneStatuses.get(controlledDrone.id).rotation;
+        }
+        else {
+            dronePosition = new Vector3f();
+            droneRotation = new Vector3f();
+        }
         float currTime = (float) glfwGetTime();
         deltaTime = currTime - lastTime;
         lastTime = currTime;
         switch(configuration.type) {
             case DroneCamera -> {
                 var cameraOffset = new Vector3f(-3.0f,0,-1.5f);
-                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
+                var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
-                camera.setCameraFront(new Vector3f(droneModel.getPosition()).sub(cameraPos).normalize());
+                camera.setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 camera.setCameraUp(new Vector3f(0,0,-1));
             }
             case FreeCamera -> {
@@ -249,40 +281,38 @@ public class Scene implements AutoCloseable {
                 camera.processInput(window, deltaTime);
             }
             case RacingCamera -> {
-                var rot = new Vector3f(droneModel.getRotation());
+                var rot = new Vector3f(droneRotation);
                 var cameraOffset = new Vector3f(-3,0,-1.5f).rotate(Convert.toQuaternion(rot));
-                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
+                var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
-                camera.setCameraFront(droneModel.getPosition().sub(cameraPos).normalize());
+                camera.setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 camera.setCameraUp(new Vector3f(0,0,-1).rotate(Convert.toQuaternion(rot)));
             }
             case HorizontalCamera -> {
-                var rot = new Vector3f(droneModel.getRotation());
+                var rot = new Vector3f(droneRotation);
                 rot.x = 0;
                 rot.y = 0;
                 var cameraOffset = new Vector3f(-3,0,-1.5f).rotate(Convert.toQuaternion(rot));
-                var cameraPos = new Vector3f(droneModel.getPosition()).add(cameraOffset);
+                var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
-                camera.setCameraFront(droneModel.getPosition().sub(cameraPos).normalize());
+                camera.setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 camera.setCameraUp(new Vector3f(0,0,-1));
             }
             case ObserverCamera -> {
                 var observerPos = new Vector3f(1f,1f,1f);
                 camera.setCameraPos(observerPos);
-                camera.setCameraFront(droneModel.getPosition().sub(observerPos).normalize());
+                camera.setCameraFront(new Vector3f(dronePosition).sub(observerPos).normalize());
                 camera.setCameraUp(new Vector3f(0,0,-1));
             }
             //TODO: SoftFPV is not implemented yet, now its copy of hardFPV
             case HardFPV, SoftFPV  -> {
-                var modelPos = droneModel.getPosition();
-                var rot = new Vector3f(droneModel.getRotation());
+                var rot = new Vector3f(droneRotation);
                 var cameraOffset = new Vector3f(1.0f,0f,0.1f).rotate(Convert.toQuaternion(rot));
-                var cameraPos = new Vector3f(modelPos).add(cameraOffset);
+                var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 camera.setCameraPos(cameraPos);
                 camera.setCameraFront(cameraOffset.normalize());
                 camera.setCameraUp(new Vector3f(0,0,-1).rotate(Convert.toQuaternion(rot)));
             }
-
         }
     }
 
