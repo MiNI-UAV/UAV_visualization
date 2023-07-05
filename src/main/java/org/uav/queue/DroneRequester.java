@@ -16,10 +16,13 @@ public class DroneRequester {
     private final ZMQ.Socket socket;
     private final ZContext context;
     private final DroneRequestReplyParser messageParser;
+    private final Configuration configuration;
 
     public DroneRequester(ZContext context, Configuration configuration) {
         this.context = context;
+        this.configuration = configuration;
         String address = "tcp://" + configuration.address + ":" + port;
+        System.out.println(address);
         messageParser = new DroneRequestReplyParser();
         socket = context.createSocket(SocketType.REQ);
         socket.connect(address);
@@ -35,6 +38,6 @@ public class DroneRequester {
 
         var parsedMessage = messageParser.parse(message);
 
-        return Optional.of(new Drone(context, parsedMessage.dronePort, parsedMessage.droneId));
+        return Optional.of(new Drone(context, parsedMessage.dronePort, parsedMessage.droneId, configuration));
     }
 }

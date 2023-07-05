@@ -1,19 +1,21 @@
 package org.uav.model;
 
+import org.uav.config.Configuration;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
 public class Drone {
 
-    private static final String address = "tcp://127.0.0.1:";
     public int id;
     public ZMQ.Socket socket;
 
-    public Drone(ZContext context, int dronePort, int droneId) {
+    public Drone(ZContext context, int dronePort, int droneId, Configuration configuration) {
         id = droneId;
         socket = context.createSocket(SocketType.PAIR);
-        socket.connect(address + dronePort);
+        String address = "tcp://" + configuration.address + ":" + dronePort;
+        System.out.println(address);
+        socket.connect(address);
     }
 
     public void sendSteeringCommand(String command) {
