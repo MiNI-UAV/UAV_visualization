@@ -2,6 +2,7 @@ package org.uav.input;
 
 import org.uav.config.Configuration;
 import org.uav.model.Drone;
+import org.uav.queue.Actions;
 import org.uav.queue.ControlModes;
 import org.uav.status.JoystickStatus;
 import org.uav.queue.JoystickProducer;
@@ -18,6 +19,7 @@ public class InputHandler {
     private final JoystickStatus joystickStatus;
     private final JoystickProducer joystickProducer;
     private final Drone drone;
+    private boolean holdShoot = false;
 
     byte[] prevButtonsState = new byte[32];
 
@@ -63,8 +65,11 @@ public class InputHandler {
                 //System.out.print(count1 + "," + axes + " ");
                 if(configuration.joystickMapping.containsKey(count1))
                     joystickStatus.rawData[configuration.joystickMapping.get(count1)] = convertToRawData(count1, axes);
+                if(configuration.axisActionsMapping.containsKey(count1))
+                    handleAxis(configuration.axisActionsMapping.get(count1),axes);
                 count1++;
             }
+            //System.out.println("");
 
             ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
             byte[] arr = new byte[byteBuffer.remaining()];
@@ -92,6 +97,22 @@ public class InputHandler {
         }
 
         prevButtonsState = buttonState;
+    }
+
+    private void handleAxis(Actions action, float axisValue) {
+        switch(action)
+        {
+            case shot ->
+            {
+                if(!holdShoot && axisValue > 0.5 ) {
+                    holdShoot = true;
+                    joystickProducer.send(drone, action);
+                }
+                if(holdShoot && axisValue < -0.5) {
+                    holdShoot = false;
+                }
+            }
+        }
     }
 
     private int convertToRawData(int index, float axes) {

@@ -1,5 +1,6 @@
 package org.uav.serializer;
 
+import org.uav.queue.Actions;
 import org.uav.queue.ControlModes;
 import org.uav.status.JoystickStatus;
 
@@ -20,6 +21,14 @@ public class JoystickMessageSerializer implements MessageSerializer {
     public String serialize(ControlModes mode) {
         Locale.setDefault(Locale.US);
         String msg = MessageFormat.format("m:{0}", mode.toString());
+        //System.out.println(msg);
+        return msg;
+    }
+
+    @Override
+    public String serialize(Actions actions) {
+        Locale.setDefault(Locale.US);
+        String msg = MessageFormat.format("{0}", actions.toString());
         //System.out.println(msg);
         return msg;
     }

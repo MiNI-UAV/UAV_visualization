@@ -10,8 +10,9 @@ public class DroneRequestReplyParser implements MessageParser<DroneRequestReplyM
         Scanner scanner = new Scanner(input);
         scanner.useDelimiter(",");
         int droneId = Integer.parseInt(scanner.next());
-        int dronePort = Integer.parseInt(scanner.next());
-        return new DroneRequestReplyMessage(droneId, dronePort);
+        int steerPort = Integer.parseInt(scanner.next());
+        int utilsPort = Integer.parseInt(scanner.next());
+        return new DroneRequestReplyMessage(droneId, steerPort, utilsPort);
     }
 }
 

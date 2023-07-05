@@ -36,8 +36,8 @@ public class DroneRequester {
         if(message.equals(TAKEN_MESSAGE))
             return Optional.empty();
 
-        var parsedMessage = messageParser.parse(message);
+        DroneRequestReplyMessage parsedMessage = messageParser.parse(message);
 
-        return Optional.of(new Drone(context, parsedMessage.dronePort, parsedMessage.droneId, configuration));
+        return Optional.of(new Drone(context, parsedMessage.steerPort, parsedMessage.utilsPort, parsedMessage.droneId, configuration));
     }
 }

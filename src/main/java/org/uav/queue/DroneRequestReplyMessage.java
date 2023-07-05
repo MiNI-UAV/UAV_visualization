@@ -3,10 +3,13 @@ package org.uav.queue;
 public class DroneRequestReplyMessage {
 
     int droneId;
-    int dronePort;
+    int steerPort;
 
-    public DroneRequestReplyMessage(int droneId, int dronePort) {
+    int utilsPort;
+
+    public DroneRequestReplyMessage(int droneId, int steerPort, int utilsPort) {
         this.droneId = droneId;
-        this.dronePort = dronePort;
+        this.steerPort = steerPort;
+        this.utilsPort = utilsPort;
     }
 }

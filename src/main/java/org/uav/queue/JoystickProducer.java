@@ -25,4 +25,10 @@ public class JoystickProducer {
         drone.sendSteeringCommand(message);
         System.out.println("Sent: [" + message + "]");
     }
+
+    public void send(Drone drone, Actions actions) {
+        String message = messageSerializer.serialize(actions);
+        drone.sendUtilsCommand(message);
+        // System.out.println("Sent: [" + message + "]");
+    }
 }

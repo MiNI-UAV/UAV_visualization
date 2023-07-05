@@ -8,17 +8,27 @@ import org.zeromq.ZMQ;
 public class Drone {
 
     public int id;
-    public ZMQ.Socket socket;
+    public ZMQ.Socket steerSocket;
+    public ZMQ.Socket utilsSocket;
 
-    public Drone(ZContext context, int dronePort, int droneId, Configuration configuration) {
+    public Drone(ZContext context, int steerPort, int utilsPort, int droneId, Configuration configuration) {
         id = droneId;
-        socket = context.createSocket(SocketType.PAIR);
-        String address = "tcp://" + configuration.address + ":" + dronePort;
+
+        steerSocket = context.createSocket(SocketType.PAIR);
+        String address = "tcp://" + configuration.address + ":" + steerPort;
         System.out.println(address);
-        socket.connect(address);
+        steerSocket.connect(address);
+
+        utilsSocket = context.createSocket(SocketType.PAIR);
+        String address2 = "tcp://" + configuration.address + ":" + utilsPort;
+        System.out.println(address2);
+        utilsSocket.connect(address2);
     }
 
     public void sendSteeringCommand(String command) {
-        socket.send(command.getBytes(ZMQ.CHARSET), 0);
+        steerSocket.send(command.getBytes(ZMQ.CHARSET), 0);
+    }
+    public void sendUtilsCommand(String command) {
+        utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0);
     }
 }

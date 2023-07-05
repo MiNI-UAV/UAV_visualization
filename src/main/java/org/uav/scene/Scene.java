@@ -11,6 +11,7 @@ import org.uav.config.Configuration;
 import org.uav.input.InputHandler;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.Drone;
+import org.uav.queue.Actions;
 import org.uav.queue.DroneRequester;
 import org.uav.status.DroneStatus;
 import org.uav.model.Model;
@@ -99,16 +100,16 @@ public class Scene implements AutoCloseable {
         // joystickMapping.put(2, 1);
         // joystickMapping.put(0, 2);
         // joystickMapping.put(1, 3);
-//        //XBOX controller
+//        //XBOX Igor
+//        joystickMapping.put(0, 0);
+//        joystickMapping.put(1, 1);
+//        joystickMapping.put(3, 2);
+//        joystickMapping.put(4, 3);
+        // XBOX Wojtek
         joystickMapping.put(0, 0);
         joystickMapping.put(1, 1);
-        joystickMapping.put(3, 2);
-        joystickMapping.put(4, 3);
-        // XBOX Igor
-//        joystickMapping.put(5, 0);
-//        joystickMapping.put(2, 1);
-//        joystickMapping.put(0, 2);
-//        joystickMapping.put(1, 3);
+        joystickMapping.put(2, 2);
+        joystickMapping.put(3, 3);
 
         var joystickInversionMapping = new HashMap<Integer, Boolean>();
         //HOTAS
@@ -116,16 +117,16 @@ public class Scene implements AutoCloseable {
         // joystickInversionMapping.put(2, true);
         // joystickInversionMapping.put(0, false);
         // joystickInversionMapping.put(1, true);
-        //XBOX controller
-        joystickInversionMapping.put(0, false);
-        joystickInversionMapping.put(1, true);
-        joystickInversionMapping.put(4, true);
-        joystickInversionMapping.put(3, false);
-        // XBOX Igor
-//        joystickInversionMapping.put(5, false);
-//        joystickInversionMapping.put(2, true);
+        //XBOX Igor
 //        joystickInversionMapping.put(0, false);
 //        joystickInversionMapping.put(1, true);
+//        joystickInversionMapping.put(4, true);
+//        joystickInversionMapping.put(3, false);
+        // XBOX Wojtek
+        joystickInversionMapping.put(0, false);
+        joystickInversionMapping.put(1, true);
+        joystickInversionMapping.put(2, false);
+        joystickInversionMapping.put(3, true);
 
         var joystickButtonMapping = new HashMap<Integer, JoystickButtonFunctions>();
         //XBOX controller
@@ -136,9 +137,15 @@ public class Scene implements AutoCloseable {
         joystickButtonMapping.put(4,JoystickButtonFunctions.posMode);
         joystickButtonMapping.put(0,JoystickButtonFunctions.noneMode);
 
+        var axisActionsMapping = new HashMap<Integer, Actions>();
+        //XBOX controller
+        axisActionsMapping.put(4,Actions.shot);
+
+
         configuration.joystickMapping = joystickMapping;
         configuration.joystickInversionMapping = joystickInversionMapping;
         configuration.joystickButtonsMapping = joystickButtonMapping;
+        configuration.axisActionsMapping = axisActionsMapping;
     }
 
     private void setUpShaders() throws IOException {
