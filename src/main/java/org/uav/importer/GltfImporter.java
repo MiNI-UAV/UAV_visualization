@@ -23,17 +23,20 @@ import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class GltfImporter {
 
-    private static List<TextureModel> textureModels;
-    private static Map<String, Texture> loadedTextures;
-    private static String textureDirectory;
+    private List<TextureModel> textureModels;
+    private final Map<String, Texture> loadedTextures;
+    private String textureDirectory;
 
-    public static Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
+    public GltfImporter() {
+        loadedTextures = new HashMap<>();
+    }
+
+    public Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
         textureDirectory = textureDir;
         String path = "file://" + Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource(resourceFile)).getFile();
         GltfModelReader reader = new GltfModelReader();
         GltfModelV2 model = (GltfModelV2) reader.read(new URI(path));
         textureModels = model.getTextureModels();
-        loadedTextures = new HashMap<>();
 
         SceneModel sceneModel = model.getSceneModels().get(0);
 
@@ -57,7 +60,7 @@ public class GltfImporter {
         );
     }
 
-    private static ModelNode getChildModelNode(NodeModel nodeModel) {
+    private ModelNode getChildModelNode(NodeModel nodeModel) {
 
         List<Mesh> meshes = processMeshModels(nodeModel.getMeshModels());
 
@@ -87,7 +90,7 @@ public class GltfImporter {
         return new ModelNode(nodeModel.getName(), meshes, children, localTranslation, localRotation, localScale);
     }
 
-    private static  List<Mesh> processMeshModels(List<MeshModel> meshModels) {
+    private List<Mesh> processMeshModels(List<MeshModel> meshModels) {
         List<Mesh> meshes = new ArrayList<>();
         for (MeshModel meshModel : meshModels)
         {
@@ -123,7 +126,7 @@ public class GltfImporter {
         return meshes;
     }
 
-    private static Texture loadTexture(TextureModel textureModel) {
+    private Texture loadTexture(TextureModel textureModel) {
         if(loadedTextures.containsKey(textureModel.getImageModel().getUri()))
             return loadedTextures.get(textureModel.getImageModel().getUri());
 

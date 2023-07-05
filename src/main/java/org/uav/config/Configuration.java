@@ -12,8 +12,8 @@ public class Configuration {
     public Map<Integer, Boolean> joystickInversionMapping;
     public Map<Integer, JoystickButtonFunctions> joystickButtonsMapping;
     public Map<Integer, Actions> axisActionsMapping;
-    public String address = "127.0.0.1";
-    //public String address = "83.6.113.220";
+    //public String address = "127.0.0.1";
+    public String address = "83.6.113.220";
     public String droneName = "Wojtek";
     public float deadZoneFactor = 0.2f;
     public CameraType type = CameraType.HorizontalCamera;

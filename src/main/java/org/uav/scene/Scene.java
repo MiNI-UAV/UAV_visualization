@@ -8,11 +8,14 @@ import org.lwjgl.system.MemoryStack;
 import org.uav.OpenGLScene;
 import org.uav.camera.Camera;
 import org.uav.config.Configuration;
+import org.uav.importer.GltfImporter;
 import org.uav.input.InputHandler;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.Drone;
 import org.uav.queue.Actions;
+import org.uav.model.ProjectileStatus;
 import org.uav.queue.DroneRequester;
+import org.uav.queue.ProjectileStatusesConsumer;
 import org.uav.status.DroneStatus;
 import org.uav.model.Model;
 import org.uav.queue.DroneStatusConsumer;
@@ -33,7 +36,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
-import static org.uav.importer.GltfImporter.loadModel;
 
 public class Scene implements AutoCloseable {
     private final long window;
@@ -47,15 +49,20 @@ public class Scene implements AutoCloseable {
     private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
     private float dayFactor = 1.0f;
     private final Drone controlledDrone;
+    private List<Model> droneModels;
     private final List<DroneStatus> droneStatuses;
     private final ReentrantLock droneStatusesMutex;
+    private final DroneStatusConsumer droneStatusConsumer;
+    private List<Model> projectileModels;
+    private final List<ProjectileStatus> projectileStatuses;
+    private final ReentrantLock projectileStatusesMutex;
+    private final ProjectileStatusesConsumer projectileStatusesConsumer;
     private Model environmentModel;
     //private Model busterModel;
     private Model axisModel;
-    private List<Model> droneModels;
     Shader lightSourceShader;
-    private final DroneStatusConsumer droneStatusConsumer;
     private final DroneRequester droneRequester;
+    private final GltfImporter modelImporter;
 
     // camera movement
 
@@ -68,14 +75,22 @@ public class Scene implements AutoCloseable {
         this.windowHeight = windowHeight;
         this.windowWidth = windowWidth;
 
+        modelImporter = new GltfImporter();
         ZContext context = new ZContext();
         camera = new Camera();
         configuration = new Configuration();
+
         droneStatuses = new ArrayList<>();
         droneModels = new ArrayList<>();
         droneStatusesMutex = new ReentrantLock();
         droneStatusConsumer = new DroneStatusConsumer(context, droneStatuses, droneStatusesMutex, configuration);
         droneStatusConsumer.start();
+
+        projectileStatuses = new ArrayList<>();
+        projectileModels = new ArrayList<>();
+        projectileStatusesMutex = new ReentrantLock();
+        projectileStatusesConsumer = new ProjectileStatusesConsumer(context, projectileStatuses, projectileStatusesMutex, configuration);
+        projectileStatusesConsumer.start();
 
         droneRequester = new DroneRequester(context, configuration);
         var newDroneResult = droneRequester.requestNewDrone(configuration.droneName);
@@ -101,15 +116,15 @@ public class Scene implements AutoCloseable {
         // joystickMapping.put(0, 2);
         // joystickMapping.put(1, 3);
 //        //XBOX Igor
-//        joystickMapping.put(0, 0);
-//        joystickMapping.put(1, 1);
-//        joystickMapping.put(3, 2);
-//        joystickMapping.put(4, 3);
-        // XBOX Wojtek
         joystickMapping.put(0, 0);
         joystickMapping.put(1, 1);
-        joystickMapping.put(2, 2);
-        joystickMapping.put(3, 3);
+        joystickMapping.put(3, 2);
+        joystickMapping.put(4, 3);
+        // XBOX Wojtek
+//        joystickMapping.put(0, 0);
+//        joystickMapping.put(1, 1);
+//        joystickMapping.put(2, 2);
+//        joystickMapping.put(3, 3);
 
         var joystickInversionMapping = new HashMap<Integer, Boolean>();
         //HOTAS
@@ -118,18 +133,18 @@ public class Scene implements AutoCloseable {
         // joystickInversionMapping.put(0, false);
         // joystickInversionMapping.put(1, true);
         //XBOX Igor
-//        joystickInversionMapping.put(0, false);
-//        joystickInversionMapping.put(1, true);
-//        joystickInversionMapping.put(4, true);
-//        joystickInversionMapping.put(3, false);
-        // XBOX Wojtek
         joystickInversionMapping.put(0, false);
         joystickInversionMapping.put(1, true);
-        joystickInversionMapping.put(2, false);
-        joystickInversionMapping.put(3, true);
+        joystickInversionMapping.put(4, true);
+        joystickInversionMapping.put(3, false);
+        // XBOX Wojtek
+//        joystickInversionMapping.put(0, false);
+//        joystickInversionMapping.put(1, true);
+//        joystickInversionMapping.put(2, false);
+//        joystickInversionMapping.put(3, true);
 
         var joystickButtonMapping = new HashMap<Integer, JoystickButtonFunctions>();
-        //XBOX controller
+        //XBOX controller Wojtek
         joystickButtonMapping.put(6,JoystickButtonFunctions.nextCamera);
         joystickButtonMapping.put(7,JoystickButtonFunctions.prevCamera);
         joystickButtonMapping.put(3,JoystickButtonFunctions.angleMode);
@@ -138,8 +153,10 @@ public class Scene implements AutoCloseable {
         joystickButtonMapping.put(0,JoystickButtonFunctions.noneMode);
 
         var axisActionsMapping = new HashMap<Integer, Actions>();
-        //XBOX controller
-        axisActionsMapping.put(4,Actions.shot);
+        //XBOX controller Wotjek
+        //axisActionsMapping.put(4, Actions.shot);
+        // XBOX controller Igor
+        axisActionsMapping.put(2, Actions.shot);
 
 
         configuration.joystickMapping = joystickMapping;
@@ -190,20 +207,24 @@ public class Scene implements AutoCloseable {
         //busterModel = loadModel("models/buster.gltf", "textures/buster");
         //busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
         //busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
-        environmentModel = loadModel("models/dust.gltf", "textures/dust");
-        axisModel = loadModel("models/axis.gltf", "textures/axis");
+        environmentModel = modelImporter.loadModel("models/dust.gltf", "textures/dust");
+        axisModel = modelImporter.loadModel("models/axis.gltf", "textures/axis");
         //environmentModel = loadModel("models/field.gltf", "textures/field");
     }
 
-    private static Model createDroneModel() throws URISyntaxException, IOException {
+    private Model createDroneModel() throws URISyntaxException, IOException {
         Supplier<Quaternionf> clockwiseRotation =
                 () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),-cos(glfwGetTime()*1000)).normalize();
         Supplier<Quaternionf> counterClockwiseRotation =
                 () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),cos(glfwGetTime()*1000)).normalize();
-        var droneModel = loadModel("models/drone.gltf", "textures/drone");
+        var droneModel = modelImporter.loadModel("models/drone.gltf", "textures/drone");
         droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
         droneModel.setAnimation(null, counterClockwiseRotation, null, List.of("propeller.1", "propeller.4"));
         return droneModel;
+    }
+
+    private Model createProjectileModel() throws URISyntaxException, IOException {
+        return modelImporter.loadModel("models/projectile.gltf", "textures/projectile");
     }
 
     public void loop() {
@@ -227,6 +248,7 @@ public class Scene implements AutoCloseable {
 
                 environmentModel.draw(stack, configuration.shader);
 
+                // BEGIN Drone models drawing
                 for(Model drone: droneModels) {
                     drone.draw(stack, configuration.shader);
                 }
@@ -245,6 +267,26 @@ public class Scene implements AutoCloseable {
                 }
                 changeCamera();
                 droneStatusesMutex.unlock();
+                // END Drone models drawing
+                // BEGIN Projectiles models drawing
+                for(Model projectile: projectileModels) {
+                    projectile.draw(stack, configuration.shader);
+                }
+                projectileStatusesMutex.lock();
+
+                if(projectileModels.size() != projectileStatuses.size()) {
+                    var newProjectileModels = new ArrayList<Model>();
+                    while(newProjectileModels.size() != projectileStatuses.size()) {
+                        Model projectileModel = createProjectileModel();
+                        newProjectileModels.add(projectileModel);
+                    }
+                    projectileModels = newProjectileModels;
+                }
+                for(int i=0; i<projectileStatuses.size(); i++) {
+                    projectileModels.get(i).setPosition(projectileStatuses.get(i).position);
+                }
+                projectileStatusesMutex.unlock();
+                // END Projectiles models drawing
 
                 axisModel.setPosition(new Vector3f(0,0,1));
                 axisModel.draw(stack, configuration.shader);
@@ -372,5 +414,6 @@ public class Scene implements AutoCloseable {
     @Override
     public void close() {
         droneStatusConsumer.stop();
+        projectileStatusesConsumer.stop();
     }
 }
