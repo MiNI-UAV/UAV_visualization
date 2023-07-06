@@ -1,26 +1,28 @@
 package org.uav.queue;
 
 import org.uav.config.Configuration;
-import org.uav.model.ProjectileStatus;
+import org.uav.model.status.ProjectileStatus;
+import org.uav.model.status.ProjectileStatuses;
 import org.uav.parser.ProjectileStatusMessageParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 
-import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ProjectileStatusesConsumer {
     private static final String port = "9100";
-    private final List<ProjectileStatus> projectileStatuses;
+    private final ProjectileStatuses projectileStatuses;
     private final ReentrantLock projectileStatusesMutex;
     private final ZMQ.Socket socket;
     private final ProjectileStatusMessageParser messageParser;
     private final Thread thread;
 
 
-    public ProjectileStatusesConsumer(ZContext context, List<ProjectileStatus> projectileStatuses, ReentrantLock projectileStatusesMutex, Configuration configuration) {
+    public ProjectileStatusesConsumer(ZContext context, ProjectileStatuses projectileStatuses, ReentrantLock projectileStatusesMutex, Configuration configuration) {
         this.projectileStatuses = projectileStatuses;
         this.projectileStatusesMutex = projectileStatusesMutex;
         String address = "tcp://" + configuration.address + ":" + port;
@@ -48,8 +50,9 @@ public class ProjectileStatusesConsumer {
                     String message = new String(reply, ZMQ.CHARSET);
                     //System.out.println("Received: [" + message + "]");
                     projectileStatusesMutex.lock();
-                    projectileStatuses.clear();
-                    projectileStatuses.addAll(messageParser.parse(message)); // TODO Message parser should return a map with ids.
+                    projectileStatuses.map.clear();
+                    projectileStatuses.map = messageParser.parse(message).stream()
+                            .collect(Collectors.toMap(ProjectileStatus::getId, Function.identity()));
                     projectileStatusesMutex.unlock();
 
                 } catch (ZMQException exception) {

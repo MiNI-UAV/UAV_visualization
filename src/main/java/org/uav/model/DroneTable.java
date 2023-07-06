@@ -1,6 +1,6 @@
 package org.uav.model;
 
-import org.uav.status.DroneStatus;
+import org.uav.model.status.DroneStatus;
 
 import java.util.List;
 

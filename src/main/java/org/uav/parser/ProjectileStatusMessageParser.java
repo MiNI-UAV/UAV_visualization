@@ -1,7 +1,7 @@
 package org.uav.parser;
 
 import org.joml.Vector3f;
-import org.uav.model.ProjectileStatus;
+import org.uav.model.status.ProjectileStatus;
 
 import java.util.Arrays;
 import java.util.List;

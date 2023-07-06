@@ -1,4 +1,4 @@
-package org.uav.model;
+package org.uav.model.status;
 
 import org.joml.Vector3f;
 
@@ -11,5 +11,9 @@ public class ProjectileStatus {
         this.id = id;
         this.position = position;
         this.velocity = velocity;
+    }
+
+    public int getId() {
+        return id;
     }
 }

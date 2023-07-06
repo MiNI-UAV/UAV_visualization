@@ -2,7 +2,7 @@ package org.uav.serializer;
 
 import org.uav.queue.Actions;
 import org.uav.queue.ControlModes;
-import org.uav.status.JoystickStatus;
+import org.uav.model.status.JoystickStatus;
 
 import java.text.MessageFormat;
 import java.util.Locale;

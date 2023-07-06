@@ -1,6 +1,6 @@
 package org.uav.parser;
 
-import org.uav.status.DroneStatus;
+import org.uav.model.status.DroneStatus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,10 @@ public class DroneStatusMessageParser implements MessageParser<List<DroneStatus>
         var drone = new DroneStatus();
         Scanner scanner = new Scanner(input);
         scanner.useDelimiter(",");
-        scanner.next();
+
+        drone.id = Integer.parseInt(scanner.next());
+
+        drone.time = Float.parseFloat(scanner.next());
 
         drone.position.x = Float.parseFloat(scanner.next());
         drone.position.y = Float.parseFloat(scanner.next());

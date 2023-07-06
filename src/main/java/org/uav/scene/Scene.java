@@ -11,13 +11,12 @@ import org.uav.config.Configuration;
 import org.uav.importer.GltfImporter;
 import org.uav.input.InputHandler;
 import org.uav.input.JoystickButtonFunctions;
-import org.uav.model.Drone;
+import org.uav.model.*;
+import org.uav.model.status.DroneStatuses;
+import org.uav.model.status.ProjectileStatuses;
 import org.uav.queue.Actions;
-import org.uav.model.ProjectileStatus;
 import org.uav.queue.DroneRequester;
 import org.uav.queue.ProjectileStatusesConsumer;
-import org.uav.status.DroneStatus;
-import org.uav.model.Model;
 import org.uav.queue.DroneStatusConsumer;
 import org.uav.shader.Shader;
 import org.uav.utils.Convert;
@@ -50,11 +49,11 @@ public class Scene implements AutoCloseable {
     private float dayFactor = 1.0f;
     private final Drone controlledDrone;
     private List<Model> droneModels;
-    private final List<DroneStatus> droneStatuses;
+    private final DroneStatuses droneStatuses;
     private final ReentrantLock droneStatusesMutex;
     private final DroneStatusConsumer droneStatusConsumer;
     private List<Model> projectileModels;
-    private final List<ProjectileStatus> projectileStatuses;
+    private final ProjectileStatuses projectileStatuses;
     private final ReentrantLock projectileStatusesMutex;
     private final ProjectileStatusesConsumer projectileStatusesConsumer;
     private Model environmentModel;
@@ -80,13 +79,13 @@ public class Scene implements AutoCloseable {
         camera = new Camera();
         configuration = new Configuration();
 
-        droneStatuses = new ArrayList<>();
+        droneStatuses = new DroneStatuses();
         droneModels = new ArrayList<>();
         droneStatusesMutex = new ReentrantLock();
         droneStatusConsumer = new DroneStatusConsumer(context, droneStatuses, droneStatusesMutex, configuration);
         droneStatusConsumer.start();
 
-        projectileStatuses = new ArrayList<>();
+        projectileStatuses = new ProjectileStatuses();
         projectileModels = new ArrayList<>();
         projectileStatusesMutex = new ReentrantLock();
         projectileStatusesConsumer = new ProjectileStatusesConsumer(context, projectileStatuses, projectileStatusesMutex, configuration);
@@ -253,18 +252,20 @@ public class Scene implements AutoCloseable {
                     drone.draw(stack, configuration.shader);
                 }
                 droneStatusesMutex.lock();
-                if(droneModels.size() != droneStatuses.size()) {
+                if(droneModels.size() != droneStatuses.map.size()) {
                     var newDroneModels = new ArrayList<Model>();
-                    while(newDroneModels.size() != droneStatuses.size()) {
+                    while(newDroneModels.size() != droneStatuses.map.size()) {
                         Model droneModel = createDroneModel();
                         newDroneModels.add(droneModel);
                     }
                     droneModels = newDroneModels;
                 }
-                for(int i=0; i<droneStatuses.size(); i++) {
-                    droneModels.get(i).setPosition(droneStatuses.get(i).position);
-                    droneModels.get(i).setRotation(droneStatuses.get(i).rotation);
-                }
+                var droneIterator = droneModels.iterator();
+                droneStatuses.map.forEach((id, status) -> {
+                    var model = droneIterator.next();
+                    model.setPosition(status.position);
+                    model.setRotation(status.rotation);
+                });
                 changeCamera();
                 droneStatusesMutex.unlock();
                 // END Drone models drawing
@@ -274,17 +275,20 @@ public class Scene implements AutoCloseable {
                 }
                 projectileStatusesMutex.lock();
 
-                if(projectileModels.size() != projectileStatuses.size()) {
+                if(projectileModels.size() != projectileStatuses.map.size()) {
                     var newProjectileModels = new ArrayList<Model>();
-                    while(newProjectileModels.size() != projectileStatuses.size()) {
+                    while(newProjectileModels.size() != projectileStatuses.map.size()) {
                         Model projectileModel = createProjectileModel();
                         newProjectileModels.add(projectileModel);
                     }
                     projectileModels = newProjectileModels;
                 }
-                for(int i=0; i<projectileStatuses.size(); i++) {
-                    projectileModels.get(i).setPosition(projectileStatuses.get(i).position);
-                }
+
+                var projectileIterator = projectileModels.iterator();
+                projectileStatuses.map.forEach((id, status) -> {
+                    var model = projectileIterator.next();
+                    model.setPosition(status.position);
+                });
                 projectileStatusesMutex.unlock();
                 // END Projectiles models drawing
 
@@ -306,9 +310,9 @@ public class Scene implements AutoCloseable {
 
     private void changeCamera() {
         Vector3f dronePosition, droneRotation;
-        if(controlledDrone.id < droneStatuses.size()) {
-            dronePosition = droneStatuses.get(controlledDrone.id).position;
-            droneRotation = droneStatuses.get(controlledDrone.id).rotation;
+        if(droneStatuses.map.containsKey(controlledDrone.id)) {
+            dronePosition = droneStatuses.map.get(controlledDrone.id).position;
+            droneRotation = droneStatuses.map.get(controlledDrone.id).rotation;
         }
         else {
             dronePosition = new Vector3f();

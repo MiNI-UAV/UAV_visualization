@@ -4,7 +4,7 @@ import org.uav.config.Configuration;
 import org.uav.model.Drone;
 import org.uav.queue.Actions;
 import org.uav.queue.ControlModes;
-import org.uav.status.JoystickStatus;
+import org.uav.model.status.JoystickStatus;
 import org.uav.queue.JoystickProducer;
 import org.zeromq.ZContext;
 

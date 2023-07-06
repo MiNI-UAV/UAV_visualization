@@ -1,4 +1,4 @@
-package org.uav.status;
+package org.uav.model.status;
 
 public class JoystickStatus {
     public int[] rawData;

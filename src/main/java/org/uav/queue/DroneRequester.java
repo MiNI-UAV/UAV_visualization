@@ -22,7 +22,6 @@ public class DroneRequester {
         this.context = context;
         this.configuration = configuration;
         String address = "tcp://" + configuration.address + ":" + port;
-        System.out.println(address);
         messageParser = new DroneRequestReplyParser();
         socket = context.createSocket(SocketType.REQ);
         socket.connect(address);
