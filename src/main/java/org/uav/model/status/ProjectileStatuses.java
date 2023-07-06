@@ -1,7 +1,5 @@
 package org.uav.model.status;
 
-import org.uav.model.status.ProjectileStatus;
-
 import java.util.HashMap;
 import java.util.Map;
 

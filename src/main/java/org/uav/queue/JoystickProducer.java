@@ -8,7 +8,7 @@ import org.zeromq.ZContext;
 public class JoystickProducer {
     private final JoystickMessageSerializer messageSerializer;
 
-    public JoystickProducer(ZContext context) {
+    public JoystickProducer() {
         messageSerializer = new JoystickMessageSerializer();
     }
 

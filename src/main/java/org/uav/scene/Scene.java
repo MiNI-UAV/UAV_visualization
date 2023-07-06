@@ -95,7 +95,7 @@ public class Scene implements AutoCloseable {
         var newDroneResult = droneRequester.requestNewDrone(configuration.droneName);
         controlledDrone = newDroneResult.orElseThrow();
 
-        inputHandler = new InputHandler(configuration, context, controlledDrone);
+        inputHandler = new InputHandler(configuration, controlledDrone);
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);

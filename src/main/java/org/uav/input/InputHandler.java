@@ -6,7 +6,6 @@ import org.uav.queue.Actions;
 import org.uav.queue.ControlModes;
 import org.uav.model.status.JoystickStatus;
 import org.uav.queue.JoystickProducer;
-import org.zeromq.ZContext;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -24,12 +23,12 @@ public class InputHandler {
     byte[] prevButtonsState = new byte[32];
 
 
-    public InputHandler(Configuration configuration, ZContext context, Drone drone) {
+    public InputHandler(Configuration configuration, Drone drone) {
         this.configuration = configuration;
         this.drone = drone;
         int joystickAxisCount = 4;
         joystickStatus = new JoystickStatus(joystickAxisCount);
-        joystickProducer = new JoystickProducer(context);
+        joystickProducer = new JoystickProducer();
     }
 
     public void processInput(long window) {
