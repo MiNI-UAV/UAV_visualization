@@ -40,13 +40,13 @@ public class Scene implements AutoCloseable {
     private final long window;
     private final int windowHeight;
     private final int windowWidth;
+    public Shader objectShader;
+    public Shader lightSourceShader;
     private final Camera camera;
     private final Configuration configuration;
     private final InputHandler inputHandler;
 
     private final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
-    private final Vector3f NIGHT_COLOR = new Vector3f(0f, 0f, 0f);
-    private float dayFactor = 1.0f;
     private final Drone controlledDrone;
     private List<Model> droneModels;
     private final DroneStatuses droneStatuses;
@@ -57,9 +57,7 @@ public class Scene implements AutoCloseable {
     private final ReentrantLock projectileStatusesMutex;
     private final ProjectileStatusesConsumer projectileStatusesConsumer;
     private Model environmentModel;
-    //private Model busterModel;
     private Model axisModel;
-    Shader lightSourceShader;
     private final DroneRequester droneRequester;
     private final GltfImporter modelImporter;
 
@@ -164,51 +162,34 @@ public class Scene implements AutoCloseable {
         configuration.axisActionsMapping = axisActionsMapping;
     }
 
-    private void setUpShaders() throws IOException {
+    private void setUpLights(Shader shader) {
 
+        shader.use();
+        shader.setVec3("dirLight.direction",  new Vector3f(-0.5f, -0.5f, 0.5f));
+        shader.setVec3("dirLight.ambient",  new Vector3f(0.5f, 0.5f, 0.5f));
+        shader.setVec3("dirLight.diffuse",  new Vector3f(0.4f, 0.4f, 0.4f));
+        shader.setVec3("dirLight.specular",  new Vector3f(0.5f, 0.5f, 0.5f));
+        shader.setBool("useDirectionalLight", true);
+    }
+
+    private void setUpShaders() throws IOException {
         String phongVertexShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/phongShader.vert")).getFile();
         String phongFragmentShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/phongShader.frag")).getFile();
-        String gouraudVertexShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/gouraudShader.vert")).getFile();
-        String gouraudFragmentShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/gouraudShader.frag")).getFile();
-        String flatVertexShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/flatShader.vert")).getFile();
-        String flatFragmentShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/flatShader.frag")).getFile();
+        objectShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
+        objectShader.use();
+        objectShader.setVec3("backgroundColor", DAY_COLOR);
+        setUpLights(objectShader);
+
         String lightSourceVertexShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/lightSourceShader.vert")).getFile();
         String lightSourceFragmentShaderSource = Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource("shaders/lightSourceShader.frag")).getFile();
-
-        configuration.phongShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
-        configuration.gouraudShader = new Shader(gouraudVertexShaderSource, gouraudFragmentShaderSource);
-        configuration.flatShader =new Shader(flatVertexShaderSource, flatFragmentShaderSource);
-        configuration.shader = configuration.phongShader;
         lightSourceShader = new Shader(lightSourceVertexShaderSource, lightSourceFragmentShaderSource);
-
-        configuration.phongShader.use();
-        configuration.phongShader.setVec3("backgroundColor", DAY_COLOR);
-        setUpFog(configuration.phongShader);
-        setUpLights(configuration.phongShader);
-
-        configuration.gouraudShader.use();
-        configuration.gouraudShader.setVec3("backgroundColor", DAY_COLOR);
-        setUpFog(configuration.gouraudShader);
-        setUpLights(configuration.gouraudShader);
-
-        configuration.flatShader.use();
-        configuration.flatShader.setVec3("backgroundColor", DAY_COLOR);
-        setUpFog(configuration.flatShader);
-        setUpLights(configuration.flatShader);
-
         lightSourceShader.use();
         lightSourceShader.setVec3("lightColor", new Vector3f(1.f, 	1.f, 1.f));
-        setUpFog(lightSourceShader);
     }
 
     private void setUpDrawables() throws URISyntaxException, IOException {
-
-        //busterModel = loadModel("models/buster.gltf", "textures/buster");
-        //busterModel.setAnimation(null, clockwiseRotation, null, List.of("Drone_Turb_Blade_L_body_0"));
-        //busterModel.setAnimation(null, counterClockwiseRotation, null, List.of("Drone_Turb_Blade_R_body_0"));
         environmentModel = modelImporter.loadModel("models/dust.gltf", "textures/dust");
         axisModel = modelImporter.loadModel("models/axis.gltf", "textures/axis");
-        //environmentModel = loadModel("models/field.gltf", "textures/field");
     }
 
     private Model createDroneModel() throws URISyntaxException, IOException {
@@ -231,9 +212,6 @@ public class Scene implements AutoCloseable {
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            toggleDayNight(configuration.shader, lightSourceShader);
-            changeFog(configuration.shader, lightSourceShader);
-
             Matrix4f view = camera.getViewMatrix();
             Matrix4f projection = new Matrix4f().perspective(toRadians(camera.getFov()), (float) windowWidth / windowHeight, 0.1f, 1000f);
 
@@ -241,15 +219,15 @@ public class Scene implements AutoCloseable {
 
             // Drawing
             try (MemoryStack stack = MemoryStack.stackPush()) {
-                configuration.shader.setVec3("viewPos", camera.getCameraPos());
-                configuration.shader.setMatrix4f(stack,"view", view);
-                configuration.shader.setMatrix4f(stack,"projection", projection);
+                objectShader.setVec3("viewPos", camera.getCameraPos());
+                objectShader.setMatrix4f(stack,"view", view);
+                objectShader.setMatrix4f(stack,"projection", projection);
 
-                environmentModel.draw(stack, configuration.shader);
+                environmentModel.draw(stack, objectShader);
 
                 // BEGIN Drone models drawing
                 for(Model drone: droneModels) {
-                    drone.draw(stack, configuration.shader);
+                    drone.draw(stack, objectShader);
                 }
                 droneStatusesMutex.lock();
                 if(droneModels.size() != droneStatuses.map.size()) {
@@ -271,7 +249,7 @@ public class Scene implements AutoCloseable {
                 // END Drone models drawing
                 // BEGIN Projectiles models drawing
                 for(Model projectile: projectileModels) {
-                    projectile.draw(stack, configuration.shader);
+                    projectile.draw(stack, objectShader);
                 }
                 projectileStatusesMutex.lock();
 
@@ -293,15 +271,11 @@ public class Scene implements AutoCloseable {
                 // END Projectiles models drawing
 
                 axisModel.setPosition(new Vector3f(0,0,1));
-                axisModel.draw(stack, configuration.shader);
+                axisModel.draw(stack, objectShader);
                 //busterModel.draw(stack, configuration.shader);
             } catch (URISyntaxException | IOException e) {
                 throw new RuntimeException(e);
             }
-
-            // Update state
-            //busterModel.setPosition(new Vector3f(droneStatus.position.x , droneStatus.position.y, droneStatus.position.z));
-            //busterModel.setRotation(droneStatus.rotation);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
@@ -367,52 +341,6 @@ public class Scene implements AutoCloseable {
                 camera.setCameraUp(new Vector3f(0,0,-1).rotate(Convert.toQuaternion(rot)));
             }
         }
-    }
-
-    private void changeFog(Shader shader, Shader lightSourceShader) {
-        shader.setBool("fog.useFog", configuration.useFog);
-        shader.setFloat("fog.density", configuration.fogDensity);
-        lightSourceShader.use();
-        lightSourceShader.setBool("fog.useFog", configuration.useFog);
-        lightSourceShader.setFloat("fog.density", configuration.fogDensity);
-        shader.use();
-    }
-
-    private void toggleDayNight(Shader shader, Shader lightSourceShader) {
-
-        if(dayFactor <= 0f && !configuration.isDay)
-            dayFactor = 0f;
-        else if(dayFactor >= 1f && configuration.isDay)
-            dayFactor = 1f;
-        else if(configuration.isDay)
-            dayFactor += 0.04f;
-        else
-            dayFactor -= 0.04f;
-
-        var skyColor = new Vector3f(DAY_COLOR).mul(dayFactor).add(new Vector3f(NIGHT_COLOR).mul(1 - dayFactor));
-
-        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
-        shader.setVec3("fog.color", skyColor);
-        shader.setVec3("backgroundColor", skyColor);
-        lightSourceShader.use();
-        lightSourceShader.setVec3("fog.color", skyColor);
-        shader.use();
-    }
-
-    private void setUpFog(Shader shader) {
-        shader.setBool("fog.useFog", configuration.useFog);
-        shader.setVec3("fog.color", DAY_COLOR);
-        shader.setFloat("fog.density", configuration.fogDensity);
-    }
-
-    private void setUpLights(Shader shader) {
-
-        shader.use();
-        shader.setVec3("dirLight.direction",  new Vector3f(-0.5f, -0.5f, 0.5f));
-        shader.setVec3("dirLight.ambient",  new Vector3f(0.5f, 0.5f, 0.5f));
-        shader.setVec3("dirLight.diffuse",  new Vector3f(0.4f, 0.4f, 0.4f));
-        shader.setVec3("dirLight.specular",  new Vector3f(0.5f, 0.5f, 0.5f));
-        shader.setBool("useDirectionalLight", true);
     }
 
     @Override

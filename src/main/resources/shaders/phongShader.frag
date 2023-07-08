@@ -64,18 +64,9 @@ struct SpotLight {
 #define NR_SPOT_LIGHTS 3
 uniform SpotLight spotLights[NR_SPOT_LIGHTS];
 
-// Fog
-struct Fog {
-    vec3 color;
-    float density;
-    bool useFog;
-};
-uniform Fog fog;
-
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-float getFogFactor(Fog fog, float fogCoordinate);
 
 void main()
 {
@@ -94,8 +85,6 @@ void main()
     //result += calcSpotLight(spotLights[i], normNormal, fragPos, viewDir);
 
     result *= objectColor.xyz; // TODO: texture
-    if(fog.useFog == true)
-        result = mix(result, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
     fragColor = vec4(result, 1.f);
 }
 
@@ -170,12 +159,4 @@ vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     diffuse  *= attenuation * intensity;
     specular *= attenuation * intensity;
     return (ambient + diffuse + specular);
-}
-
-float getFogFactor(Fog fog, float fogCoordinate)
-{
-    float result = 0.0;
-    result = exp(-pow(fog.density * fogCoordinate, 2.0));
-    result = 1.0 - clamp(result, 0.0, 1.0);
-    return result;
 }
