@@ -2,12 +2,13 @@ package org.uav.input;
 
 public enum CameraMode {
     DroneCamera,
-    FreeCamera,
     RacingCamera,
-    ObserverCamera,
     HorizontalCamera,
     HardFPV,
-    SoftFPV;
+    SoftFPV,
+    ObserverCamera,
+    FreeCamera;
+
 
 
     private static final CameraMode[] vals = values();

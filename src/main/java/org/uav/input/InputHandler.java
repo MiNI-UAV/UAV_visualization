@@ -26,7 +26,7 @@ public class InputHandler {
     public InputHandler(SimulationState simulationState, Config config) {
         this.config = config;
         this.simulationState = simulationState;
-        int joystickAxisCount = 4;
+        int joystickAxisCount = config.joystick.mappings.axes.size();
         joystickStatus = new JoystickStatus(joystickAxisCount);
         joystickProducer = new JoystickProducer();
     }
@@ -67,20 +67,18 @@ public class InputHandler {
             System.out.println("[Error] No joystick found!");
         if(glfwJoystickPresent(joystick))
         {
+            // debugPrintOutAxes(joystick);
             int count1 = 0;
             FloatBuffer floatBuffer = glfwGetJoystickAxes(joystick);
-            //System.out.print("Axes:");
 
             while (floatBuffer != null && floatBuffer.hasRemaining()) {
                 float axes = floatBuffer.get();
-                //System.out.print(count1 + "," + axes + " ");
                 if(config.joystick.mappings.axes.containsKey(count1))
                     joystickStatus.rawData[config.joystick.mappings.axes.get(count1)] = convertToRawData(count1, axes);
                 if(config.joystick.mappings.axisActions.containsKey(count1))
                     handleAxis(config.joystick.mappings.axisActions.get(count1),axes);
                 count1++;
             }
-            //System.out.println("");
 
             ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
             byte[] arr = new byte[byteBuffer.remaining()];
@@ -88,6 +86,18 @@ public class InputHandler {
             handleButtons(arr);
             joystickProducer.send(simulationState.getCurrentlyControlledDrone(), joystickStatus);
         }
+    }
+
+    private void debugPrintOutAxes(int joystick) {
+        int count = 0;
+        FloatBuffer floatBuffer = glfwGetJoystickAxes(joystick);
+        System.out.print("Axes:");
+        while (floatBuffer != null && floatBuffer.hasRemaining()) {
+            float axes = floatBuffer.get();
+            System.out.print(count + "," + axes + " ");
+            count++;
+        }
+        System.out.println();
     }
 
     private void handleButtons(byte[] buttonState) {
