@@ -2,6 +2,7 @@ package org.uav.scene.camera;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.uav.config.Config;
 import org.uav.model.SimulationState;
 import org.uav.utils.Convert;
 
@@ -17,7 +18,7 @@ public class Camera {
     private Vector3f cameraPos = new Vector3f();
     private Vector3f cameraUp = CAMERA_UP;
     private Vector3f cameraFront = new Vector3f();
-    private static final float fov = 75;
+    private final float fov;
 
     // Free Camera Movement
     private float yaw = (float) atan2(cameraFront.y, cameraFront.x), pitch = 0;
@@ -25,8 +26,9 @@ public class Camera {
     static float deltaTime = 0.0f;
     static float lastTime = 0.0f;
 
-    public Camera(SimulationState simulationState) {
+    public Camera(SimulationState simulationState, Config config) {
         this.simulationState = simulationState;
+        fov = config.fov;
     }
 
     public Vector3f getCameraPos() {

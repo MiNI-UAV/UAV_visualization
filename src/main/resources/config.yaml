@@ -3,6 +3,7 @@ windowWidth: 1920
 windowHeight: 1080
 # windowWidth: 1200
 # windowHeight: 900
+fov: 75
 serverAddress: "127.0.0.1"
 droneName: "Wojtek"
 defaultCamera: "HorizontalCamera"

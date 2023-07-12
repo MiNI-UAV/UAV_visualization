@@ -16,6 +16,7 @@ public class Config {
 
     public int windowWidth;
     public int windowHeight;
+    public float fov;
     public String serverAddress;
     public String droneName;
     public CameraMode defaultCamera;

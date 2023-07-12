@@ -49,7 +49,7 @@ public class OpenGlScene {
         this.simulationState = simulationState;
 
         modelImporter = new GltfImporter();
-        camera = new Camera(simulationState);
+        camera = new Camera(simulationState, config);
 
         droneModels = new ArrayList<>();
         projectileModels = new ArrayList<>();
