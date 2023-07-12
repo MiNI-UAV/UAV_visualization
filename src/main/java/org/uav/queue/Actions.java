@@ -1,14 +1,14 @@
 package org.uav.queue;
 
 public enum Actions {
-    shot;
+    shoot;
 
     @Override
     public String toString() {
         String s = "";
         switch (this)
         {
-            case shot -> s = "shot";
+            case shoot -> s = "shoot";
         }
         return s;
     }

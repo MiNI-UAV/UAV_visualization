@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id("io.freefair.lombok") version "8.1.0"
 }
 
 application {
@@ -22,7 +23,10 @@ dependencies {
 
     implementation "de.javagl:jgltf-model:2.0.0"
     implementation "org.zeromq:jeromq:0.5.3"
-    implementation 'org.joml:joml:1.10.5'
+    implementation "org.joml:joml:1.10.5"
+    implementation "org.yaml:snakeyaml:2.0"
+
+    // LWJGL
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-assimp"
     implementation "org.lwjgl:lwjgl-bgfx"

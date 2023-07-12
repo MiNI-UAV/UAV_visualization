@@ -6,7 +6,7 @@ import de.javagl.jgltf.model.v2.GltfModelV2;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.uav.OpenGLScene;
+import org.uav.UavVisualization;
 import org.uav.model.*;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class GltfImporter {
 
     public Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
         textureDirectory = textureDir;
-        String path = "file://" + Objects.requireNonNull(OpenGLScene.class.getClassLoader().getResource(resourceFile)).getFile();
+        String path = "file://" + Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource(resourceFile)).getFile();
         GltfModelReader reader = new GltfModelReader();
         GltfModelV2 model = (GltfModelV2) reader.read(new URI(path));
         textureModels = model.getTextureModels();
@@ -138,7 +138,7 @@ public class GltfImporter {
         int[] h = new int[1];
         int[] components = new int[1];
         System.out.println("loading " + path);
-        String imagePath = new File(OpenGLScene.class.getClassLoader().getResource(path).getPath()).toString();
+        String imagePath = new File(UavVisualization.class.getClassLoader().getResource(path).getPath()).toString();
         ByteBuffer image = stbi_load(imagePath, w, h, components, 0);
         int format = GL_RGB;
         if(components[0] == 4) format = GL_RGBA;

@@ -1,6 +1,6 @@
 package org.uav.model;
 
-import org.uav.config.Configuration;
+import org.uav.config.Config;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
@@ -11,16 +11,16 @@ public class Drone {
     public ZMQ.Socket steerSocket;
     public ZMQ.Socket utilsSocket;
 
-    public Drone(ZContext context, int steerPort, int utilsPort, int droneId, Configuration configuration) {
+    public Drone(ZContext context, int steerPort, int utilsPort, int droneId, Config config) {
         id = droneId;
 
         steerSocket = context.createSocket(SocketType.PAIR);
-        String address = "tcp://" + configuration.address + ":" + steerPort;
+        String address = "tcp://" + config.serverAddress + ":" + steerPort;
         System.out.println(address);
         steerSocket.connect(address);
 
         utilsSocket = context.createSocket(SocketType.PAIR);
-        String address2 = "tcp://" + configuration.address + ":" + utilsPort;
+        String address2 = "tcp://" + config.serverAddress + ":" + utilsPort;
         System.out.println(address2);
         utilsSocket.connect(address2);
     }

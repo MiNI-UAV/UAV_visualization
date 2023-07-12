@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import org.uav.shader.Shader;
+import org.uav.scene.shader.Shader;
 
 import java.util.List;
 import java.util.function.Supplier;

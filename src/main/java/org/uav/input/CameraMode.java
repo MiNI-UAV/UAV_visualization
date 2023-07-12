@@ -1,6 +1,6 @@
 package org.uav.input;
 
-public enum CameraType {
+public enum CameraMode {
     DroneCamera,
     FreeCamera,
     RacingCamera,
@@ -10,12 +10,12 @@ public enum CameraType {
     SoftFPV;
 
 
-    private static final CameraType[] vals = values();
+    private static final CameraMode[] vals = values();
 
-    public CameraType next() {
+    public CameraMode next() {
         return vals[(this.ordinal() + 1) % vals.length];
     }
-    public CameraType prev() {
+    public CameraMode prev() {
         return vals[(ordinal() - 1  + vals.length) % vals.length];
     }
 }

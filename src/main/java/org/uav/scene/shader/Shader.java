@@ -1,4 +1,4 @@
-package org.uav.shader;
+package org.uav.scene.shader;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;

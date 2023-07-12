@@ -1,6 +1,7 @@
 package org.uav.queue;
 
-import org.uav.config.Configuration;
+import org.uav.config.Config;
+import org.uav.model.SimulationState;
 import org.uav.model.status.ProjectileStatus;
 import org.uav.model.status.ProjectileStatuses;
 import org.uav.parser.ProjectileStatusMessageParser;
@@ -14,7 +15,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ProjectileStatusesConsumer {
-    private static final String port = "9100";
     private final ProjectileStatuses projectileStatuses;
     private final ReentrantLock projectileStatusesMutex;
     private final ZMQ.Socket socket;
@@ -22,10 +22,10 @@ public class ProjectileStatusesConsumer {
     private final Thread thread;
 
 
-    public ProjectileStatusesConsumer(ZContext context, ProjectileStatuses projectileStatuses, ReentrantLock projectileStatusesMutex, Configuration configuration) {
-        this.projectileStatuses = projectileStatuses;
-        this.projectileStatusesMutex = projectileStatusesMutex;
-        String address = "tcp://" + configuration.address + ":" + port;
+    public ProjectileStatusesConsumer(ZContext context, SimulationState simulationState, Config config) {
+        this.projectileStatuses = simulationState.getProjectileStatuses();
+        this.projectileStatusesMutex = simulationState.getProjectileStatusesMutex();
+        String address = "tcp://" + config.serverAddress + ":" + config.ports.projectileStatuses;
         messageParser = new ProjectileStatusMessageParser();
         socket = context.createSocket(SocketType.SUB);
         socket.connect(address);

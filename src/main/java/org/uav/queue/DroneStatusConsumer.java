@@ -1,6 +1,7 @@
 package org.uav.queue;
 
-import org.uav.config.Configuration;
+import org.uav.config.Config;
+import org.uav.model.SimulationState;
 import org.uav.model.status.DroneStatuses;
 import org.uav.model.status.DroneStatus;
 import org.uav.parser.DroneStatusMessageParser;
@@ -15,7 +16,6 @@ import java.util.stream.Collectors;
 
 public class DroneStatusConsumer {
 
-    private static final String port = "9090";
     private final DroneStatuses droneStatuses;
     private final ReentrantLock droneStatusMutex;
     private final ZMQ.Socket socket;
@@ -23,10 +23,10 @@ public class DroneStatusConsumer {
     private final Thread thread;
 
 
-    public DroneStatusConsumer(ZContext context, DroneStatuses droneStatus, ReentrantLock droneStatusMutex, Configuration configuration) {
-        this.droneStatuses = droneStatus;
-        this.droneStatusMutex = droneStatusMutex;
-        String address = "tcp://" + configuration.address + ":" + port;
+    public DroneStatusConsumer(ZContext context, SimulationState simulationState, Config config) {
+        this.droneStatuses = simulationState.getDroneStatuses();
+        this.droneStatusMutex = simulationState.getDroneStatusesMutex();
+        String address = "tcp://" + config.serverAddress + ":" + config.ports.droneStatuses;
         messageParser = new DroneStatusMessageParser();
         socket = context.createSocket(SocketType.SUB);
         socket.connect(address);

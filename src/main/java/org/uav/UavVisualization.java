@@ -3,7 +3,10 @@ package org.uav;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
-import org.uav.scene.Scene;
+import org.uav.config.Config;
+import org.uav.model.SimulationState;
+import org.uav.processor.SimulationStateProcessor;
+import org.uav.scene.OpenGlScene;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -14,30 +17,40 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class OpenGLScene {
+public class UavVisualization {
 
     // The window handle
     private long window;
-    private static final int WINDOW_WIDTH = 1200;
-    private static final int WINDOW_HEIGHT = 900;
+    private OpenGlScene openGlScene;
+    private SimulationStateProcessor simulationStateProcessor;
+    private Config config;
 
     public void run() throws IOException, URISyntaxException {
-
         init();
-        Scene scene = new Scene(window, WINDOW_WIDTH, WINDOW_HEIGHT);
-        scene.loop();
-        scene.close();
-
-        // Free the window callbacks and destroy the window
-        glfwFreeCallbacks(window);
-        glfwDestroyWindow(window);
-
-        // Terminate GLFW and free the error callback
-        glfwTerminate();
-        glfwSetErrorCallback(null).free();
+        openGlScene.loop();
+        close();
     }
 
-    private void init() {
+    private void init() throws IOException, URISyntaxException {
+        config = Config.loadConfig("config.yaml");
+        initializeOpenGlEnvironment();
+        var simulationState = new SimulationState(config, window);
+        initSimulationStateProcessor(simulationState);
+        openGlScene = new OpenGlScene(simulationState, config);
+    }
+
+    private void initSimulationStateProcessor(SimulationState simulationState) {
+        simulationStateProcessor = new SimulationStateProcessor(simulationState, config);
+        simulationStateProcessor.openCommunication();
+        simulationStateProcessor.requestNewDrone();
+    }
+
+    private void close() {
+        simulationStateProcessor.close();
+        closeOpenGlEnvironment();
+    }
+
+    private void initializeOpenGlEnvironment() {
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW.
@@ -50,7 +63,7 @@ public class OpenGLScene {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "UAV visualization", NULL, NULL);
+        window = glfwCreateWindow(config.windowWidth, config.windowHeight, "UAV visualization", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -89,8 +102,18 @@ public class OpenGLScene {
         glfwShowWindow(window);
     }
 
+    private void closeOpenGlEnvironment() {
+        // Free the window callbacks and destroy the window
+        glfwFreeCallbacks(window);
+        glfwDestroyWindow(window);
+
+        // Terminate GLFW and free the error callback
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
+    }
+
     public static void main(String[] args) throws IOException, URISyntaxException {
-        new OpenGLScene().run();
+        new UavVisualization().run();
     }
 
 }

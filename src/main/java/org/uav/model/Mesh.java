@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.importer.IndicesLoader;
 import org.uav.importer.VerticesLoader;
-import org.uav.shader.Shader;
+import org.uav.scene.shader.Shader;
 
 import java.util.List;
 
