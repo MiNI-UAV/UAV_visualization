@@ -3,6 +3,7 @@ package org.uav.config;
 import org.uav.UavVisualization;
 import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
+import org.uav.model.DroneMovement;
 import org.uav.queue.Actions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -31,7 +32,7 @@ public class Config {
 
             public Map<Integer, JoystickButtonFunctions> buttonActions;
             public Map<Integer, Actions> axisActions;
-            public Map<Integer, Integer> axes;
+            public Map<Integer, DroneMovement> axes;
             public Map<Integer, Boolean> axisInversions;
         }
     }
@@ -44,8 +45,10 @@ public class Config {
     public static Config loadConfig(String path) {
         try (InputStream inputStream = UavVisualization.class
                 .getClassLoader().getResourceAsStream(path)) {
-            var source = new Yaml(new Constructor(Config.class, new LoaderOptions()));
-            return source.load(inputStream);
+            var constructor = new Constructor(Config.class, new LoaderOptions());
+            var yaml = new Yaml(constructor);
+            // yaml.setBeanAccess(BeanAccess.FIELD); TODO: Privatize config
+            return yaml.load(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -20,10 +20,10 @@ joystick:
     axisActions:
       2: "shoot"
     axes:
-      0: 0
-      1: 1
-      3: 2
-      4: 3
+      0: "rotation"
+      1: "heightChange"
+      3: "sidewaysMovement"
+      4: "straightMovement"
     axisInversions:
       0: false
       1: true

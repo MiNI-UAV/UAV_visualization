@@ -74,7 +74,7 @@ public class InputHandler {
             while (floatBuffer != null && floatBuffer.hasRemaining()) {
                 float axes = floatBuffer.get();
                 if(config.joystick.mappings.axes.containsKey(count1))
-                    joystickStatus.rawData[config.joystick.mappings.axes.get(count1)] = convertToRawData(count1, axes);
+                    joystickStatus.rawData[config.joystick.mappings.axes.get(count1).getRawDataArrayIndex()] = convertToRawData(count1, axes);
                 if(config.joystick.mappings.axisActions.containsKey(count1))
                     handleAxis(config.joystick.mappings.axisActions.get(count1),axes);
                 count1++;
