@@ -50,7 +50,6 @@ public class ProjectileStatusesConsumer {
                     String message = new String(reply, ZMQ.CHARSET);
                     //System.out.println("Received: [" + message + "]");
                     projectileStatusesMutex.lock();
-                    projectileStatuses.map.clear();
                     projectileStatuses.map = messageParser.parse(message).stream()
                             .collect(Collectors.toMap(ProjectileStatus::getId, Function.identity()));
                     projectileStatusesMutex.unlock();

@@ -9,4 +9,8 @@ public class DroneStatuses {
     public DroneStatuses() {
         map = new HashMap<>();
     }
+
+    public DroneStatuses(Map<Integer, DroneStatus> map) {
+        this.map = map;
+    }
 }

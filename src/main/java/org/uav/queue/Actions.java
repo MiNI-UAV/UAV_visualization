@@ -8,7 +8,7 @@ public enum Actions {
         String s = "";
         switch (this)
         {
-            case shoot -> s = "shoot";
+            case shoot -> s = "shot";
         }
         return s;
     }

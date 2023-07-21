@@ -9,4 +9,8 @@ public class ProjectileStatuses {
     public ProjectileStatuses() {
         map = new HashMap<>();
     }
+
+    public ProjectileStatuses(Map<Integer, ProjectileStatus> map) {
+        this.map = map;
+    }
 }

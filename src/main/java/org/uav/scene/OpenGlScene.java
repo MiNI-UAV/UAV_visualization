@@ -8,10 +8,8 @@ import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
 import org.uav.importer.GltfImporter;
-import org.uav.input.InputHandler;
 import org.uav.model.Model;
 import org.uav.model.SimulationState;
-import org.uav.scene.camera.Camera;
 import org.uav.scene.shader.Shader;
 
 import java.io.IOException;
@@ -35,8 +33,6 @@ public class OpenGlScene {
     private final SimulationState simulationState;
     private final Config config;
     private final GltfImporter modelImporter;
-    private final InputHandler inputHandler;
-    private final Camera camera;
     public Shader objectShader;
     public Shader lightSourceShader;
     private List<Model> droneModels;
@@ -49,13 +45,9 @@ public class OpenGlScene {
         this.simulationState = simulationState;
 
         modelImporter = new GltfImporter();
-        camera = new Camera(simulationState, config);
 
         droneModels = new ArrayList<>();
         projectileModels = new ArrayList<>();
-
-        inputHandler = new InputHandler(simulationState, config);
-
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
@@ -67,7 +59,6 @@ public class OpenGlScene {
     }
 
     private void setUpLights(Shader shader) {
-
         shader.use();
         shader.setVec3("dirLight.direction",  new Vector3f(-0.5f, -0.5f, 0.5f));
         shader.setVec3("dirLight.ambient",  new Vector3f(0.5f, 0.5f, 0.5f));
@@ -111,77 +102,69 @@ public class OpenGlScene {
         return modelImporter.loadModel("models/projectile.gltf", "textures/projectile");
     }
 
-    public void loop() {
-        while (!glfwWindowShouldClose(simulationState.getWindow())) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    public void render() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            Matrix4f view = camera.getViewMatrix();
-            Matrix4f projection = new Matrix4f().perspective(toRadians(camera.getFov()), (float) config.windowWidth / config.windowHeight, 0.1f, 1000f);
+        Matrix4f view = simulationState.getCamera().getViewMatrix();
+        Matrix4f projection = new Matrix4f()
+                .perspective(toRadians(simulationState.getCamera().getFov()), (float) config.windowWidth / config.windowHeight, 0.1f, 1000f);
 
-            inputHandler.handleInput(simulationState.getWindow());
+        // Drawing
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            objectShader.setVec3("viewPos", simulationState.getCamera().getCameraPos());
+            objectShader.setMatrix4f(stack,"view", view);
+            objectShader.setMatrix4f(stack,"projection", projection);
 
-            // Drawing
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                objectShader.setVec3("viewPos", camera.getCameraPos());
-                objectShader.setMatrix4f(stack,"view", view);
-                objectShader.setMatrix4f(stack,"projection", projection);
+            environmentModel.draw(stack, objectShader);
 
-                environmentModel.draw(stack, objectShader);
-
-                // BEGIN Drone models drawing
-                for(Model drone: droneModels) {
-                    drone.draw(stack, objectShader);
+            // BEGIN Drone models drawing
+            for(Model drone: droneModels) {
+                drone.draw(stack, objectShader);
+            }
+            if(droneModels.size() != simulationState.getCurrPassDroneStatuses().map.size()) {
+                var newDroneModels = new ArrayList<Model>();
+                while(newDroneModels.size() != simulationState.getCurrPassDroneStatuses().map.size()) {
+                    Model droneModel = createDroneModel();
+                    newDroneModels.add(droneModel);
                 }
-                simulationState.getDroneStatusesMutex().lock();
-                if(droneModels.size() != simulationState.getDroneStatuses().map.size()) {
-                    var newDroneModels = new ArrayList<Model>();
-                    while(newDroneModels.size() != simulationState.getDroneStatuses().map.size()) {
-                        Model droneModel = createDroneModel();
-                        newDroneModels.add(droneModel);
-                    }
-                    droneModels = newDroneModels;
-                }
-                var droneIterator = droneModels.iterator();
-                simulationState.getDroneStatuses().map.forEach((id, status) -> {
-                    var model = droneIterator.next();
-                    model.setPosition(status.position);
-                    model.setRotation(status.rotation);
-                });
-                camera.updateCamera();
-                simulationState.getDroneStatusesMutex().unlock();
-                // END Drone models drawing
-                // BEGIN Projectiles models drawing
-                for(Model projectile: projectileModels) {
-                    projectile.draw(stack, objectShader);
-                }
-                simulationState.getProjectileStatusesMutex().lock();
-
-                if(projectileModels.size() != simulationState.getProjectileStatuses().map.size()) {
-                    var newProjectileModels = new ArrayList<Model>();
-                    while(newProjectileModels.size() != simulationState.getProjectileStatuses().map.size()) {
-                        Model projectileModel = createProjectileModel();
-                        newProjectileModels.add(projectileModel);
-                    }
-                    projectileModels = newProjectileModels;
-                }
-
-                var projectileIterator = projectileModels.iterator();
-                simulationState.getProjectileStatuses().map.forEach((id, status) -> {
-                    var model = projectileIterator.next();
-                    model.setPosition(status.position);
-                });
-                simulationState.getProjectileStatusesMutex().unlock();
-                // END Projectiles models drawing
-
-                axisModel.setPosition(new Vector3f(0,0,1));
-                axisModel.draw(stack, objectShader);
-                //busterModel.draw(stack, configuration.shader);
-            } catch (URISyntaxException | IOException e) {
-                throw new RuntimeException(e);
+                droneModels = newDroneModels;
+            }
+            var droneIterator = droneModels.iterator();
+            simulationState.getCurrPassDroneStatuses().map.forEach((id, status) -> {
+                var model = droneIterator.next();
+                model.setPosition(status.position);
+                model.setRotation(status.rotation);
+            });
+            // END Drone models drawing
+            // BEGIN Projectiles models drawing
+            for(Model projectile: projectileModels) {
+                projectile.draw(stack, objectShader);
             }
 
-            glfwSwapBuffers(simulationState.getWindow());
-            glfwPollEvents();
+            if(projectileModels.size() != simulationState.getCurrPassProjectileStatuses().map.size()) {
+                var newProjectileModels = new ArrayList<Model>();
+                while(newProjectileModels.size() != simulationState.getCurrPassProjectileStatuses().map.size()) {
+                    Model projectileModel = createProjectileModel();
+                    newProjectileModels.add(projectileModel);
+                }
+                projectileModels = newProjectileModels;
+            }
+
+            var projectileIterator = projectileModels.iterator();
+            simulationState.getCurrPassProjectileStatuses().map.forEach((id, status) -> {
+                var model = projectileIterator.next();
+                model.setPosition(status.position);
+            });
+            // END Projectiles models drawing
+
+            axisModel.setPosition(new Vector3f(0,0,1));
+            axisModel.draw(stack, objectShader);
+
+        } catch (URISyntaxException | IOException e) {
+            throw new RuntimeException(e);
         }
+
+        glfwSwapBuffers(simulationState.getWindow());
+        glfwPollEvents();
     }
 }

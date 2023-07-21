@@ -51,7 +51,6 @@ public class DroneStatusConsumer {
                     String message = new String(reply, ZMQ.CHARSET);
                     //System.out.println("Received: [" + message + "]");
                     droneStatusMutex.lock();
-                    droneStatuses.map.clear();
                     droneStatuses.map = messageParser.parse(message).stream()
                             .collect(Collectors.toMap(DroneStatus::getId, Function.identity()));
                     droneStatusMutex.unlock();

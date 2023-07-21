@@ -27,8 +27,15 @@ public class UavVisualization {
 
     public void run() throws IOException, URISyntaxException {
         init();
-        openGlScene.loop();
+        loop();
         close();
+    }
+
+    private void loop() {
+        while (!glfwWindowShouldClose(window)) {
+            simulationStateProcessor.update();
+            openGlScene.render();
+        }
     }
 
     private void init() throws IOException, URISyntaxException {

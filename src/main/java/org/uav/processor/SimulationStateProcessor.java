@@ -1,6 +1,7 @@
 package org.uav.processor;
 
 import org.uav.config.Config;
+import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
 import org.uav.queue.DroneRequester;
 import org.uav.queue.DroneStatusConsumer;
@@ -15,6 +16,7 @@ public class SimulationStateProcessor implements AutoCloseable {
     private final DroneRequester droneRequester;
     private final DroneStatusConsumer droneStatusConsumer;
     private final ProjectileStatusesConsumer projectileStatusesConsumer;
+    private final InputHandler inputHandler;
 
 
     public SimulationStateProcessor(SimulationState simulationState, Config config) {
@@ -24,6 +26,7 @@ public class SimulationStateProcessor implements AutoCloseable {
         droneRequester = new DroneRequester(context, config);
         droneStatusConsumer = new DroneStatusConsumer(context, simulationState, config);
         projectileStatusesConsumer = new ProjectileStatusesConsumer(context, simulationState, config);
+        inputHandler = new InputHandler(simulationState, config);
     }
 
     public void openCommunication() {
@@ -34,6 +37,21 @@ public class SimulationStateProcessor implements AutoCloseable {
     public void requestNewDrone() {
         var newDroneResult = droneRequester.requestNewDrone(config.droneName);
         simulationState.setCurrentlyControlledDrone(newDroneResult.orElseThrow());
+    }
+
+    public void update() {
+        inputHandler.handleInput(simulationState.getWindow());
+        simulationState.getCamera().updateCamera();
+        updateCurrentEntityStatuses();
+    }
+
+    private void updateCurrentEntityStatuses() {
+        simulationState.getDroneStatusesMutex().lock();
+        simulationState.getCurrPassDroneStatuses().map = simulationState.getDroneStatuses().map;
+        simulationState.getDroneStatusesMutex().unlock();
+        simulationState.getProjectileStatusesMutex().lock();
+        simulationState.getCurrPassProjectileStatuses().map = simulationState.getProjectileStatuses().map;
+        simulationState.getProjectileStatusesMutex().unlock();
     }
 
     @Override
