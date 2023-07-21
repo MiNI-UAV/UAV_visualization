@@ -33,3 +33,4 @@ ports:
   droneRequester: 9000
   droneStatuses: 9090
   projectileStatuses: 9100
+heartBeatIntervalMs: 500

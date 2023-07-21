@@ -23,6 +23,7 @@ public class Config {
     public CameraMode defaultCamera;
     public JoystickConfig joystick;
     public Ports ports;
+    public int heartBeatIntervalMs;
 
     public static class JoystickConfig {
         public float deadZoneFactor;
