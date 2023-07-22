@@ -3,6 +3,7 @@ package org.uav.input;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
 import org.uav.model.status.JoystickStatus;
+import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.Actions;
 import org.uav.queue.ControlModes;
 import org.uav.queue.JoystickProducer;
@@ -15,6 +16,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class InputHandler {
     private final SimulationState simulationState;
+    private final SimulationStateProcessor simulationStateProcessor;
     private final Config config;
     private final JoystickStatus joystickStatus;
     private final JoystickProducer joystickProducer;
@@ -23,9 +25,10 @@ public class InputHandler {
     byte[] prevButtonsState = new byte[32];
 
 
-    public InputHandler(SimulationState simulationState, Config config) {
+    public InputHandler(SimulationStateProcessor simulationStateProcessor, SimulationState simulationState, Config config) {
         this.config = config;
         this.simulationState = simulationState;
+        this.simulationStateProcessor = simulationStateProcessor;
         int joystickAxisCount = config.joystick.mappings.axes.size();
         joystickStatus = new JoystickStatus(joystickAxisCount);
         joystickProducer = new JoystickProducer();
@@ -107,6 +110,7 @@ public class InputHandler {
             if(!config.joystick.mappings.buttonActions.containsKey(i)) continue;
             switch(config.joystick.mappings.buttonActions.getOrDefault(i,JoystickButtonFunctions.unused))
             {
+                case respawn -> simulationStateProcessor.respawnDrone();
                 case nextCamera -> simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());
                 case prevCamera ->  simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());
                 case acroMode -> joystickProducer.send(simulationState.getCurrentlyControlledDrone(), ControlModes.acro);

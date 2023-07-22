@@ -1,6 +1,7 @@
 package org.uav.input;
 
 public enum JoystickButtonFunctions {
+    respawn,
     nextCamera,
     prevCamera,
 
@@ -12,5 +13,5 @@ public enum JoystickButtonFunctions {
 
     noneMode,
 
-    unused;
+    unused
 }

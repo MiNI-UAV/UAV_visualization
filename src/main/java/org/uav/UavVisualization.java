@@ -4,8 +4,10 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
 import org.uav.config.Config;
+import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
 import org.uav.processor.SimulationStateProcessor;
+import org.uav.queue.HeartbeatProducer;
 import org.uav.scene.OpenGlScene;
 
 import java.io.IOException;
@@ -19,11 +21,14 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class UavVisualization {
 
-    // The window handle
     private long window;
     private OpenGlScene openGlScene;
+    private SimulationState simulationState;
     private SimulationStateProcessor simulationStateProcessor;
+    private HeartbeatProducer heartbeatProducer;
+    private InputHandler inputHandler;
     private Config config;
+
 
     public void run() throws IOException, URISyntaxException {
         init();
@@ -33,16 +38,25 @@ public class UavVisualization {
 
     private void loop() {
         while (!glfwWindowShouldClose(window)) {
-            simulationStateProcessor.update();
+            update();
             openGlScene.render();
         }
     }
 
+    public void update() {
+        heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone());
+        inputHandler.handleInput(simulationState.getWindow());
+        simulationState.getCamera().updateCamera();
+        simulationStateProcessor.updateCurrentEntityStatuses();
+    }
+
     private void init() throws IOException, URISyntaxException {
         config = Config.loadConfig("config.yaml");
+        heartbeatProducer = new HeartbeatProducer(config);
         initializeOpenGlEnvironment();
-        var simulationState = new SimulationState(config, window);
+        simulationState = new SimulationState(config, window);
         initSimulationStateProcessor(simulationState);
+        inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
         openGlScene = new OpenGlScene(simulationState, config);
     }
 
