@@ -51,7 +51,7 @@ public class UavVisualization {
     }
 
     private void init() throws IOException, URISyntaxException {
-        config = Config.loadConfig("config.yaml");
+        config = Config.loadConfig("config_xbox.yaml");
         heartbeatProducer = new HeartbeatProducer(config);
         initializeOpenGlEnvironment();
         simulationState = new SimulationState(config, window);
