@@ -17,6 +17,7 @@ joystick:
       4: "posMode"
       6: "nextCamera"
       7: "prevCamera"
+      13: "respawn"
     axisActions:
       4: "shoot"
     axes:

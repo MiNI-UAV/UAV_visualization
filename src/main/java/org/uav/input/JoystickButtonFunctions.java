@@ -2,6 +2,7 @@ package org.uav.input;
 
 public enum JoystickButtonFunctions {
     respawn,
+    
     nextCamera,
     prevCamera,
 

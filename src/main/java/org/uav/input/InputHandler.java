@@ -107,7 +107,11 @@ public class InputHandler {
 
         for (int i = 0; i < buttonState.length; i++) {
             if(buttonState[i] == 0 || buttonState[i] == prevButtonsState[i]) continue;
-            if(!config.joystick.mappings.buttonActions.containsKey(i)) continue;
+            if(!config.joystick.mappings.buttonActions.containsKey(i))
+            {
+                System.out.println("Unknown button: " + String.valueOf(i));
+                continue;
+            }
             switch(config.joystick.mappings.buttonActions.getOrDefault(i,JoystickButtonFunctions.unused))
             {
                 case respawn -> simulationStateProcessor.respawnDrone();
