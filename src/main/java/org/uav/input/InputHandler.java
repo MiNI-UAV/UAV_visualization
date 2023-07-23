@@ -20,6 +20,7 @@ public class InputHandler {
     private final Config config;
     private final JoystickStatus joystickStatus;
     private final JoystickProducer joystickProducer;
+    private boolean holdDrop = false;
     private boolean holdShoot = false;
 
     byte[] prevButtonsState = new byte[32];
@@ -139,6 +140,16 @@ public class InputHandler {
                 }
                 if(holdShoot && axisValue < -0.5) {
                     holdShoot = false;
+                }
+            }
+            case drop ->
+            {
+                if(!holdDrop && axisValue > 0.5 ) {
+                    holdDrop = true;
+                    joystickProducer.send(simulationState.getCurrentlyControlledDrone(), action);
+                }
+                if(holdDrop && axisValue < -0.5) {
+                    holdDrop = false;
                 }
             }
         }

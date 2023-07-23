@@ -19,7 +19,8 @@ joystick:
       7: "prevCamera"
       13: "respawn"
     axisActions:
-      4: "shoot"
+      5: "shoot"
+      4: "drop"
     axes:
       0: "rotation"
       1: "heightChange"
