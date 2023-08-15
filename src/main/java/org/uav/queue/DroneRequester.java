@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DroneRequester {
     private final Config config;
@@ -30,11 +32,12 @@ public class DroneRequester {
 
     public Optional<Drone> requestNewDrone(String droneName)
     {
+        sendConfigFile("README.md");
         return requestNewDrone(droneName, "config");
     }
 
-    public Optional<Drone> requestNewDrone(String droneName, String configName) {
-        socket.send(("s:" + droneName + ";" + configName).getBytes(ZMQ.CHARSET), 0);
+    public Optional<Drone> requestNewDrone(String droneName, String configNameHash) {
+        socket.send(("s:" + droneName + ";" + configNameHash).getBytes(ZMQ.CHARSET), 0);
         byte[] reply = socket.recv();
         String message = new String(reply, ZMQ.CHARSET);
 
@@ -61,7 +64,7 @@ public class DroneRequester {
         return false;
     }
 
-    public void sendConfigFile(String configName, String configPath)
+    public void sendConfigFile(String configPath)
     {
         Path fileName
             = Path.of(configPath);
@@ -72,11 +75,24 @@ public class DroneRequester {
             // TODO: handle exception
             return;
         }
+
+        try {
+            MessageDigest sha1Digest = MessageDigest.getInstance("SHA-1");
+            byte[] hashBytes = sha1Digest.digest(configContent.getBytes());
+            StringBuilder hexString = new StringBuilder();   
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            String sha1Hash = hexString.toString();
+            System.out.println("SHA-1 of config file: " + sha1Hash);
+            System.out.println("Use first 8 chars: " + sha1Hash.substring(0, 8));
+
+        } catch (NoSuchAlgorithmException e) {
+            // TODO: handle exception
+        }
         
         StringBuffer sb = new StringBuffer();
         sb.append("c:");
-        sb.append(configName);
-        sb.append(";");
         sb.append(configContent);
         socket.send(sb.toString().getBytes(ZMQ.CHARSET), 0);
         byte[] reply = socket.recv();
