@@ -32,7 +32,7 @@ public class DroneRequester {
 
     public Optional<Drone> requestNewDrone(String droneName)
     {
-        sendConfigFile("README.md");
+        //sendConfigFile("README.md");
         return requestNewDrone(droneName, "config");
     }
 
