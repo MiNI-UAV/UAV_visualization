@@ -90,9 +90,10 @@ public class OpenGlScene {
 
     private void setUpDrawables() throws URISyntaxException, IOException {
 
-        var resourceFile = MessageFormat.format("assets/models/{0}.gltf", config.map);
-        var textureDir = MessageFormat.format("assets/textures/{0}", config.map);
-        environmentModel = modelImporter.loadModel(resourceFile, textureDir);
+        var mapDir = MessageFormat.format("assets/maps/{0}", config.map);
+        var modelFile = MessageFormat.format(mapDir + "/model/{0}.gltf", config.map);
+        var textureDir = mapDir + "/textures";
+        environmentModel = modelImporter.loadModel(modelFile, textureDir);
 
         gui = GuiFactory.createStandardGui(simulationState, config);
     }
@@ -102,14 +103,17 @@ public class OpenGlScene {
                 () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),-cos(glfwGetTime()*1000)).normalize();
         Supplier<Quaternionf> counterClockwiseRotation =
                 () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),cos(glfwGetTime()*1000)).normalize();
-        var droneModel = modelImporter.loadModel("assets/models/drone.gltf", "assets/textures/drone");
+        var droneDir = MessageFormat.format("assets/drones/{0}", config.droneModel);
+        var modelFile = MessageFormat.format(droneDir + "/model/{0}.gltf", config.droneModel);
+        var textureDir = droneDir + "/textures";
+        var droneModel = modelImporter.loadModel(modelFile, textureDir);
         droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
         droneModel.setAnimation(null, counterClockwiseRotation, null, List.of("propeller.1", "propeller.4"));
         return droneModel;
     }
 
     private Model createProjectileModel() throws URISyntaxException, IOException {
-        return modelImporter.loadModel("assets/models/projectile.gltf", "assets/textures/projectile");
+        return modelImporter.loadModel("assets/core/projectile/model/projectile.gltf", "assets/core/projectile/textures");
     }
 
     public void render() {
@@ -129,9 +133,7 @@ public class OpenGlScene {
 
             // BEGIN Drone models drawing
             for(Model drone: droneModels) {
-                objectShader.setVec3("playerColor", new Vector3f(5,1f,1f));
                 drone.draw(stack, objectShader);
-                objectShader.setVec3("playerColor", new Vector3f(1));
             }
             if(droneModels.size() != simulationState.getCurrPassDroneStatuses().map.size()) {
                 var newDroneModels = new ArrayList<Model>();

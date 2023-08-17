@@ -32,6 +32,11 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
     ) {
         this.horizonScreenX = horizonScreenX;
         this.horizonScreenY = horizonScreenY;
+        position = new Vector2f();
+        velocity = 0;
+        climbRate = 0;
+        height = 0;
+        mode = ControlMode.None;
     }
 
     public void update(SimulationState simulationState) {

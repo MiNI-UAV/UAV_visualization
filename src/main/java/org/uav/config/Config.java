@@ -22,6 +22,7 @@ public class Config {
     public float guiScale;
     public float fov;
     public String droneName;
+    public String droneModel;
     public String map;
     public CameraMode defaultCamera;
     public ControlMode defaultControlMode;

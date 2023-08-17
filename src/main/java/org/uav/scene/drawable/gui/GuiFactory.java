@@ -17,7 +17,7 @@ public class GuiFactory {
 
     static public Gui createStandardGui(SimulationState simulationState, Config config) {
         var guiBuilder = new Gui.GuiBuilder();
-        var assetsDirectory = "assets/textures/GUI/";
+        var assetsDirectory = "assets/core/GUI/";
         var radar = new RadarWidget(
                 loadImage(assetsDirectory + "radar.png"),
                 loadImage(assetsDirectory + "radarArrow.png"),
@@ -25,14 +25,14 @@ public class GuiFactory {
                 config
         );
         var artificialHorizon = new ArtificialHorizonWidget(
-                loadImage(assetsDirectory + "horizon3.png"),
+                loadImage(assetsDirectory + "horizon.png"),
                 loadImage(assetsDirectory + "horizonCursor.png"),
                 loadImage(assetsDirectory + "horizonRoll.png"),
                 loadImage(assetsDirectory + "compass.png"),
                 simulationState,
                 config
         );
-        String mapPath = assetsDirectory + "maps/" + config.map + ".png";
+        String mapPath = "assets/maps/" + config.map + "/minimap.png";
         var map = new MapWidget(
                 loadImage(assetsDirectory + "background.png"),
                 loadImage(mapPath),
