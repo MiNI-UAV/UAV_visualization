@@ -3,7 +3,6 @@ package org.uav.queue;
 import org.uav.model.Drone;
 import org.uav.model.status.JoystickStatus;
 import org.uav.serializer.JoystickMessageSerializer;
-import org.zeromq.ZContext;
 
 public class JoystickProducer {
     private final JoystickMessageSerializer messageSerializer;
@@ -18,7 +17,7 @@ public class JoystickProducer {
         //System.out.println("Sent: [" + message + "]");
     }
 
-    public void send(Drone drone, ControlModes mode) {
+    public void send(Drone drone, ControlMode mode) {
         String message = messageSerializer.serialize(mode);
         drone.sendSteeringCommand(message);
         System.out.println("Sent: [" + message + "]");

@@ -5,6 +5,7 @@ import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.DroneMovement;
 import org.uav.queue.Actions;
+import org.uav.queue.ControlMode;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -15,12 +16,15 @@ import java.util.Map;
 
 public class Config {
 
+    public String serverAddress;
     public int windowWidth;
     public int windowHeight;
+    public float guiScale;
     public float fov;
-    public String serverAddress;
     public String droneName;
+    public String map;
     public CameraMode defaultCamera;
+    public ControlMode defaultControlMode;
     public JoystickConfig joystick;
     public Ports ports;
     public int heartBeatIntervalMs;

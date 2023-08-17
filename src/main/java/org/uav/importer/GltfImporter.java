@@ -118,9 +118,14 @@ public class GltfImporter {
                     meshes.add(new Mesh(vertices, ind, List.of(), material));
                     continue;
                 }*/
-                TextureModel textureModel = textureModels.get((Integer) materialModel.getValues().get("baseColorTexture")); // TODO Crash null when no texture on model
-                Texture texture = loadTexture(textureModel);
-                meshes.add(new Mesh(vertices, ind, List.of(texture), material));
+                if(materialModel.getValues().containsKey("baseColorTexture")) {
+                    TextureModel textureModel = textureModels.get((Integer) materialModel.getValues().get("baseColorTexture")); // TODO Crash null when no texture on model
+                    Texture texture = loadTexture(textureModel);
+                    meshes.add(new Mesh(vertices, ind, List.of(texture), material));
+                } else {
+                    Texture texture = loadTexture("missing", "assets/textures/missing.jpg");
+                    meshes.add(new Mesh(vertices, ind, List.of(texture), material));
+                }
             }
         }
         return meshes;
@@ -134,6 +139,10 @@ public class GltfImporter {
         String s = imageModel.getUri();
         String fileName = s.substring(s.lastIndexOf('/') + 1);
         String path = textureDirectory + "/" + fileName;
+        return loadTexture(textureModel.getImageModel().getUri(), path);
+    }
+
+    private Texture loadTexture(String name, String path) {
         int[] w = new int[1];
         int[] h = new int[1];
         int[] components = new int[1];
@@ -154,7 +163,7 @@ public class GltfImporter {
         stbi_image_free(image);
 
         Texture texture1 = new Texture(texture, "texture_diffuse");
-        loadedTextures.put(textureModel.getImageModel().getUri(), texture1);
+        loadedTextures.put(name, texture1);
         return texture1;
     }
 
