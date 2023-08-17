@@ -9,8 +9,13 @@ import org.zeromq.ZMQ;
 
 import java.util.Optional;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class DroneRequester {
-    private static final String TAKEN_MESSAGE = "taken";
     private final Config config;
     private final ZMQ.Socket socket;
     private final ZContext context;
@@ -25,16 +30,73 @@ public class DroneRequester {
         socket.connect(address);
     }
 
-    public Optional<Drone> requestNewDrone(String droneName) {
-        socket.send(droneName.getBytes(ZMQ.CHARSET), 0);
+    public Optional<Drone> requestNewDrone(String droneName)
+    {
+        //sendConfigFile("README.md");
+        return requestNewDrone(droneName, "config");
+    }
+
+    public Optional<Drone> requestNewDrone(String droneName, String configNameHash) {
+        socket.send(("s:" + droneName + ";" + configNameHash).getBytes(ZMQ.CHARSET), 0);
         byte[] reply = socket.recv();
         String message = new String(reply, ZMQ.CHARSET);
 
-        if(message.equals(TAKEN_MESSAGE))
+        if(parseReply(message))
             return Optional.empty();
 
         DroneRequestReplyMessage parsedMessage = messageParser.parse(message);
 
         return Optional.of(new Drone(context, parsedMessage.steerPort, parsedMessage.utilsPort, parsedMessage.droneId, config));
+    }
+
+    public boolean parseReply(String reply)
+    {
+        if(reply.equals("-1"))
+        {
+            //Invalid drone name
+            return true;
+        }
+        if(reply.equals("-2"))
+        {
+            //Unknown config file
+            return true;
+        }
+        return false;
+    }
+
+    public void sendConfigFile(String configPath)
+    {
+        Path fileName
+            = Path.of(configPath);
+        String configContent;
+        try {
+            configContent = Files.readString(fileName);
+        } catch (IOException e) {
+            // TODO: handle exception
+            return;
+        }
+
+        try {
+            MessageDigest sha1Digest = MessageDigest.getInstance("SHA-1");
+            byte[] hashBytes = sha1Digest.digest(configContent.getBytes());
+            StringBuilder hexString = new StringBuilder();   
+            for (byte b : hashBytes) {
+                hexString.append(String.format("%02x", b));
+            }
+            String sha1Hash = hexString.toString();
+            System.out.println("SHA-1 of config file: " + sha1Hash);
+            System.out.println("Use first 8 chars: " + sha1Hash.substring(0, 8));
+
+        } catch (NoSuchAlgorithmException e) {
+            // TODO: handle exception
+        }
+        
+        StringBuffer sb = new StringBuffer();
+        sb.append("c:");
+        sb.append(configContent);
+        socket.send(sb.toString().getBytes(ZMQ.CHARSET), 0);
+        byte[] reply = socket.recv();
+        String message = new String(reply, ZMQ.CHARSET);
+        parseReply(message);
     }
 }
