@@ -5,7 +5,7 @@ import org.uav.model.SimulationState;
 import org.uav.model.status.JoystickStatus;
 import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.Actions;
-import org.uav.queue.ControlModes;
+import org.uav.queue.ControlMode;
 import org.uav.queue.JoystickProducer;
 
 import java.nio.ByteBuffer;
@@ -110,23 +110,29 @@ public class InputHandler {
             if(buttonState[i] == 0 || buttonState[i] == prevButtonsState[i]) continue;
             if(!config.joystick.mappings.buttonActions.containsKey(i))
             {
-                System.out.println("Unknown button: " + String.valueOf(i));
+                System.out.println("Unknown button: " + i);
                 continue;
             }
             switch(config.joystick.mappings.buttonActions.getOrDefault(i,JoystickButtonFunctions.unused))
             {
                 case respawn -> simulationStateProcessor.respawnDrone();
+                case map -> simulationState.setMapOverlay(!simulationState.isMapOverlay());
                 case nextCamera -> simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());
                 case prevCamera ->  simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());
-                case acroMode -> joystickProducer.send(simulationState.getCurrentlyControlledDrone(), ControlModes.acro);
-                case angleMode -> joystickProducer.send(simulationState.getCurrentlyControlledDrone(), ControlModes.angle);
-                case posMode -> joystickProducer.send(simulationState.getCurrentlyControlledDrone(), ControlModes.pos);
-                case noneMode -> joystickProducer.send(simulationState.getCurrentlyControlledDrone(), ControlModes.none);
+                case acroMode -> changeControlMode(ControlMode.Acrobatic);
+                case angleMode -> changeControlMode(ControlMode.Angle);
+                case posMode -> changeControlMode(ControlMode.Positional);
+                case noneMode -> changeControlMode(ControlMode.None);
                 case unused -> {}
             }
         }
 
         prevButtonsState = buttonState;
+    }
+
+    private void changeControlMode(ControlMode controlMode) {
+        simulationState.setCurrentControlMode(controlMode);
+        joystickProducer.send(simulationState.getCurrentlyControlledDrone(), controlMode);
     }
 
     private void handleAxis(Actions action, float axisValue) {

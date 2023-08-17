@@ -3,6 +3,7 @@ package org.uav;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.system.MemoryStack;
+import org.uav.audio.MusicPlayer;
 import org.uav.config.Config;
 import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
@@ -10,9 +11,12 @@ import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.HeartbeatProducer;
 import org.uav.scene.OpenGlScene;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.IntBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -28,6 +32,7 @@ public class UavVisualization {
     private HeartbeatProducer heartbeatProducer;
     private InputHandler inputHandler;
     private Config config;
+    private MusicPlayer musicPlayer;
 
 
     public void run() throws IOException, URISyntaxException {
@@ -51,19 +56,22 @@ public class UavVisualization {
     }
 
     private void init() throws IOException, URISyntaxException {
-        config = Config.loadConfig("config_xbox.yaml");
+        config = Config.loadConfig("config.yaml");
         heartbeatProducer = new HeartbeatProducer(config);
         initializeOpenGlEnvironment();
         simulationState = new SimulationState(config, window);
-        initSimulationStateProcessor(simulationState);
+        simulationStateProcessor = new SimulationStateProcessor(simulationState, config);
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
         openGlScene = new OpenGlScene(simulationState, config);
-    }
-
-    private void initSimulationStateProcessor(SimulationState simulationState) {
-        simulationStateProcessor = new SimulationStateProcessor(simulationState, config);
         simulationStateProcessor.openCommunication();
         simulationStateProcessor.requestNewDrone();
+//        String musicFilePath = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("assets/audio/music.wav")).getFile();
+//        try {
+//            musicPlayer = new MusicPlayer(musicFilePath);
+//            musicPlayer.play();
+//        } catch (UnsupportedAudioFileException | LineUnavailableException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private void close() {

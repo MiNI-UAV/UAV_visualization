@@ -4,8 +4,7 @@ public enum Actions {
     drop,
     shoot;
 
-    @Override
-    public String toString() {
+    public String toMessage() {
         String s = "";
         switch (this)
         {
