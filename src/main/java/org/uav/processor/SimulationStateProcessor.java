@@ -1,16 +1,32 @@
 package org.uav.processor;
 
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.CountingInputStream;
 import org.uav.config.Config;
 import org.uav.model.Drone;
 import org.uav.model.SimulationState;
 import org.uav.queue.DroneRequester;
 import org.uav.queue.DroneStatusConsumer;
 import org.uav.queue.ProjectileStatusesConsumer;
+import org.uav.scene.LoadingScreen;
 import org.zeromq.ZContext;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class SimulationStateProcessor implements AutoCloseable {
 
     private static final String KILL_COMMAND = "kill";
+    public static final String ASSETS_DOWNLOAD_PAGE = "https://github.com/MiNI-UAV/UAV_aggregator/releases/download/";
+    public static final String ASSETS_ARCHIVE = "assets.tar.gz";
     private final SimulationState simulationState;
     private final Config config;
     private final DroneRequester droneRequester;
@@ -56,5 +72,85 @@ public class SimulationStateProcessor implements AutoCloseable {
         Drone oldDrone = simulationState.getCurrentlyControlledDrone();
         requestNewDrone();
         oldDrone.sendUtilsCommand(KILL_COMMAND);
+    }
+
+    public void checkAndUpdateAssets(SimulationState simulationState, LoadingScreen loadingScreen) throws IOException {
+        var serverInfo = droneRequester.fetchServerInfo();
+        simulationState.setAssetsDirectory(System.getProperty("user.dir") + "/assets/" + serverInfo.assetChecksum);
+        simulationState.setServerMap(serverInfo.serverMap);
+
+        if(!assetPackExists(serverInfo.assetChecksum)) {
+            loadingScreen.render("Downloading new assets...");
+            downloadAssets(serverInfo.assetChecksum, loadingScreen);
+        }
+    }
+
+    private void downloadAssets(String assetChecksum, LoadingScreen loadingScreen) throws IOException {
+        String assetPackDirectory = System.getProperty("user.dir") + "/assets/" + assetChecksum;
+        if(!new File(assetPackDirectory).mkdir()) throw new IOException();
+        String saveAtPath = assetPackDirectory + "/" + ASSETS_ARCHIVE;
+        String downloadUrlPath = ASSETS_DOWNLOAD_PAGE + assetChecksum + "/" + ASSETS_ARCHIVE;
+        URL downloadUrl = new URL(downloadUrlPath);
+        HttpURLConnection httpConnection = (HttpURLConnection) (downloadUrl.openConnection());
+        long completeFileSize = httpConnection.getContentLength();
+        float fileSizeMb = (float) (completeFileSize / 1000_00) / 10;
+
+        try(InputStream inputStream = downloadUrl.openStream();
+            CountingInputStream cis = new CountingInputStream(inputStream);
+            FileOutputStream fileOS = new FileOutputStream(saveAtPath)
+        ) {
+
+            new Thread(() -> {
+                try {
+                    IOUtils.copyLarge(cis, fileOS);
+                } catch (IOException e) {
+                    throw new RuntimeException();
+                }
+            }).start();
+
+            int byteStep = 100_000;
+            long lastStep = 0;
+            while (cis.getByteCount() < completeFileSize) {
+                if (cis.getByteCount() - lastStep > byteStep) {
+                    lastStep += byteStep;
+                    float currentMb = (float) (cis.getByteCount() / 1000_00) / 10;
+                    loadingScreen.render("Downloading new assets... " + currentMb + "/" + fileSizeMb + " MB");
+                }
+            }
+        }
+
+        loadingScreen.render("Unpacking assets...");
+        unTar(saveAtPath, assetPackDirectory);
+        File unTarredDirectory = new File(assetPackDirectory + "/assets");
+        for(File file: unTarredDirectory.listFiles())
+            FileUtils.moveDirectoryToDirectory(file, new File(assetPackDirectory), false);
+        unTarredDirectory.delete();
+        new File(saveAtPath).delete();
+    }
+
+    public void unTar(String origin, String destination) throws IOException {
+        try (InputStream inputStream = new FileInputStream(origin);
+             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+             TarArchiveInputStream tar = new TarArchiveInputStream(new GzipCompressorInputStream(bufferedInputStream))) {
+            ArchiveEntry entry;
+            while ((entry = tar.getNextEntry()) != null) {
+                Path extractTo = Path.of(destination).resolve(entry.getName());
+                if (entry.isDirectory()) {
+                    Files.createDirectories(extractTo);
+                } else {
+                    Files.copy(tar, extractTo);
+                }
+            }
+        }
+    }
+
+    private boolean assetPackExists(String assetChecksum) throws IOException {
+        String assetsDirectory = System.getProperty("user.dir") + "/assets";
+        if(!Files.exists(Paths.get(assetsDirectory))) {
+            if(!new File(assetsDirectory).mkdir()) throw new IOException();
+            return false;
+        }
+        String assetPackDirectory = assetsDirectory + "/" + assetChecksum;
+        return Files.exists(Paths.get(assetPackDirectory));
     }
 }

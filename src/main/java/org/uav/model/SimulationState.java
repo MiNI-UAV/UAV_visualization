@@ -1,6 +1,7 @@
 package org.uav.model;
 
 import lombok.Data;
+import org.joml.Vector3f;
 import org.uav.config.Config;
 import org.uav.input.CameraMode;
 import org.uav.model.status.DroneStatuses;
@@ -12,7 +13,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @Data
 public class SimulationState {
+    String assetsDirectory;
+    String serverMap;
     final long window;
+
     final DroneStatuses droneStatuses;
     final ReentrantLock droneStatusesMutex;
     final ProjectileStatuses projectileStatuses;
@@ -28,6 +32,7 @@ public class SimulationState {
     float lastHeartBeatTimeStamp;
 
     boolean mapOverlay;
+    Vector3f skyColor;
 
 
     public SimulationState(Config config, long window) {
@@ -43,5 +48,6 @@ public class SimulationState {
         currPassProjectileStatuses = new ProjectileStatuses(projectileStatuses.map);
         camera = new Camera(this, config);
         mapOverlay = false;
+        skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
     }
 }

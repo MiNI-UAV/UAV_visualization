@@ -2,6 +2,7 @@ package org.uav;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.audio.MusicPlayer;
 import org.uav.config.Config;
@@ -9,17 +10,18 @@ import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
 import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.HeartbeatProducer;
+import org.uav.scene.LoadingScreen;
 import org.uav.scene.OpenGlScene;
 
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.IntBuffer;
-import java.util.Objects;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -33,7 +35,6 @@ public class UavVisualization {
     private InputHandler inputHandler;
     private Config config;
     private MusicPlayer musicPlayer;
-
 
     public void run() throws IOException, URISyntaxException {
         init();
@@ -57,14 +58,20 @@ public class UavVisualization {
 
     private void init() throws IOException, URISyntaxException {
         config = Config.loadConfig("config.yaml");
-        heartbeatProducer = new HeartbeatProducer(config);
         initializeOpenGlEnvironment();
+        var loadingScreen = new LoadingScreen(window, config);
+        loadingScreen.render("Initializing...");
+        heartbeatProducer = new HeartbeatProducer(config);
         simulationState = new SimulationState(config, window);
         simulationStateProcessor = new SimulationStateProcessor(simulationState, config);
+        loadingScreen.render("Checking assets...");
+        simulationStateProcessor.checkAndUpdateAssets(simulationState, loadingScreen);
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
-        openGlScene = new OpenGlScene(simulationState, config);
+        openGlScene = new OpenGlScene(simulationState, config, loadingScreen);
         simulationStateProcessor.openCommunication();
+        loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
+
 //        String musicFilePath = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("assets/audio/music.wav")).getFile();
 //        try {
 //            musicPlayer = new MusicPlayer(musicFilePath);
@@ -129,6 +136,14 @@ public class UavVisualization {
 
         // Make the window visible
         glfwShowWindow(window);
+
+        GL.createCapabilities();
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_BLEND);
+        // https://stackoverflow.com/questions/28079159/opengl-glsl-texture-transparency
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     private void closeOpenGlEnvironment() {

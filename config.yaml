@@ -1,0 +1,48 @@
+
+serverAddress: 192.168.1.22 # xevix.tplinkdns.com
+#windowWidth: 1920
+#windowHeight: 1020
+windowWidth: 1020
+windowHeight: 1020
+guiScale: 1.0
+fov: 90 # 0 < fov < 180
+droneName: Maurice
+droneModel: quadcopter
+defaultCamera: HorizontalCamera
+defaultControlMode: Positional
+joystick:
+  deadZoneFactor: 0.1
+  mappings:
+    buttonActions:
+      0: unused # A
+      1: respawn # B
+      2: unused # X
+      3: unused # Y
+      4: prevCamera # Left Bumper
+      5: nextCamera # Right Bumper
+      6: unused # Left Menu
+      7: map # Right Menu
+      8: unused # Xbox Logo
+      9: unused # Left Knob
+      10: unused # Right Knob
+      11: angleMode # Up D-Pad
+      12: acroMode # Right D-Pad
+      13: noneMode # Down D-Pad
+      14: posMode # Left D-Pad
+    axisActions:
+      2: shoot
+    axes:
+      0: rotation
+      1: heightChange
+      3: sidewaysMovement
+      4: straightMovement
+    axisInversions:
+      0: false
+      1: true
+      3: false
+      4: true
+ports:
+  droneRequester: 9000
+  droneStatuses: 9090
+  projectileStatuses: 9100
+heartBeatIntervalMs: 500

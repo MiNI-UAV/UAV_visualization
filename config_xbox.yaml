@@ -1,0 +1,38 @@
+
+windowWidth: 1920
+windowHeight: 1080
+# windowWidth: 1200
+# windowHeight: 900
+fov: 75
+serverAddress: "127.0.0.1"
+droneName: "Wojtek"
+defaultCamera: "HorizontalCamera"
+joystick:
+  deadZoneFactor: 0.2
+  mappings:
+    buttonActions:
+      0: "noneMode"
+      1: "acroMode"
+      3: "angleMode"
+      4: "posMode"
+      6: "nextCamera"
+      7: "prevCamera"
+      13: "respawn"
+    axisActions:
+      5: "shoot"
+      4: "drop"
+    axes:
+      0: "rotation"
+      1: "heightChange"
+      2: "sidewaysMovement"
+      3: "straightMovement"
+    axisInversions:
+      0: false
+      1: true
+      2: false
+      3: true
+ports:
+  droneRequester: 9000
+  droneStatuses: 9090
+  projectileStatuses: 9100
+heartBeatIntervalMs: 500

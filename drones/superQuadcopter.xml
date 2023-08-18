@@ -1,0 +1,183 @@
+<params>
+   <name>drone1</name>
+   <type>quadcopter</type>
+   <ineria>
+      <mass>4.7</mass>
+      <Ix>0.075</Ix>
+      <Iy>0.085</Iy>
+      <Iz>0.13</Iz>
+      <Ixy>0.0</Ixy>
+      <Ixz>0.0</Ixz>
+      <Iyz>0.0</Iyz>
+   </ineria>
+   <rotors> 
+      <no>4</no>
+      <forceCoff>0.000071</forceCoff>
+      <torqueCoff>0.0000019</torqueCoff>
+      <positions>
+         <item>0.25 0.25 -0.1</item>
+         <item>-0.25 0.25 -0.1</item>
+         <item>-0.25 -0.25 -0.1</item>
+         <item>0.25 -0.25 -0.1</item>
+      </positions>
+      <direction>
+         <item>1</item>
+         <item>-1</item>
+         <item>1</item>
+         <item>-1</item>
+      </direction>
+      <timeConstants>
+         <item>0.05</item>
+         <item>0.05</item>
+         <item>0.05</item>
+         <item>0.05</item>
+      </timeConstants>
+   </rotors>
+   <aero>
+      <S>0.0225</S>
+      <d>0.01</d>
+      <C>0.47 0.47 0.47 0.0 0.0 0.0</C>
+   </aero>
+   <PID>
+      <X>
+         <P>0.8</P>
+         <I>0.01</I>
+         <D>0.0</D>
+         <min>-30</min>
+         <max>30</max>
+      </X>
+      <Y>
+         <P>0.8</P>
+         <I>0.01</I>
+         <D>0.0</D>
+         <min>-30</min>
+         <max>30</max>
+      </Y>
+      <Z>
+         <P>2.122</P>
+         <I>0.035</I>
+         <D>-0.387</D>
+         <min>-2.2</min>
+         <max>2</max>
+      </Z>
+      <U>
+         <P>-0.05</P>
+         <I>-0.001</I>
+         <D>0.0</D>
+         <min>-0.3</min>
+         <max>0.3</max>
+      </U>
+      <V>
+         <P>0.05</P>
+         <I>0.001</I>
+         <D>0.0</D>
+         <min>-0.3</min>
+         <max>0.3</max>
+      </V>
+      <W>
+         <P>-3556.149</P>
+         <I>-538.572</I>
+         <D>-112.917</D>
+         <min>-500</min>
+         <max>500</max>
+      </W>
+      <Fi>
+         <P>9.584</P>
+         <I>0.798</I>
+         <D>0.192</D>
+         <min>-100</min>
+         <max>100</max>
+      </Fi>
+      <Theta>
+         <P>5.191</P>
+         <I>0.228</I>
+         <D>0.127</D>
+         <min>-100</min>
+         <max>100</max>
+      </Theta>
+      <Psi>
+         <P>5.288</P>
+         <I>0.230</I>
+         <D>-0.151</D>
+         <min>-100</min>
+         <max>100</max>
+      </Psi>
+      <Roll>
+         <P>-6.249</P>
+         <I>-0.904</I>
+         <D>-0.219</D>
+         <min>-250</min>
+         <max>250</max>
+      </Roll>
+      <Pitch>
+         <P>6.304</P>
+         <I>1.174</I>
+         <D>0.433</D>
+         <min>-250</min>
+         <max>250</max>
+      </Pitch>
+      <Yaw>
+         <P>112.662</P>
+         <I>22.778</I>
+         <D>3.419</D>
+         <min>-250</min>
+         <max>250</max>
+      </Yaw>
+   </PID>
+   <control>
+      <maxSpeed>1000</maxSpeed>
+      <hoverSpeed>335</hoverSpeed>
+   </control>
+   <mixer>
+      1,  1,  1,  1,
+      1,  1, -1, -1,
+      1, -1, -1,  1,
+      1, -1,  1, -1
+   </mixer>
+   <navi>
+      <sensors>
+         <accelerometer>
+            <sd>0.001</sd>
+            <bias>0.0 0.0 0.0</bias>
+            <refreshTime>0.0025</refreshTime>
+         </accelerometer>
+         <gyroscope>
+            <sd>0.01</sd>
+            <bias>0.0 0.0 0.0</bias>
+            <refreshTime>0.0025</refreshTime>
+         </gyroscope>
+         <magnetometer>
+            <sd>0.01</sd>
+            <bias>0.0 0.0 0.0</bias>
+            <refreshTime>0.0025</refreshTime>
+         </magnetometer>
+         <barometer>
+            <sd>0.01</sd>
+            <bias>0.0 0.0 0.0</bias>
+            <refreshTime>0.01</refreshTime>
+         </barometer>
+         <GPS>
+            <sd>0.5</sd>
+            <bias>0.0 0.0 0.0</bias>
+            <refreshTime>0.3</refreshTime>
+         </GPS>
+         <GPSVel>
+            <sd>0.5</sd>
+            <bias>0.0 0.0 0.0</bias>
+            <refreshTime>0.3</refreshTime>
+         </GPSVel>
+      </sensors>
+      <AHRS>
+         <type>Complementary</type>
+         <alpha>0.9</alpha>
+         <Q>1e-14</Q>
+         <R>1e-2</R>
+      </AHRS>
+      <EKF>
+         <predictScaler>1e1</predictScaler>
+         <updateScaler>1e-4</updateScaler>
+         <baroScaler>1</baroScaler>
+         <zScaler>1e1</zScaler>
+      </EKF>
+   </navi>
+</params>

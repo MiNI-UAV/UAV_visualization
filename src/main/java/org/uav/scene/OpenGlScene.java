@@ -3,21 +3,19 @@ package org.uav.scene;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
 import org.uav.importer.GltfImporter;
 import org.uav.model.Model;
 import org.uav.model.SimulationState;
-import org.uav.scene.drawable.gui.*;
-import org.uav.scene.drawable.gui.widget.map.MapWidget;
+import org.uav.model.status.DroneStatus;
+import org.uav.model.status.ProjectileStatus;
+import org.uav.scene.drawable.gui.Gui;
 import org.uav.scene.shader.Shader;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -27,38 +25,24 @@ import static java.lang.Math.sin;
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.glBindBuffer;
 
 public class OpenGlScene {
-    private static final Vector3f DAY_COLOR = new Vector3f(0.529f, 0.808f, 0.922f);
-
     private final SimulationState simulationState;
     private final Config config;
     private final GltfImporter modelImporter;
-    public Shader objectShader;
-    public Shader lightSourceShader;
-    private List<Model> droneModels;
-    private List<Model> projectileModels;
+    private Shader objectShader;
+    private Shader lightSourceShader;
+    private Shader guiShader;
+    private Model droneModel;
+    private Model projectileModel;
     private Model environmentModel;
     private Gui gui;
 
-    public OpenGlScene(SimulationState simulationState, Config config) throws IOException, URISyntaxException {
+    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen) throws IOException, URISyntaxException {
         this.config = config;
         this.simulationState = simulationState;
 
-        modelImporter = new GltfImporter();
-
-        droneModels = new ArrayList<>();
-        projectileModels = new ArrayList<>();
-
-        GL.createCapabilities();
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        // https://stackoverflow.com/questions/28079159/opengl-glsl-texture-transparency
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glClearColor(DAY_COLOR.x, DAY_COLOR.y, DAY_COLOR.z, 0.0f);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        modelImporter = new GltfImporter(loadingScreen);
 
         setUpDrawables();
         setUpShaders();
@@ -78,7 +62,7 @@ public class OpenGlScene {
         String phongFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/phongShader.frag")).getFile();
         objectShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
         objectShader.use();
-        objectShader.setVec3("backgroundColor", DAY_COLOR);
+        objectShader.setVec3("backgroundColor", simulationState.getSkyColor());
         setUpLights(objectShader);
 
         String lightSourceVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/lightSourceShader.vert")).getFile();
@@ -86,16 +70,23 @@ public class OpenGlScene {
         lightSourceShader = new Shader(lightSourceVertexShaderSource, lightSourceFragmentShaderSource);
         lightSourceShader.use();
         lightSourceShader.setVec3("lightColor", new Vector3f(1.f, 	1.f, 1.f));
+
+        String guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/guiShader.vert")).getFile();
+        String guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/guiShader.frag")).getFile();
+        guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
+        guiShader.use();
     }
 
     private void setUpDrawables() throws URISyntaxException, IOException {
 
-        var mapDir = MessageFormat.format("assets/maps/{0}", config.map);
-        var modelFile = MessageFormat.format(mapDir + "/model/{0}.gltf", config.map);
+        var mapDir = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap();
+        var modelFile = mapDir + "/model/model.gltf";
         var textureDir = mapDir + "/textures";
         environmentModel = modelImporter.loadModel(modelFile, textureDir);
+        droneModel = createDroneModel();
+        projectileModel = createProjectileModel();
 
-        gui = GuiFactory.createStandardGui(simulationState, config);
+        gui = new Gui(simulationState, config);
     }
 
     private Model createDroneModel() throws URISyntaxException, IOException {
@@ -103,8 +94,8 @@ public class OpenGlScene {
                 () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),-cos(glfwGetTime()*1000)).normalize();
         Supplier<Quaternionf> counterClockwiseRotation =
                 () -> new Quaternionf(0,0,1 * sin(glfwGetTime()*1000),cos(glfwGetTime()*1000)).normalize();
-        var droneDir = MessageFormat.format("assets/drones/{0}", config.droneModel);
-        var modelFile = MessageFormat.format(droneDir + "/model/{0}.gltf", config.droneModel);
+        var droneDir = simulationState.getAssetsDirectory() + "/drones/" + config.droneModel;
+        var modelFile = droneDir + "/model/model.gltf";
         var textureDir = droneDir + "/textures";
         var droneModel = modelImporter.loadModel(modelFile, textureDir);
         droneModel.setAnimation(null, clockwiseRotation, null, List.of("propeller.2", "propeller.3"));
@@ -113,11 +104,14 @@ public class OpenGlScene {
     }
 
     private Model createProjectileModel() throws URISyntaxException, IOException {
-        return modelImporter.loadModel("assets/core/projectile/model/projectile.gltf", "assets/core/projectile/textures");
+        String projectileDir = simulationState.getAssetsDirectory() + "/core/projectile";
+        return modelImporter.loadModel(projectileDir + "/model/model.gltf", projectileDir + "/textures");
     }
 
     public void render() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        var skyColor = simulationState.getSkyColor();
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
 
         Matrix4f view = simulationState.getCamera().getViewMatrix();
         Matrix4f projection = new Matrix4f()
@@ -125,70 +119,33 @@ public class OpenGlScene {
 
         // Drawing
         try (MemoryStack stack = MemoryStack.stackPush()) {
+            objectShader.use();
             objectShader.setVec3("viewPos", simulationState.getCamera().getCameraPos());
             objectShader.setMatrix4f(stack,"view", view);
             objectShader.setMatrix4f(stack,"projection", projection);
 
             environmentModel.draw(stack, objectShader);
 
-            // BEGIN Drone models drawing
-            for(Model drone: droneModels) {
-                drone.draw(stack, objectShader);
+            for(DroneStatus status: simulationState.getCurrPassDroneStatuses().map.values()) {
+                droneModel.draw(stack, objectShader);
+                droneModel.setPosition(status.position);
+                droneModel.setRotation(status.rotation);
             }
-            if(droneModels.size() != simulationState.getCurrPassDroneStatuses().map.size()) {
-                var newDroneModels = new ArrayList<Model>();
-                while(newDroneModels.size() != simulationState.getCurrPassDroneStatuses().map.size()) {
-                    Model droneModel = createDroneModel();
-                    newDroneModels.add(droneModel);
-                }
-                droneModels = newDroneModels;
-            }
-            var droneIterator = droneModels.iterator();
-            simulationState.getCurrPassDroneStatuses().map.forEach((id, status) -> {
-                var model = droneIterator.next();
-                model.setPosition(status.position);
-                model.setRotation(status.rotation);
-            });
-            // END Drone models drawing
-            // BEGIN Projectiles models drawing
-            for(Model projectile: projectileModels) {
-                projectile.draw(stack, objectShader);
+            for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
+                projectileModel.draw(stack, objectShader);
+                projectileModel.setPosition(status.position);
             }
 
-            if(projectileModels.size() != simulationState.getCurrPassProjectileStatuses().map.size()) {
-                var newProjectileModels = new ArrayList<Model>();
-                while(newProjectileModels.size() != simulationState.getCurrPassProjectileStatuses().map.size()) {
-                    Model projectileModel = createProjectileModel();
-                    newProjectileModels.add(projectileModel);
-                }
-                projectileModels = newProjectileModels;
-            }
-
-            var projectileIterator = projectileModels.iterator();
-            simulationState.getCurrPassProjectileStatuses().map.forEach((id, status) -> {
-                var model = projectileIterator.next();
-                model.setPosition(status.position);
-            });
-            // END Projectiles models drawing
-
-            renderUI(stack);
-
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
+            renderUI();
         }
 
         glfwSwapBuffers(simulationState.getWindow());
         glfwPollEvents();
     }
 
-    private void renderUI(MemoryStack stack) {
-        objectShader.setVec3("viewPos", new Vector3f());
-        objectShader.setMatrix4f(stack,"view", new Matrix4f().identity());
-        objectShader.setMatrix4f(stack,"projection", new Matrix4f().identity());
-        objectShader.setMatrix4f(stack,"model", new Matrix4f().identity());
-
-        ((MapWidget) gui.guiWidget("map")).setHidden(!simulationState.isMapOverlay());
+    private void renderUI() {
+        gui.openMap(simulationState.isMapOverlay());
         gui.update();
-        gui.draw(objectShader);
+        gui.draw(guiShader);
     }
 }

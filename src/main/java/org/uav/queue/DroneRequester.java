@@ -1,19 +1,22 @@
 package org.uav.queue;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.uav.config.Config;
 import org.uav.model.Drone;
+import org.uav.model.ServerInfo;
 import org.uav.parser.DroneRequestReplyParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
-
-import java.util.Optional;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Optional;
 
 public class DroneRequester {
     private final Config config;
@@ -62,6 +65,22 @@ public class DroneRequester {
             return true;
         }
         return false;
+    }
+
+    public ServerInfo fetchServerInfo() {
+        socket.send(("i").getBytes(ZMQ.CHARSET), 0);
+        byte[] reply = socket.recv();
+        String message = new String(reply, ZMQ.CHARSET);
+
+        JSONObject obj = new JSONObject(message);
+        String assetChecksum = obj.getString("checksum");
+        String serverMap = obj.getString("map");
+        var configs = new ArrayList<String>();
+        JSONArray arr = obj.getJSONArray("configs");
+        for (int i = 0; i < arr.length(); i++)
+            configs.add(arr.getString(i));
+
+        return new ServerInfo(assetChecksum, serverMap, configs);
     }
 
     public void sendConfigFile(String configPath)

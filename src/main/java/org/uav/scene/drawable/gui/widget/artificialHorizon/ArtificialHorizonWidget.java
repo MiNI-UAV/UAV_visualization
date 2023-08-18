@@ -5,7 +5,10 @@ import org.uav.model.SimulationState;
 import org.uav.scene.drawable.GuiWidget;
 import org.uav.scene.drawable.gui.GuiAnchorPoint;
 import org.uav.scene.drawable.gui.GuiElement;
-import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.*;
+import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonBackgroundLayer;
+import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonCompassLayer;
+import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonMetersLayer;
+import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonRollLayer;
 import org.uav.scene.shader.Shader;
 
 import java.awt.image.BufferedImage;
@@ -50,7 +53,6 @@ public class ArtificialHorizonWidget implements GuiWidget {
                 .build();
     }
 
-    @Override
     public void update() {
         if(guiElement.getHidden()) return;
         backgroundLayer.update(simulationState);
