@@ -33,7 +33,7 @@ public class ArtificialHorizonBackgroundLayer implements DrawableGuiLayer {
     public void update(SimulationState simulationState) {
         var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
         if(drone == null) return;
-        rotX = drone.rotation.x;
+        rotX = -drone.rotation.x;
         rotY = drone.rotation.y / (0.5f * (float) Math.PI) * distanceToMax;
     }
     @Override

@@ -1,5 +1,5 @@
 
-serverAddress: 192.168.1.22 # xevix.tplinkdns.com
+serverAddress: 127.0.0.1
 #windowWidth: 1920
 #windowHeight: 1020
 windowWidth: 1020
@@ -31,6 +31,7 @@ joystick:
       14: posMode # Left D-Pad
     axisActions:
       2: shoot
+      5: drop
     axes:
       0: rotation
       1: heightChange
