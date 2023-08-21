@@ -34,6 +34,7 @@ joystick:
       2: false
       3: true
 ports:
+  notifications: 8000
   droneRequester: 9000
   droneStatuses: 9090
   projectileStatuses: 9100
