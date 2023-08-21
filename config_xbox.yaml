@@ -1,12 +1,14 @@
-
-windowWidth: 1920
-windowHeight: 1080
+serverAddress: "127.0.0.1"
+windowWidth: 1020
+windowHeight: 1020
 # windowWidth: 1200
 # windowHeight: 900
-fov: 75
-serverAddress: "127.0.0.1"
+guiScale: 1.0
+fov: 90
 droneName: "Wojtek"
-defaultCamera: "HorizontalCamera"
+droneModel: quadcopter
+defaultCamera: HorizontalCamera
+defaultControlMode: Positional
 joystick:
   deadZoneFactor: 0.2
   mappings:
