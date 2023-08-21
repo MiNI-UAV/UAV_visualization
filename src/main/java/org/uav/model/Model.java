@@ -9,21 +9,19 @@ import org.uav.scene.shader.Shader;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static org.uav.utils.Convert.toQuaternion;
-
 public class Model {
 
     public final ModelNode rootNode;
 
     private Vector3f position;
-    private Vector3f rotation;
+    private Quaternionf rotation;
 
     public Model(ModelNode rootNode) {
         position = new Vector3f();
-        rotation = new Vector3f();
+        rotation = new Quaternionf();
         this.rootNode = rootNode;
         this.rootNode.setCustomTranslationSupplier(()->position);
-        this.rootNode.setCustomRotationSupplier(()-> toQuaternion(rotation));
+        this.rootNode.setCustomRotationSupplier(()-> rotation);
     }
 
     public void draw(MemoryStack stack, Shader shader) {
@@ -46,10 +44,10 @@ public class Model {
         return new Vector3f(position);
     }
 
-    public void setRotation(Vector3f rotation) {
+    public void setRotation(Quaternionf rotation) {
         this.rotation = rotation;
     }
-    public Vector3f getRotation() {
+    public Quaternionf getRotation() {
         return rotation;
     }
 }

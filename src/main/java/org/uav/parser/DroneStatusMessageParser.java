@@ -25,6 +25,7 @@ public class DroneStatusMessageParser implements MessageParser<List<DroneStatus>
         drone.position.y = Float.parseFloat(scanner.next());
         drone.position.z = Float.parseFloat(scanner.next());
 
+        drone.rotation.w = Float.parseFloat(scanner.next());
         drone.rotation.x = Float.parseFloat(scanner.next());
         drone.rotation.y = Float.parseFloat(scanner.next());
         drone.rotation.z = Float.parseFloat(scanner.next());

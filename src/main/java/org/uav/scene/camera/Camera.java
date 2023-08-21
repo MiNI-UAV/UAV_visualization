@@ -1,14 +1,13 @@
 package org.uav.scene.camera;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
-import org.uav.utils.Convert;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 
 public class Camera {
     private static final Vector3f CAMERA_UP = new Vector3f(0, 0, -1f);
@@ -57,14 +56,15 @@ public class Camera {
     }
 
     public void updateCamera() {
-        Vector3f dronePosition, droneRotation;
+        Vector3f dronePosition;
+        Quaternionf droneRotation;
         if(simulationState.getCurrPassDroneStatuses().map.containsKey(simulationState.getCurrentlyControlledDrone().id)) {
             dronePosition = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id).position;
             droneRotation = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id).rotation;
         }
         else {
             dronePosition = new Vector3f();
-            droneRotation = new Vector3f();
+            droneRotation = new Quaternionf();
         }
         float currTime = (float) glfwGetTime();
         deltaTime = currTime - lastTime;
@@ -82,18 +82,18 @@ public class Camera {
                 updateFreeCamera(simulationState.getWindow(), deltaTime);
             }
             case RacingCamera -> {
-                var rot = new Vector3f(droneRotation);
-                var cameraOffset = new Vector3f(CAMERA_TP).rotate(Convert.toQuaternion(rot));
+                var rot = new Quaternionf(droneRotation);
+                var cameraOffset = new Vector3f(CAMERA_TP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
-                setCameraUp(new Vector3f(CAMERA_UP).rotate(Convert.toQuaternion(rot)));
+                setCameraUp(new Vector3f(CAMERA_UP).rotate(rot));
             }
             case HorizontalCamera -> {
-                var rot = new Vector3f(droneRotation);
+                var rot = new Quaternionf(droneRotation);
                 rot.x = 0;
                 rot.y = 0;
-                var cameraOffset = new Vector3f(CAMERA_TP).rotate(Convert.toQuaternion(rot));
+                var cameraOffset = new Vector3f(CAMERA_TP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
@@ -106,12 +106,12 @@ public class Camera {
             }
             //TODO: SoftFPV is not implemented yet, now its copy of hardFPV
             case HardFPV, SoftFPV  -> {
-                var rot = new Vector3f(droneRotation);
-                var cameraOffset = new Vector3f(CAMERA_FP).rotate(Convert.toQuaternion(rot));
+                var rot = new Quaternionf(droneRotation);
+                var cameraOffset = new Vector3f(CAMERA_FP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(cameraOffset.normalize());
-                setCameraUp(new Vector3f(CAMERA_UP).rotate(Convert.toQuaternion(rot)));
+                setCameraUp(new Vector3f(CAMERA_UP).rotate(rot));
             }
         }
     }
