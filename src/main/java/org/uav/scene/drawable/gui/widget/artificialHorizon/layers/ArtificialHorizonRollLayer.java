@@ -27,7 +27,7 @@ public class ArtificialHorizonRollLayer implements DrawableGuiLayer {
     public void update(SimulationState simulationState) {
         var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
         if(drone == null) return;
-        rotX = drone.rotation.x;
+        rotX = -drone.rotation.x;
     }
     @Override
     public void draw(Graphics2D g) {

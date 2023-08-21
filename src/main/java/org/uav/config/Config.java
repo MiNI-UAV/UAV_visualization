@@ -1,6 +1,5 @@
 package org.uav.config;
 
-import org.uav.UavVisualization;
 import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.DroneMovement;
@@ -10,6 +9,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -22,7 +22,7 @@ public class Config {
     public float guiScale;
     public float fov;
     public String droneName;
-    public String map;
+    public String droneModel;
     public CameraMode defaultCamera;
     public ControlMode defaultControlMode;
     public JoystickConfig joystick;
@@ -43,13 +43,13 @@ public class Config {
     }
 
     public static class Ports {
+        public int notifications;
         public int droneRequester;
         public int droneStatuses;
         public int projectileStatuses;
     }
     public static Config loadConfig(String path) {
-        try (InputStream inputStream = UavVisualization.class
-                .getClassLoader().getResourceAsStream(path)) {
+        try (InputStream inputStream = new FileInputStream(System.getProperty("user.dir") + "/" + path)) {
             var constructor = new Constructor(Config.class, new LoaderOptions());
             var yaml = new Yaml(constructor);
             // yaml.setBeanAccess(BeanAccess.FIELD); TODO: Privatize config

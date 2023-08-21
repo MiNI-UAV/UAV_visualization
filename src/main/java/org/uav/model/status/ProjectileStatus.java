@@ -12,8 +12,4 @@ public class ProjectileStatus {
         this.position = position;
         this.velocity = velocity;
     }
-
-    public int getId() {
-        return id;
-    }
 }

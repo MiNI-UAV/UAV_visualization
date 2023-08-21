@@ -44,7 +44,6 @@ public class MapWidget implements GuiWidget {
         guiElement.draw(shader);
     }
 
-    @Override
     public void update() {
         if(guiElement.getHidden()) return;
         mapProjection.update(simulationState);

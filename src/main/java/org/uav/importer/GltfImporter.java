@@ -6,10 +6,9 @@ import de.javagl.jgltf.model.v2.GltfModelV2;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.uav.UavVisualization;
 import org.uav.model.*;
+import org.uav.scene.LoadingScreen;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,14 +25,17 @@ public class GltfImporter {
     private List<TextureModel> textureModels;
     private final Map<String, Texture> loadedTextures;
     private String textureDirectory;
+    private final LoadingScreen loadingScreen;
 
-    public GltfImporter() {
+    public GltfImporter(LoadingScreen loadingScreen){
         loadedTextures = new HashMap<>();
+        this.loadingScreen = loadingScreen;
     }
 
     public Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
+        loadingScreen.render("Loading " + resourceFile + "...");
         textureDirectory = textureDir;
-        String path = "file://" + Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource(resourceFile)).getFile();
+        String path = "file://" + resourceFile;
         GltfModelReader reader = new GltfModelReader();
         GltfModelV2 model = (GltfModelV2) reader.read(new URI(path));
         textureModels = model.getTextureModels();
@@ -123,7 +125,7 @@ public class GltfImporter {
                     Texture texture = loadTexture(textureModel);
                     meshes.add(new Mesh(vertices, ind, List.of(texture), material));
                 } else {
-                    Texture texture = loadTexture("missing", "assets/textures/missing.jpg");
+                    Texture texture = loadTexture("missing", System.getProperty("user.dir") + "/assets/missing.jpg");
                     meshes.add(new Mesh(vertices, ind, List.of(texture), material));
                 }
             }
@@ -143,12 +145,12 @@ public class GltfImporter {
     }
 
     private Texture loadTexture(String name, String path) {
+        loadingScreen.render("Loading " + name + "...");
+
         int[] w = new int[1];
         int[] h = new int[1];
         int[] components = new int[1];
-        System.out.println("loading " + path);
-        String imagePath = new File(UavVisualization.class.getClassLoader().getResource(path).getPath()).toString();
-        ByteBuffer image = stbi_load(imagePath, w, h, components, 0);
+        ByteBuffer image = stbi_load(path, w, h, components, 0);
         int format = GL_RGB;
         if(components[0] == 4) format = GL_RGBA;
         if(components[0] == 1) format = GL_BACK;
