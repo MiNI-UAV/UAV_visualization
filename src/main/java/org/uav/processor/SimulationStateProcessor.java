@@ -11,6 +11,7 @@ import org.uav.model.Drone;
 import org.uav.model.SimulationState;
 import org.uav.queue.DroneRequester;
 import org.uav.queue.DroneStatusConsumer;
+import org.uav.queue.NotificationsConsumer;
 import org.uav.queue.ProjectileStatusesConsumer;
 import org.uav.scene.LoadingScreen;
 import org.zeromq.ZContext;
@@ -32,6 +33,7 @@ public class SimulationStateProcessor implements AutoCloseable {
     private final DroneRequester droneRequester;
     private final DroneStatusConsumer droneStatusConsumer;
     private final ProjectileStatusesConsumer projectileStatusesConsumer;
+    private final NotificationsConsumer notificationsConsumer;
 
 
     public SimulationStateProcessor(SimulationState simulationState, Config config) {
@@ -41,15 +43,17 @@ public class SimulationStateProcessor implements AutoCloseable {
         droneRequester = new DroneRequester(context, config);
         droneStatusConsumer = new DroneStatusConsumer(context, simulationState, config);
         projectileStatusesConsumer = new ProjectileStatusesConsumer(context, simulationState, config);
+        notificationsConsumer = new NotificationsConsumer(context, config, simulationState);
     }
 
     public void openCommunication() {
         droneStatusConsumer.start();
         projectileStatusesConsumer.start();
+        notificationsConsumer.start();
     }
 
     public void requestNewDrone() {
-        var newDroneResult = droneRequester.requestNewDrone(config.droneName);
+        var newDroneResult = droneRequester.requestNewDrone(config.droneName, simulationState.getDroneModelChecksum());
         simulationState.setCurrentlyControlledDrone(newDroneResult.orElseThrow());
     }
 
@@ -66,27 +70,29 @@ public class SimulationStateProcessor implements AutoCloseable {
     public void close() {
         droneStatusConsumer.stop();
         projectileStatusesConsumer.stop();
+        notificationsConsumer.interrupt();
     }
 
     public void respawnDrone() {
         Drone oldDrone = simulationState.getCurrentlyControlledDrone();
         requestNewDrone();
         oldDrone.sendUtilsCommand(KILL_COMMAND);
+        simulationState.setCurrentControlMode(config.defaultControlMode);
     }
 
     public void checkAndUpdateAssets(SimulationState simulationState, LoadingScreen loadingScreen) throws IOException {
         var serverInfo = droneRequester.fetchServerInfo();
-        simulationState.setAssetsDirectory(System.getProperty("user.dir") + "/assets/" + serverInfo.assetChecksum);
+        simulationState.setAssetsDirectory(System.getProperty("user.dir") + "/assets/" + serverInfo.assetChecksum.substring(0,8));
         simulationState.setServerMap(serverInfo.serverMap);
 
-        if(!assetPackExists(serverInfo.assetChecksum)) {
+        if(!assetPackExists(serverInfo.assetChecksum.substring(0,8))) {
             loadingScreen.render("Downloading new assets...");
             downloadAssets(serverInfo.assetChecksum, loadingScreen);
         }
     }
 
     private void downloadAssets(String assetChecksum, LoadingScreen loadingScreen) throws IOException {
-        String assetPackDirectory = System.getProperty("user.dir") + "/assets/" + assetChecksum;
+        String assetPackDirectory = System.getProperty("user.dir") + "/assets/" + assetChecksum.substring(0,8);
         if(!new File(assetPackDirectory).mkdir()) throw new IOException();
         String saveAtPath = assetPackDirectory + "/" + ASSETS_ARCHIVE;
         String downloadUrlPath = ASSETS_DOWNLOAD_PAGE + assetChecksum + "/" + ASSETS_ARCHIVE;
@@ -113,7 +119,7 @@ public class SimulationStateProcessor implements AutoCloseable {
             while (cis.getByteCount() < completeFileSize) {
                 if (cis.getByteCount() - lastStep > byteStep) {
                     lastStep += byteStep;
-                    float currentMb = (float) (cis.getByteCount() / 1000_00) / 10;
+                    float currentMb = (float) (cis.getByteCount() / 100_000) / 10;
                     loadingScreen.render("Downloading new assets... " + currentMb + "/" + fileSizeMb + " MB");
                 }
             }
@@ -152,5 +158,11 @@ public class SimulationStateProcessor implements AutoCloseable {
         }
         String assetPackDirectory = assetsDirectory + "/" + assetChecksum;
         return Files.exists(Paths.get(assetPackDirectory));
+    }
+
+    public void saveDroneModelChecksum(String droneModel) {
+        String droneModelConfigPath = System.getProperty("user.dir") + "/drones/" + droneModel + ".xml";
+        String droneModelChecksum = droneRequester.sendConfigFile(droneModelConfigPath);
+        simulationState.setDroneModelChecksum(droneModelChecksum);
     }
 }

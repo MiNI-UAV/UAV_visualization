@@ -7,7 +7,7 @@ windowHeight: 1020
 guiScale: 1.0
 fov: 90 # 0 < fov < 180
 droneName: Maurice
-droneModel: quadcopter
+droneModel: buster
 defaultCamera: HorizontalCamera
 defaultControlMode: Positional
 joystick:
@@ -43,6 +43,7 @@ joystick:
       3: false
       4: true
 ports:
+  notifications: 8000
   droneRequester: 9000
   droneStatuses: 9090
   projectileStatuses: 9100

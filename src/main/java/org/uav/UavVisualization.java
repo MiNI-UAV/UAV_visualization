@@ -69,6 +69,7 @@ public class UavVisualization {
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen);
         simulationStateProcessor.openCommunication();
+        simulationStateProcessor.saveDroneModelChecksum(config.droneModel);
         loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
 

@@ -43,6 +43,7 @@ public class Config {
     }
 
     public static class Ports {
+        public int notifications;
         public int droneRequester;
         public int droneStatuses;
         public int projectileStatuses;

@@ -2,7 +2,6 @@ package org.uav.queue;
 
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
-import org.uav.model.status.ProjectileStatus;
 import org.uav.model.status.ProjectileStatuses;
 import org.uav.parser.ProjectileStatusMessageParser;
 import org.zeromq.SocketType;
@@ -51,7 +50,7 @@ public class ProjectileStatusesConsumer {
                     //System.out.println("Received: [" + message + "]");
                     projectileStatusesMutex.lock();
                     projectileStatuses.map = messageParser.parse(message).stream()
-                            .collect(Collectors.toMap(ProjectileStatus::getId, Function.identity()));
+                            .collect(Collectors.toMap(projectile -> projectile.id, Function.identity()));
                     projectileStatusesMutex.unlock();
 
                 } catch (ZMQException exception) {

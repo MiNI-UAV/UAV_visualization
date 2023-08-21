@@ -21,8 +21,4 @@ public class DroneStatus {
         angularVelocity = new Vector3f();
         propellers = new Vector<>();
     }
-
-    public int getId() {
-        return id;
-    }
 }

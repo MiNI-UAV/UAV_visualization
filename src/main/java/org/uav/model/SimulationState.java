@@ -15,12 +15,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class SimulationState {
     String assetsDirectory;
     String serverMap;
+    String droneModelChecksum;
     final long window;
 
     final DroneStatuses droneStatuses;
     final ReentrantLock droneStatusesMutex;
     final ProjectileStatuses projectileStatuses;
     final ReentrantLock projectileStatusesMutex;
+    final Notifications notifications;
 
     final Camera camera;
     CameraMode currentCameraMode;
@@ -41,6 +43,7 @@ public class SimulationState {
         droneStatusesMutex = new ReentrantLock();
         projectileStatuses = new ProjectileStatuses();
         projectileStatusesMutex = new ReentrantLock();
+        notifications = new Notifications();
         currentCameraMode = config.defaultCamera;
         currentControlMode = config.defaultControlMode;
         currentlyControlledDrone = null;
