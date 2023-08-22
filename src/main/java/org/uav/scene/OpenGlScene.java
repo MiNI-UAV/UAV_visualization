@@ -122,17 +122,17 @@ public class OpenGlScene {
             objectShader.setMatrix4f(stack,"view", view);
             objectShader.setMatrix4f(stack,"projection", projection);
 
-            environmentModel.draw(stack, objectShader);
+            environmentModel.draw(stack, objectShader, simulationState.getSimulationTime());
 
             for(DroneStatus status: simulationState.getCurrPassDroneStatuses().map.values()) {
                 String currentDroneModelName = simulationState.getNotifications().droneModels.getOrDefault(status.id, DEFAULT_DRONE_MODEL);
-                Model currentDroneModel = droneModels.get(currentDroneModelName);
-                currentDroneModel.draw(stack, objectShader);
+                Model currentDroneModel = droneModels.getOrDefault(currentDroneModelName, droneModels.get(DEFAULT_DRONE_MODEL));
+                currentDroneModel.draw(stack, objectShader, simulationState.getSimulationTime());
                 currentDroneModel.setPosition(status.position);
                 currentDroneModel.setRotation(status.rotation);
             }
             for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
-                projectileModel.draw(stack, objectShader);
+                projectileModel.draw(stack, objectShader, simulationState.getSimulationTime());
                 projectileModel.setPosition(status.position);
             }
 

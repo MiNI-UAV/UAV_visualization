@@ -1,6 +1,6 @@
 <params>
    <name>drone1</name>
-   <type>quadcopter</type>
+   <type>defaultDrone</type>
    <ineria>
       <mass>4.7</mass>
       <Ix>0.075</Ix>

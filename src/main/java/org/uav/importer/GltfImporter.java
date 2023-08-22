@@ -3,9 +3,12 @@ package org.uav.importer;
 import de.javagl.jgltf.model.*;
 import de.javagl.jgltf.model.io.GltfModelReader;
 import de.javagl.jgltf.model.v2.GltfModelV2;
+import org.javatuples.Pair;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.uav.animation.Animation;
+import org.uav.animation.AnimationPlayer;
 import org.uav.model.*;
 import org.uav.scene.LoadingScreen;
 
@@ -22,10 +25,14 @@ import static org.lwjgl.stb.STBImage.stbi_load;
 
 public class GltfImporter {
 
+    public static final String UNSUPPORTED_ANIMATION_MODEL = "Unsupported animation model";
     private List<TextureModel> textureModels;
     private final Map<String, Texture> loadedTextures;
     private String textureDirectory;
     private final LoadingScreen loadingScreen;
+    private Map<String, AnimationModel.Sampler> translationAnimationSamplers;
+    private Map<String, AnimationModel.Sampler> rotationAnimationSamplers;
+    private Map<String, AnimationModel.Sampler> scaleAnimationSamplers;
 
     public GltfImporter(LoadingScreen loadingScreen){
         loadedTextures = new HashMap<>();
@@ -33,7 +40,6 @@ public class GltfImporter {
     }
 
     public Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
-        loadingScreen.render("Loading " + resourceFile + "...");
         textureDirectory = textureDir;
         String path = "file://" + resourceFile;
         GltfModelReader reader = new GltfModelReader();
@@ -42,6 +48,23 @@ public class GltfImporter {
 
         SceneModel sceneModel = model.getSceneModels().get(0);
 
+        translationAnimationSamplers = new HashMap<>();
+        rotationAnimationSamplers = new HashMap<>();
+        scaleAnimationSamplers = new HashMap<>();
+        if(!model.getAnimationModels().isEmpty()) {
+            if(model.getAnimationModels().size() != 1) throw new IOException(UNSUPPORTED_ANIMATION_MODEL);
+            AnimationModel animationModel = model.getAnimationModels().get(0);
+            animationModel.getChannels().forEach(channel -> {
+                switch(channel.getPath()) {
+                    case "translation" -> translationAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
+                    case "rotation" -> rotationAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
+                    case "scale" -> scaleAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
+                    case "weights" -> {}
+                    default -> throw new RuntimeException(UNSUPPORTED_ANIMATION_MODEL);
+                }
+            });
+        }
+
         List<ModelNode> children = new ArrayList<>();
 
         for ( NodeModel nodeModel: sceneModel.getNodeModels())
@@ -49,20 +72,28 @@ public class GltfImporter {
             children.add(getChildModelNode(nodeModel));
         }
 
-        // glTF defines +Y as up, +Z as forward, and -X as right
         return new Model(
-                new ModelNode("RootNode",
+                new ModelNode("OpenGLRootNode",
                         Collections.emptyList(),
                         children,
                         new Vector3f(),
-                        //new Quaternionf(-0.7071f,0f,0, 0.7071f),
-                        new Quaternionf(-0,0,0,1),
-                        new Vector3f(1f)
-                )
+                        new Quaternionf(0,0,0,1),
+                        new Vector3f(1f),
+                        new AnimationPlayer())
         );
     }
 
-    private ModelNode getChildModelNode(NodeModel nodeModel) {
+    private ModelNode getChildModelNode(NodeModel nodeModel) throws IOException {
+
+        var translationAnimation = getAnimation(nodeModel, translationAnimationSamplers);
+        var rotationAnimation = getRotationAnimation(nodeModel, rotationAnimationSamplers);
+        var scaleAnimation = getAnimation(nodeModel, scaleAnimationSamplers);
+        var animationPlayer = new AnimationPlayer();
+        animationPlayer.put(
+                "Hover",
+                new Animation(translationAnimation, rotationAnimation, scaleAnimation)
+                );
+        animationPlayer.start("Hover", 0, true);
 
         List<Mesh> meshes = processMeshModels(nodeModel.getMeshModels());
 
@@ -76,7 +107,15 @@ public class GltfImporter {
             Vector3f localTranslation = new Vector3f(new float[]{m[12],m[13],m[14]});
             Vector3f localScale = new Vector3f(new float[]{0,0,0});
             Quaternionf localRotation = new Quaternionf();
-            return new ModelNode(nodeModel.getName(), meshes, children, localTranslation , localRotation, localScale);
+            return new ModelNode(
+                    nodeModel.getName(),
+                    meshes,
+                    children,
+                    localTranslation,
+                    localRotation,
+                    localScale,
+                    animationPlayer
+            );
         }
         float[] translation = nodeModel.getTranslation() != null ? nodeModel.getTranslation(): new float[]{0, 0, 0};
         Vector3f localTranslation = new Vector3f(translation);
@@ -89,7 +128,52 @@ public class GltfImporter {
         float[] scale = nodeModel.getScale() != null ? nodeModel.getScale(): new float[]{1, 1, 1};
         Vector3f localScale = new Vector3f(scale);
 
-        return new ModelNode(nodeModel.getName(), meshes, children, localTranslation, localRotation, localScale);
+        return new ModelNode(
+                nodeModel.getName(),
+                meshes,
+                children,
+                localTranslation,
+                localRotation,
+                localScale,
+                animationPlayer
+        );
+    }
+
+    private List<Pair<Float, Vector3f>> getAnimation(NodeModel nodeModel, Map<String, AnimationModel.Sampler> samplerMap) throws IOException {
+        if(!samplerMap.containsKey(nodeModel.getName())) return new ArrayList<>();
+        var sampler = samplerMap.get(nodeModel.getName());
+        if(sampler.getInterpolation() != AnimationModel.Interpolation.LINEAR) throw new IOException(UNSUPPORTED_ANIMATION_MODEL);
+        AccessorFloatData animationTimeAccessor = (AccessorFloatData) sampler.getInput().getAccessorData();
+        AccessorFloatData transformationAccessor = (AccessorFloatData) sampler.getOutput().getAccessorData();
+        List<Pair<Float, Vector3f>> animation = new ArrayList<>();
+        int n = animationTimeAccessor.getNumElements();
+        for (int i = 0; i < n; i++) {
+            float t = animationTimeAccessor.get(i, 0);
+            float x = transformationAccessor.get(i, 0);
+            float y = transformationAccessor.get(i, 1);
+            float z = transformationAccessor.get(i, 2);
+            animation.add(new Pair<>(t, new Vector3f(x, y, z)));
+        }
+        return animation;
+    }
+
+    private List<Pair<Float, Quaternionf>> getRotationAnimation(NodeModel nodeModel, Map<String, AnimationModel.Sampler> samplerMap) throws IOException {
+        if(!samplerMap.containsKey(nodeModel.getName())) return new ArrayList<>();
+        var sampler = samplerMap.get(nodeModel.getName());
+        if(sampler.getInterpolation() != AnimationModel.Interpolation.LINEAR) throw new IOException(UNSUPPORTED_ANIMATION_MODEL);
+        AccessorFloatData animationTimeAccessor = (AccessorFloatData) sampler.getInput().getAccessorData();
+        AccessorFloatData transformationAccessor = (AccessorFloatData) sampler.getOutput().getAccessorData();
+        List<Pair<Float, Quaternionf>> animation = new ArrayList<>();
+        int n = animationTimeAccessor.getNumElements();
+        for (int i = 0; i < n; i++) {
+            float t = animationTimeAccessor.get(i, 0);
+            float x = transformationAccessor.get(i, 0);
+            float y = transformationAccessor.get(i, 1);
+            float z = transformationAccessor.get(i, 2);
+            float w = transformationAccessor.get(i, 3);
+            animation.add(new Pair<>(t, new Quaternionf(x, y, z, w)));
+        }
+        return animation;
     }
 
     private List<Mesh> processMeshModels(List<MeshModel> meshModels) {

@@ -17,6 +17,7 @@ public class SimulationState {
     String serverMap;
     String droneModelChecksum;
     final long window;
+    float simulationTime;
 
     final DroneStatuses droneStatuses;
     final ReentrantLock droneStatusesMutex;

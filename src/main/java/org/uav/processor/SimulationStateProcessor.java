@@ -6,6 +6,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
+import org.lwjgl.glfw.GLFW;
 import org.uav.config.Config;
 import org.uav.model.Drone;
 import org.uav.model.SimulationState;
@@ -64,6 +65,7 @@ public class SimulationStateProcessor implements AutoCloseable {
         simulationState.getProjectileStatusesMutex().lock();
         simulationState.getCurrPassProjectileStatuses().map = simulationState.getProjectileStatuses().map;
         simulationState.getProjectileStatusesMutex().unlock();
+        simulationState.setSimulationTime((float) GLFW.glfwGetTime());
     }
 
     @Override
