@@ -4,7 +4,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-import org.uav.audio.MusicPlayerOld;
 import org.uav.config.Config;
 import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
@@ -34,7 +33,6 @@ public class UavVisualization {
     private HeartbeatProducer heartbeatProducer;
     private InputHandler inputHandler;
     private Config config;
-    private MusicPlayerOld musicPlayerOld;
 
     public void run() throws IOException, URISyntaxException {
         init();

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 public class AnimationPlayer {
-    private List<String> activeAnimations;
-    private Map<String, Animation> animations;
+    private final List<String> activeAnimations;
+    private final Map<String, Animation> animations;
 
     public AnimationPlayer() {
         activeAnimations = new ArrayList<>();

@@ -3,6 +3,7 @@ package org.uav.animation;
 import org.javatuples.Pair;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.uav.utils.SlerpQuaternionInterpolator;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,8 +29,8 @@ public class Animation {
         looping = false;
     }
 
-    public Vector3f getTranslationFrame(float globalTime) { // TODO Duplicates
-        if(translationAnimation.isEmpty()) return null; // TODO Or not looping and out of bounds
+    public Vector3f getTranslationFrame(float globalTime) {
+        if(translationAnimation.isEmpty()) return null;
 
         float time = globalTime - startTime;
         if(time < translationAnimation.get(0).getValue0()) {
@@ -75,7 +76,7 @@ public class Animation {
         currentFrame = Math.abs(currentFrame + 1);
         var p1 = rotationAnimation.get(currentFrame - 1);
         var p2 = rotationAnimation.get(currentFrame);
-        return p1.getValue1(); // TODO quaternion interpolation
+        return SlerpQuaternionInterpolator.interpolate(time, p1.getValue1(), p2.getValue1(), p1.getValue0(), p2.getValue0());
     }
 
     public Vector3f getScaleFrame(float globalTime) {
@@ -103,7 +104,7 @@ public class Animation {
     }
 
     private Vector3f calcLinearInterpolation(float point, float lowerBound, float upperBound, Vector3f lowerValue, Vector3f upperValue) {
-        float ratio = (point - lowerBound) / (upperBound - lowerBound); // TODO Better maths maybe
+        float ratio = (point - lowerBound) / (upperBound - lowerBound);
         return new Vector3f(
                 (upperValue.x - lowerValue.x) * ratio + lowerValue.x,
                 (upperValue.y - lowerValue.y) * ratio + lowerValue.y,
@@ -111,7 +112,7 @@ public class Animation {
         );
     }
 
-    private static <T> int findFrame(float time, List<Pair<Float, T>> animation) { // TODO: Check for not found
+    private static <T> int findFrame(float time, List<Pair<Float, T>> animation) {
         return Collections.binarySearch(animation, new Pair<>(time, null), Comparator.comparing(Pair::getValue0));
     }
 

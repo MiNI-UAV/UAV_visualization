@@ -23,11 +23,11 @@ public class Model {
         this.rootNode = rootNode;
     }
 
-    public void draw(MemoryStack stack, Shader shader) {
+    public void draw(MemoryStack stack, Shader shader, float currentTime) {
         Matrix4f modelTransformation = new Matrix4f()
                 .translate(position)
                 .rotate(rotation)
                 .scale(new Vector3f(1));
-        rootNode.draw(stack, shader, modelTransformation);
+        rootNode.draw(stack, shader, modelTransformation, currentTime);
     }
 }

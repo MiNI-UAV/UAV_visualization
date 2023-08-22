@@ -18,11 +18,7 @@ public class ModelNode {
     private final Vector3f localTranslation;
     private final Quaternionf localRotation;
     private final Vector3f localScale;
-
-    // TODO: Tie animation to the fps
-    // TODO: Add animation interpolation
-    private AnimationPlayer animationPlayer;
-    private float currentTime=0;
+    private final AnimationPlayer animationPlayer;
 
     public ModelNode(
             String name,
@@ -41,9 +37,8 @@ public class ModelNode {
         this.animationPlayer = animationPlayer;
     }
 
-    public void draw(MemoryStack stack, Shader shader, Matrix4f parentTransform) {
+    public void draw(MemoryStack stack, Shader shader, Matrix4f parentTransform, float currentTime) {
 
-        currentTime += 0.1f;
         Matrix4f localTransformation = new Matrix4f()
                 .translate(animationPlayer.getTranslationOrDefault(localTranslation, currentTime))
                 .rotate(animationPlayer.getRotationOrDefault(localRotation, currentTime))
@@ -51,6 +46,6 @@ public class ModelNode {
         Matrix4f globalTransformation = new Matrix4f(parentTransform).mul(localTransformation);
 
         meshes.forEach(m -> m.draw(stack, shader, globalTransformation));
-        children.forEach(n -> n.draw(stack, shader, globalTransformation));
+        children.forEach(n -> n.draw(stack, shader, globalTransformation, currentTime));
     }
 }
