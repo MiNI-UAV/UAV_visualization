@@ -1,10 +1,13 @@
 package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
 
+import org.joml.Quaternionf;
 import org.uav.model.SimulationState;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+
+import static java.lang.Math.atan2;
 
 public class ArtificialHorizonCompassLayer implements DrawableGuiLayer {
     private final BufferedImage compassTexture;
@@ -29,7 +32,9 @@ public class ArtificialHorizonCompassLayer implements DrawableGuiLayer {
     public void update(SimulationState simulationState) {
         var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
         if(drone == null) return;
-        compassOffset = (int) ((drone.rotation.z+Math.PI)/(2*Math.PI) * 1440);
+        Quaternionf q = drone.rotation;
+        float rotZ = ((float) atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y*q.y + q.z*q.z)));
+        compassOffset = (int) ((rotZ+Math.PI)/(2*Math.PI) * 1440);
     }
     @Override
     public void draw(Graphics2D g) {

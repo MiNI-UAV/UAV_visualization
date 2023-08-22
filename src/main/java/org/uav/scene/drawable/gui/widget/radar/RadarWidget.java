@@ -1,5 +1,6 @@
 package org.uav.scene.drawable.gui.widget.radar;
 
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
@@ -14,6 +15,8 @@ import org.uav.scene.shader.Shader;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.Math.atan2;
 
 public class RadarWidget implements GuiWidget {
     private static final float FULL_CIRCUMFERENCE = (float) (2 * Math.PI);
@@ -93,8 +96,9 @@ public class RadarWidget implements GuiWidget {
     private static Vector2f getRelativePoints(DroneStatus drone, DroneStatus radarDrone) {
         float relX = drone.position.x - radarDrone.position.x;
         float relY = drone.position.y - radarDrone.position.y;
-        float angle = -radarDrone.rotation.z;
-        return rotatePoint(angle, new Vector2f(relX, relY));
+        Quaternionf q = drone.rotation;
+        float rotZ = ((float) atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y*q.y + q.z*q.z)));
+        return rotatePoint(rotZ, new Vector2f(relX, relY));
     }
 
     private static Vector2f rotatePoint(float angle, Vector2f point) {
