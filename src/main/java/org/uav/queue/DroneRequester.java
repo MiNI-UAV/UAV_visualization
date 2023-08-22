@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.uav.config.Config;
 import org.uav.model.Drone;
 import org.uav.model.ServerInfo;
+import org.uav.model.SimulationState;
 import org.uav.parser.DroneRequestReplyParser;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
@@ -18,11 +19,13 @@ import java.util.Optional;
 
 public class DroneRequester {
     private final Config config;
+    private final SimulationState simulationState;
     private final ZMQ.Socket socket;
     private final ZContext context;
     private final DroneRequestReplyParser messageParser;
 
-    public DroneRequester(ZContext context, Config config) {
+    public DroneRequester(ZContext context, SimulationState simulationState, Config config) {
+        this.simulationState = simulationState;
         this.context = context;
         this.config = config;
         String address = "tcp://" + config.serverAddress + ":" + config.ports.droneRequester;
@@ -41,7 +44,7 @@ public class DroneRequester {
 
         DroneRequestReplyMessage parsedMessage = messageParser.parse(message);
 
-        return Optional.of(new Drone(context, parsedMessage.steerPort, parsedMessage.utilsPort, parsedMessage.droneId, config));
+        return Optional.of(new Drone(context, parsedMessage.steerPort, parsedMessage.utilsPort, parsedMessage.droneId, simulationState, config));
     }
 
     public boolean parseReply(String reply)

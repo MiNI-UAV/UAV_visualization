@@ -16,18 +16,22 @@ public class Model {
     private Vector3f position;
     @Getter @Setter
     private Quaternionf rotation;
+    @Getter @Setter
+    private Vector3f scale;
 
     public Model(ModelNode rootNode) {
-        position = new Vector3f();
-        rotation = new Quaternionf();
+        position = null;
+        rotation = null;
+        scale = new Vector3f(1);
         this.rootNode = rootNode;
     }
 
     public void draw(MemoryStack stack, Shader shader, float currentTime) {
+        if(position == null || rotation == null) return;
         Matrix4f modelTransformation = new Matrix4f()
                 .translate(position)
                 .rotate(rotation)
-                .scale(new Vector3f(1));
+                .scale(scale);
         rootNode.draw(stack, shader, modelTransformation, currentTime);
     }
 }

@@ -1,14 +1,12 @@
 package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
 
-import org.joml.Quaternionf;
 import org.uav.model.SimulationState;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.utils.Convert;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
-import static java.lang.Math.atan2;
 
 public class ArtificialHorizonRollLayer implements DrawableGuiLayer {
     private final static AffineTransform identity = new AffineTransform();
@@ -28,10 +26,10 @@ public class ArtificialHorizonRollLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
+        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(drone == null) return;
-        Quaternionf q = drone.rotation;
-        rotX = -((float) atan2(2 * (q.w * q.x + q.y * q.z), 1 - 2 * (q.x*q.x + q.y*q.y)));
+        var rotation = Convert.toEuler(drone.rotation);
+        rotX = -rotation.x;
     }
     @Override
     public void draw(Graphics2D g) {

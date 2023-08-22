@@ -40,7 +40,7 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
+        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(drone == null) return;
 
         position = new Vector2f(drone.position.x, drone.position.y);

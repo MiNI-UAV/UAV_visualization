@@ -1,7 +1,9 @@
 package org.uav.scene;
 
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
@@ -10,8 +12,10 @@ import org.uav.model.Model;
 import org.uav.model.SimulationState;
 import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
+import org.uav.queue.ControlMode;
 import org.uav.scene.drawable.gui.Gui;
 import org.uav.scene.shader.Shader;
+import org.uav.utils.Convert;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +40,7 @@ public class OpenGlScene {
     private Map<String, Model> droneModels;
     private Model projectileModel;
     private Model environmentModel;
+    private Model xMarkModel;
     private Gui gui;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen) throws IOException, URISyntaxException {
@@ -83,8 +88,11 @@ public class OpenGlScene {
         var modelFile = mapDir + "/model/model.gltf";
         var textureDir = mapDir + "/textures";
         environmentModel = modelImporter.loadModel(modelFile, textureDir);
+        environmentModel.setPosition(new Vector3f());
+        environmentModel.setRotation(new Quaternionf());
         createDroneModels();
-        projectileModel = createProjectileModel();
+        projectileModel = loadModel("/core/projectile");
+        xMarkModel = loadModel("/core/xMark");
 
         gui = new Gui(simulationState, config);
     }
@@ -101,9 +109,9 @@ public class OpenGlScene {
         }
     }
 
-    private Model createProjectileModel() throws URISyntaxException, IOException {
-        String projectileDir = simulationState.getAssetsDirectory() + "/core/projectile";
-        return modelImporter.loadModel(projectileDir + "/model/model.gltf", projectileDir + "/textures");
+    private Model loadModel(String dir) throws URISyntaxException, IOException {
+        String modelDir = simulationState.getAssetsDirectory() + dir;
+        return modelImporter.loadModel(modelDir + "/model/model.gltf", modelDir + "/textures");
     }
 
     public void render() {
@@ -134,6 +142,15 @@ public class OpenGlScene {
             for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
                 projectileModel.draw(stack, objectShader, simulationState.getSimulationTime());
                 projectileModel.setPosition(status.position);
+            }
+            if(simulationState.getCurrentControlMode() == ControlMode.Positional) {
+                Vector4f demanded = simulationState.getPositionalModeDemands();
+                if(demanded != null) {
+                    xMarkModel.setPosition(new Vector3f(demanded.x, demanded.y, demanded.z));
+                    xMarkModel.setRotation(Convert.toQuaternion(new Vector3f(0, 0, demanded.w)));
+                    xMarkModel.draw(stack, objectShader, simulationState.getSimulationTime());
+                }
+
             }
 
             renderUI();

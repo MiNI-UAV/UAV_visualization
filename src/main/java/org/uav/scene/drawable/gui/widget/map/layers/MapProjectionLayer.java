@@ -1,16 +1,14 @@
 package org.uav.scene.drawable.gui.widget.map.layers;
 
-import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.uav.model.SimulationState;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.utils.Convert;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
-import static java.lang.Math.atan2;
 
 public class MapProjectionLayer implements DrawableGuiLayer {
     private final static AffineTransform identity = new AffineTransform();
@@ -35,10 +33,10 @@ public class MapProjectionLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
+        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(drone == null) return;
-        Quaternionf q = drone.rotation;
-        rotZ = ((float) atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y*q.y + q.z*q.z)));
+        var rotation = Convert.toEuler(drone.rotation);
+        rotZ = rotation.z;
         dronePosition = new Vector2f(-drone.position.y, drone.position.x).mul(mapScale);
         droneVelocity = new Vector2f(drone.linearVelocity.y, -drone.linearVelocity.x).mul(velocityScale);
     }

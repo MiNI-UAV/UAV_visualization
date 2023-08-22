@@ -1,15 +1,12 @@
 package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
 
-import org.joml.Quaternionf;
 import org.uav.model.SimulationState;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.utils.Convert;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-
-import static java.lang.Math.asin;
-import static java.lang.Math.atan2;
 
 public class ArtificialHorizonBackgroundLayer implements DrawableGuiLayer {
     private final static AffineTransform identity = new AffineTransform();
@@ -35,12 +32,11 @@ public class ArtificialHorizonBackgroundLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id);
+        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(drone == null) return;
-        Quaternionf q = drone.rotation;
-        rotX = -((float) atan2(2 * (q.w * q.x + q.y * q.z), 1 - 2 * (q.x*q.x + q.y*q.y)));
-        float droneRotY = (float) asin(2 * (q.w * q.y - q.x * q.z));
-        rotY = droneRotY / (0.5f * (float) Math.PI) * distanceToMax;
+        var rotation = Convert.toEuler(drone.rotation);
+        rotX = -rotation.x;
+        rotY = rotation.y / (0.5f * (float) Math.PI) * distanceToMax;
     }
     @Override
     public void draw(Graphics2D g) {
