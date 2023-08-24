@@ -17,6 +17,7 @@ jobs:
         run: |
           version=`gradle -q printVersion`
           name=mini-uav-$version
+          echo "Releasing ${name}"
           if ! [ $(git tag -l "$name") ]; then
             ./bundle.sh
             git tag "${name}"
@@ -24,7 +25,7 @@ jobs:
             echo "TAG_NAME=${name}" >> "$GITHUB_ENV"
           fi
         shell: bash
-      - name: Release assets
+      - name: Release bundle
         if: env.TAG_NAME
         uses: ncipollo/release-action@v1
         with:
