@@ -9,6 +9,10 @@ jobs:
         with:
           lfs: true
           fetch-depth: '0'
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '20'
       - name: Put tag
         run: |
           version=`gradle -q printVersion`
