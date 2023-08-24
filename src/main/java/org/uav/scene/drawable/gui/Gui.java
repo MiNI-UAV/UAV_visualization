@@ -6,6 +6,7 @@ import org.uav.scene.drawable.gui.widget.ControlPanelWidget;
 import org.uav.scene.drawable.gui.widget.artificialHorizon.ArtificialHorizonWidget;
 import org.uav.scene.drawable.gui.widget.map.MapWidget;
 import org.uav.scene.drawable.gui.widget.radar.RadarWidget;
+import org.uav.scene.drawable.gui.widget.rotorDisplay.RotorDisplayWidget;
 import org.uav.scene.shader.Shader;
 
 import javax.imageio.ImageIO;
@@ -18,6 +19,7 @@ public class Gui {
     private final RadarWidget radar;
     private final ArtificialHorizonWidget artificialHorizon;
     private final MapWidget map;
+    private final RotorDisplayWidget rotorDisplay;
 
     public Gui(SimulationState simulationState, Config config) {
         var assetsDirectory = simulationState.getAssetsDirectory() + "/core/GUI/";
@@ -40,6 +42,9 @@ public class Gui {
                 simulationState,
                 config
         );
+
+        rotorDisplay = new RotorDisplayWidget(simulationState, config);
+
         String mapPath = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap() + "/model/minimap.png";
         map = new MapWidget(
                 background,
@@ -64,12 +69,14 @@ public class Gui {
         controlPanel.draw(shader);
         artificialHorizon.draw(shader);
         radar.draw(shader);
+        rotorDisplay.draw(shader);
         map.draw(shader);
     }
 
     public void update() {
         radar.update();
         artificialHorizon.update();
+        rotorDisplay.update();
         map.update();
     }
 
