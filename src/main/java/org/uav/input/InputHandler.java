@@ -117,8 +117,18 @@ public class InputHandler {
             {
                 case respawn -> simulationStateProcessor.respawnDrone();
                 case map -> simulationState.setMapOverlay(!simulationState.isMapOverlay());
-                case nextCamera -> simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());
-                case prevCamera ->  simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());
+                case nextCamera ->  { // TODO [MU-111] Rework input
+                    if(simulationState.isMapOverlay())
+                        simulationState.setMapZoom(simulationState.getMapZoom() * 1.1f);
+                    else
+                        simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());
+                }
+                case prevCamera ->{ // TODO [MU-111] Rework input
+                    if(simulationState.isMapOverlay())
+                        simulationState.setMapZoom(simulationState.getMapZoom() * 0.9f);
+                    else
+                        simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());
+                }
                 case acroMode -> changeControlMode(ControlMode.Acrobatic);
                 case angleMode -> changeControlMode(ControlMode.Angle);
                 case posMode -> changeControlMode(ControlMode.Positional);
