@@ -14,11 +14,12 @@ jobs:
           version=`gradle -q printVersion`
           name=mini-uav-$version
           if ! [ $(git tag -l "$name") ]; then
-            tar -czf assets.tar.gz assets
+            ./bundle.sh
             git tag "${name}"
             git push origin --tags
             echo "TAG_NAME=${name}" >> "$GITHUB_ENV"
           fi
+        shell: bash
       - name: Release assets
         if: env.TAG_NAME
         uses: ncipollo/release-action@v1
