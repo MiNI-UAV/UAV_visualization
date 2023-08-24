@@ -30,4 +30,4 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ env.TAG_NAME }}
-          artifacts: build/mini-uav/mini-uav-${{ env.TAG_NAME }}.tar.gz
+          artifacts: build/mini-uav/${{ env.TAG_NAME }}.tar.gz
