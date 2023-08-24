@@ -55,7 +55,6 @@ public class DroneStatusConsumer {
                     droneStatusMutex.unlock();
 
                 } catch (ZMQException exception) {
-                    System.out.println("Thread " + this.getName() + " has been interrupted");
                     break;
                 }
             }

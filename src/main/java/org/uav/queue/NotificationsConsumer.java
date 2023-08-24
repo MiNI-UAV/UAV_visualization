@@ -35,7 +35,6 @@ public class NotificationsConsumer extends Thread {
                 parseMessage(message);
 
             } catch (ZMQException exception) {
-                System.out.println("Thread " + this.getName() + " has been interrupted");
                 break;
             }
         }

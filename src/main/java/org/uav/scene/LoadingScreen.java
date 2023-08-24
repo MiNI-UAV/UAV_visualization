@@ -20,8 +20,8 @@ public class LoadingScreen {
     public LoadingScreen(long window, Config config) throws IOException {
         this.window = window;
 
-        String guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/guiShader.vert")).getFile();
-        String guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/guiShader.frag")).getFile();
+        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.vert"));
+        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.frag"));
         shader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
         shader.use();
 

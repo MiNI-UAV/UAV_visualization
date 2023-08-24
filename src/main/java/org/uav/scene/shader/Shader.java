@@ -1,26 +1,26 @@
 package org.uav.scene.shader;
 
+import org.apache.commons.io.IOUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
 
 public class Shader {
 
     public int shaderProgram;
 
-    public Shader(String vertexShaderPath, String fragmentShaderPath) throws IOException {
+    public Shader(InputStream vertexShaderStream, InputStream fragmentShaderStream) throws IOException {
         // Read GLSL files
-        String vertexShaderSource = Files.readString(new File(vertexShaderPath).toPath());
-        String fragmentShaderSource = Files.readString(new File(fragmentShaderPath).toPath());
+        String vertexShaderSource = IOUtils.toString(vertexShaderStream, StandardCharsets.UTF_8);
+        String fragmentShaderSource = IOUtils.toString(fragmentShaderStream, StandardCharsets.UTF_8);
 
         IntBuffer success = BufferUtils.createIntBuffer(1);
         // Set Up Vertex Shader

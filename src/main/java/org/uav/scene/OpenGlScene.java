@@ -63,21 +63,21 @@ public class OpenGlScene {
     }
 
     private void setUpShaders() throws IOException {
-        String phongVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/phongShader.vert")).getFile();
-        String phongFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/phongShader.frag")).getFile();
+        var phongVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/phongShader.vert"));
+        var phongFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/phongShader.frag"));
         objectShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
         objectShader.use();
         objectShader.setVec3("backgroundColor", simulationState.getSkyColor());
         setUpLights(objectShader);
 
-        String lightSourceVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/lightSourceShader.vert")).getFile();
-        String lightSourceFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/lightSourceShader.frag")).getFile();
+        var lightSourceVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/lightSourceShader.vert"));
+        var lightSourceFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/lightSourceShader.frag"));
         lightSourceShader = new Shader(lightSourceVertexShaderSource, lightSourceFragmentShaderSource);
         lightSourceShader.use();
         lightSourceShader.setVec3("lightColor", new Vector3f(1.f, 	1.f, 1.f));
 
-        String guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/guiShader.vert")).getFile();
-        String guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("shaders/guiShader.frag")).getFile();
+        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.vert"));
+        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.frag"));
         guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
         guiShader.use();
     }

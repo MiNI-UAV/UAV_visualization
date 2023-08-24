@@ -54,7 +54,6 @@ public class ProjectileStatusesConsumer {
                     projectileStatusesMutex.unlock();
 
                 } catch (ZMQException exception) {
-                    System.out.println("Thread " + this.getName() + " has been interrupted");
                     break;
                 }
             }
