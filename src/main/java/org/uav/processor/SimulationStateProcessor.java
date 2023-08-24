@@ -41,7 +41,7 @@ public class SimulationStateProcessor implements AutoCloseable {
         this.simulationState = simulationState;
         this.config = config;
         var context = new ZContext();
-        droneRequester = new DroneRequester(context, config);
+        droneRequester = new DroneRequester(context, simulationState, config);
         droneStatusConsumer = new DroneStatusConsumer(context, simulationState, config);
         projectileStatusesConsumer = new ProjectileStatusesConsumer(context, simulationState, config);
         notificationsConsumer = new NotificationsConsumer(context, config, simulationState);

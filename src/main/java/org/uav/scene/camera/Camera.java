@@ -58,9 +58,9 @@ public class Camera {
     public void updateCamera() {
         Vector3f dronePosition;
         Quaternionf droneRotation;
-        if(simulationState.getCurrPassDroneStatuses().map.containsKey(simulationState.getCurrentlyControlledDrone().id)) {
-            dronePosition = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id).position;
-            droneRotation = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().id).rotation;
+        if(simulationState.getCurrPassDroneStatuses().map.containsKey(simulationState.getCurrentlyControlledDrone().getId())) {
+            dronePosition = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId()).position;
+            droneRotation = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId()).rotation;
         }
         else {
             dronePosition = new Vector3f();

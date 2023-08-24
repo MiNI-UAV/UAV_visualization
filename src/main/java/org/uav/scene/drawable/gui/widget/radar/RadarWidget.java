@@ -1,6 +1,5 @@
 package org.uav.scene.drawable.gui.widget.radar;
 
-import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
@@ -11,12 +10,11 @@ import org.uav.scene.drawable.gui.GuiElement;
 import org.uav.scene.drawable.gui.widget.radar.layers.RadarArrowLayer;
 import org.uav.scene.drawable.gui.widget.radar.layers.RadarPointsLayer;
 import org.uav.scene.shader.Shader;
+import org.uav.utils.Convert;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.lang.Math.atan2;
 
 public class RadarWidget implements GuiWidget {
     private static final float FULL_CIRCUMFERENCE = (float) (2 * Math.PI);
@@ -38,7 +36,7 @@ public class RadarWidget implements GuiWidget {
         radarArrowAngle = 0;
         radarPoints = new ArrayList<>();
         startingTraceStrength = 40;
-        float radarRangeRadius = 45; // TODO Adjust to size of the compass
+        float radarRangeRadius = 45;
         radarRangeRadiusSquared = radarRangeRadius * radarRangeRadius;
         radarSectorLength = (float) (1/18f * Math.PI);
         currentSectorAngle = 0;
@@ -54,6 +52,7 @@ public class RadarWidget implements GuiWidget {
                 .setScale(config.guiScale)
                 .setResolution(config.windowWidth, config.windowHeight)
                 .setHidden(false)
+                .setOverlayLevel(2)
                 .addLayer(radarTexture)
                 .addLayer(radarArrowTexture.getWidth(), radarArrowTexture.getHeight(), radarArrowLayer)
                 .addLayer(radarPointsCanvasX, radarPointsCanvasY, radarPointsLayer)
@@ -82,7 +81,7 @@ public class RadarWidget implements GuiWidget {
         radarPoints.removeIf(point -> point.traceStrength <= 0);
 
         var drones = simulationState.getCurrPassDroneStatuses().map;
-        var radarDrone = drones.get(simulationState.getCurrentlyControlledDrone().id);
+        var radarDrone = drones.get(simulationState.getCurrentlyControlledDrone().getId());
         if(radarDrone == null) return;
         List<RadarPoint> newPoints = drones.values().stream()
                 .filter(drone -> drone != radarDrone)
@@ -96,9 +95,8 @@ public class RadarWidget implements GuiWidget {
     private static Vector2f getRelativePoints(DroneStatus drone, DroneStatus radarDrone) {
         float relX = drone.position.x - radarDrone.position.x;
         float relY = drone.position.y - radarDrone.position.y;
-        Quaternionf q = drone.rotation;
-        float rotZ = ((float) atan2(2 * (q.w * q.z + q.x * q.y), 1 - 2 * (q.y*q.y + q.z*q.z)));
-        return rotatePoint(rotZ, new Vector2f(relX, relY));
+        var rotation = Convert.toEuler(drone.rotation);
+        return rotatePoint(rotation.z, new Vector2f(relX, relY));
     }
 
     private static Vector2f rotatePoint(float angle, Vector2f point) {

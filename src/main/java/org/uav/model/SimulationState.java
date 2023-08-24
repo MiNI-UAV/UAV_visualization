@@ -2,6 +2,7 @@ package org.uav.model;
 
 import lombok.Data;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.uav.config.Config;
 import org.uav.input.CameraMode;
 import org.uav.model.status.DroneStatuses;
@@ -35,7 +36,12 @@ public class SimulationState {
     float lastHeartBeatTimeStamp;
 
     boolean mapOverlay;
+    float mapZoom;
     Vector3f skyColor;
+
+    Vector4f positionalModeDemands;
+    Vector4f angleModeDemands;
+    Vector4f acroModeDemands;
 
 
     public SimulationState(Config config, long window) {
@@ -52,6 +58,10 @@ public class SimulationState {
         currPassProjectileStatuses = new ProjectileStatuses(projectileStatuses.map);
         camera = new Camera(this, config);
         mapOverlay = false;
+        mapZoom = 1;
         skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
+        positionalModeDemands = null;
+        angleModeDemands = null;
+        acroModeDemands = null;
     }
 }
