@@ -2,16 +2,15 @@
 
 temp=build/mini-uav
 version=`gradle -q printVersion`
-tempLog=`mktemp -t mini-uav-bundle-log.XXXXXX`
 
-echo "Log created at $tempLog" | tee -a $tempLog
-rm -R $temp >> $tempLog 2>&1
+echo "Log created at $tempLog"
+rm -R $temp
 mkdir -p $temp
 shopt -s extglob 
 
 # Linux
-echo 'Bundling Linux package...' | tee -a $tempLog
-gradle shadowJar >> $tempLog 2>&1
+echo 'Bundling Linux package...'
+gradle shadowJar
 tempLinux=$temp/linux 
 mkdir $tempLinux
 cp build/libs/MiniUAV.jar $tempLinux
@@ -23,14 +22,14 @@ cp -r music $tempLinux
 cp config.yaml $tempLinux
 cp icon.ico $tempLinux
 cd $tempLinux
-tar -czvf mini-uav-$version-linux.tar.gz * >> $tempLog 2>&1 
+tar -czvf mini-uav-$version-linux.tar.gz *
 rm -R -- !(mini-uav-$version-linux.tar.gz)
 cd ../../../
-echo 'ok.' | tee -a $tempLog
+echo 'ok.'
 
 # Windows
-echo 'Bundling Windows package...' | tee -a $tempLog
-gradle createExe >> $tempLog 2>&1
+echo 'Bundling Windows package...'
+gradle createExe
 tempWindows=$temp/windows 
 mkdir $tempWindows
 cp -r build/launch4j/* $tempWindows
@@ -40,16 +39,16 @@ cp config.yaml $tempWindows
 cp icon.ico $tempWindows
 cp lib/* $tempWindows
 cd $tempWindows
-tar -czvf mini-uav-$version-windows.tar.gz * >> $tempLog 2>&1
+tar -czvf mini-uav-$version-windows.tar.gz *
 rm -R -- !(mini-uav-$version-windows.tar.gz)
 cd ../../../
-echo 'ok.' | tee -a $tempLog
+echo 'ok.'
 
 # Bundle release
-echo 'Bundling release...' | tee -a $tempLog
+echo 'Bundling release...'
 cd $temp
-tar -czvf mini-uav-$version.tar.gz * >> $tempLog 2>&1
+tar -czvf mini-uav-$version.tar.gz *
 echo 'ok.' | tee -a $tempLog
 
-echo 'App bundled Successfully!' | tee -a $tempLog
+echo 'App bundled Successfully!'
 
