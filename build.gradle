@@ -1,7 +1,9 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
     id("io.freefair.lombok") version "8.1.0"
+    id 'edu.sc.seis.launch4j' version '3.0.4'
 }
 
 application {
@@ -13,6 +15,17 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+}
+
+shadowJar{
+    archiveFileName = "MiniUAV.jar"
+}
+
+launch4j {
+    outfile = 'Mini UAV.exe'
+    mainClassName = application.mainClass
+    icon = "${projectDir}/icon.ico"
+    jarTask = project.tasks.shadowJar
 }
 
 project.ext.lwjglVersion = "3.3.1"
