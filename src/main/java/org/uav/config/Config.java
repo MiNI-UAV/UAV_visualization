@@ -25,6 +25,7 @@ public class Config {
     public String droneModel;
     public CameraMode defaultCamera;
     public ControlMode defaultControlMode;
+    public boolean drawInWorldDemandedPositionalCoords;
     public JoystickConfig joystick;
     public Ports ports;
     public int heartBeatIntervalMs;

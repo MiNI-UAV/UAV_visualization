@@ -10,6 +10,7 @@ droneName: Maurice
 droneModel: buster
 defaultCamera: HorizontalCamera
 defaultControlMode: Positional
+drawInWorldDemandedPositionalCoords: false
 joystick:
   deadZoneFactor: 0.1
   mappings:

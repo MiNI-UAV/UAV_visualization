@@ -36,6 +36,7 @@ public class SimulationState {
     float lastHeartBeatTimeStamp;
 
     boolean mapOverlay;
+    float mapZoom;
     Vector3f skyColor;
 
     Vector4f positionalModeDemands;
@@ -57,6 +58,7 @@ public class SimulationState {
         currPassProjectileStatuses = new ProjectileStatuses(projectileStatuses.map);
         camera = new Camera(this, config);
         mapOverlay = false;
+        mapZoom = 1;
         skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
         positionalModeDemands = null;
         angleModeDemands = null;

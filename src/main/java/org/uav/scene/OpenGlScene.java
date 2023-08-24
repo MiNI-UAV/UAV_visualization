@@ -142,8 +142,12 @@ public class OpenGlScene {
             for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
                 projectileModel.draw(stack, objectShader, simulationState.getSimulationTime());
                 projectileModel.setPosition(status.position);
+                projectileModel.setRotation(new Quaternionf());
             }
-            if(simulationState.getCurrentControlMode() == ControlMode.Positional) {
+            if(
+                config.drawInWorldDemandedPositionalCoords
+                && simulationState.getCurrentControlMode() == ControlMode.Positional
+            ) {
                 Vector4f demanded = simulationState.getPositionalModeDemands();
                 if(demanded != null) {
                     xMarkModel.setPosition(new Vector3f(demanded.x, demanded.y, demanded.z));

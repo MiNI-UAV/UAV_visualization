@@ -45,6 +45,7 @@ public class ArtificialHorizonWidget implements GuiWidget {
                 .setScale(config.guiScale)
                 .setResolution(config.windowWidth, config.windowHeight)
                 .setHidden(false)
+                .setOverlayLevel(2)
                 .addLayer(horizonScreenX, horizonScreenY, backgroundLayer)
                 .addLayer(horizonCursorTexture)
                 .addLayer(horizonScreenX, horizonScreenY, rollLayer)

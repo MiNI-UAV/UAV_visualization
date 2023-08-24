@@ -36,7 +36,7 @@ public class RadarWidget implements GuiWidget {
         radarArrowAngle = 0;
         radarPoints = new ArrayList<>();
         startingTraceStrength = 40;
-        float radarRangeRadius = 45; // TODO Adjust to size of the compass
+        float radarRangeRadius = 45;
         radarRangeRadiusSquared = radarRangeRadius * radarRangeRadius;
         radarSectorLength = (float) (1/18f * Math.PI);
         currentSectorAngle = 0;
@@ -52,6 +52,7 @@ public class RadarWidget implements GuiWidget {
                 .setScale(config.guiScale)
                 .setResolution(config.windowWidth, config.windowHeight)
                 .setHidden(false)
+                .setOverlayLevel(2)
                 .addLayer(radarTexture)
                 .addLayer(radarArrowTexture.getWidth(), radarArrowTexture.getHeight(), radarArrowLayer)
                 .addLayer(radarPointsCanvasX, radarPointsCanvasY, radarPointsLayer)

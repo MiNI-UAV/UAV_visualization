@@ -2,6 +2,7 @@ package org.uav.scene.drawable.gui;
 
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
+import org.uav.scene.drawable.gui.widget.ControlPanelWidget;
 import org.uav.scene.drawable.gui.widget.artificialHorizon.ArtificialHorizonWidget;
 import org.uav.scene.drawable.gui.widget.map.MapWidget;
 import org.uav.scene.drawable.gui.widget.radar.RadarWidget;
@@ -13,18 +14,24 @@ import java.io.File;
 import java.io.IOException;
 
 public class Gui {
+    private final ControlPanelWidget controlPanel;
     private final RadarWidget radar;
     private final ArtificialHorizonWidget artificialHorizon;
     private final MapWidget map;
 
     public Gui(SimulationState simulationState, Config config) {
         var assetsDirectory = simulationState.getAssetsDirectory() + "/core/GUI/";
+        var background = loadImage(assetsDirectory + "background.png");
+
+        controlPanel = new ControlPanelWidget(background, config);
+
         radar = new RadarWidget(
                 loadImage(assetsDirectory + "radar.png"),
                 loadImage(assetsDirectory + "radarArrow.png"),
                 simulationState,
                 config
         );
+
         artificialHorizon = new ArtificialHorizonWidget(
                 loadImage(assetsDirectory + "horizon.png"),
                 loadImage(assetsDirectory + "horizonCursor.png"),
@@ -35,9 +42,10 @@ public class Gui {
         );
         String mapPath = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap() + "/model/minimap.png";
         map = new MapWidget(
-                loadImage(assetsDirectory + "background.png"),
+                background,
                 loadImage(mapPath),
                 loadImage(assetsDirectory + "droneIconLowRes.png"),
+                loadImage(assetsDirectory + "droneIconLowResDemanded.png"),
                 simulationState,
                 config
         );
@@ -53,6 +61,7 @@ public class Gui {
     }
 
     public void draw(Shader shader) {
+        controlPanel.draw(shader);
         artificialHorizon.draw(shader);
         radar.draw(shader);
         map.draw(shader);
