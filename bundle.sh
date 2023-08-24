@@ -1,7 +1,7 @@
 #!/bin/bash
 
 temp=build/mini-uav
-version=1.0
+version=`gradle -q printVersion`
 tempLog=`mktemp -t mini-uav-bundle-log.XXXXXX`
 
 echo "Log created at $tempLog" | tee -a $tempLog
@@ -38,6 +38,7 @@ cp -r drones $tempWindows
 cp -r music $tempWindows
 cp config.yaml $tempWindows
 cp icon.ico $tempWindows
+cp lib/* $tempWindows
 cd $tempWindows
 tar -czvf mini-uav-$version-windows.tar.gz * >> $tempLog 2>&1
 rm -R -- !(mini-uav-$version-windows.tar.gz)
