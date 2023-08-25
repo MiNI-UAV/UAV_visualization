@@ -39,7 +39,7 @@ public class DroneStatusMessageParser implements MessageParser<List<DroneStatus>
         drone.angularVelocity.z = Float.parseFloat(scanner.next());
 
         while (scanner.hasNext()){
-            drone.propellers.add(Float.parseFloat(scanner.next()));
+            drone.propellersRadps.add(Float.parseFloat(scanner.next()));
         }
 
         return drone;

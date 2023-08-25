@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.config.Config;
+import org.uav.config.DroneParameters;
 import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
 import org.uav.processor.SimulationStateProcessor;
@@ -33,6 +34,7 @@ public class UavVisualization {
     private HeartbeatProducer heartbeatProducer;
     private InputHandler inputHandler;
     private Config config;
+    private DroneParameters droneParameters;
 
     public void run() throws IOException, URISyntaxException {
         init();
@@ -55,7 +57,8 @@ public class UavVisualization {
     }
 
     private void init() throws IOException, URISyntaxException {
-        config = Config.loadConfig("config.yaml");
+        config = Config.load("config.yaml");
+        droneParameters = DroneParameters.load("drones/" + config.droneModel + ".xml");
         initializeOpenGlEnvironment();
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
@@ -65,7 +68,7 @@ public class UavVisualization {
         loadingScreen.render("Checking assets...");
         simulationStateProcessor.checkAndUpdateAssets(simulationState, loadingScreen);
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
-        openGlScene = new OpenGlScene(simulationState, config, loadingScreen);
+        openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
         simulationStateProcessor.saveDroneModelChecksum(config.droneModel);
         loadingScreen.render("Spawning drone...");

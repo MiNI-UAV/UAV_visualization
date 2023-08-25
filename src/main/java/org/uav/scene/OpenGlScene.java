@@ -7,6 +7,7 @@ import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
+import org.uav.config.DroneParameters;
 import org.uav.importer.GltfImporter;
 import org.uav.model.Model;
 import org.uav.model.SimulationState;
@@ -43,13 +44,13 @@ public class OpenGlScene {
     private Model xMarkModel;
     private Gui gui;
 
-    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen) throws IOException, URISyntaxException {
+    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException, URISyntaxException {
         this.config = config;
         this.simulationState = simulationState;
 
         modelImporter = new GltfImporter(loadingScreen);
 
-        setUpDrawables();
+        setUpDrawables(droneParameters);
         setUpShaders();
     }
 
@@ -82,7 +83,7 @@ public class OpenGlScene {
         guiShader.use();
     }
 
-    private void setUpDrawables() throws URISyntaxException, IOException {
+    private void setUpDrawables(DroneParameters droneParameters) throws URISyntaxException, IOException {
 
         var mapDir = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap();
         var modelFile = mapDir + "/model/model.gltf";
@@ -94,7 +95,7 @@ public class OpenGlScene {
         projectileModel = loadModel("/core/projectile");
         xMarkModel = loadModel("/core/xMark");
 
-        gui = new Gui(simulationState, config);
+        gui = new Gui(simulationState, config, droneParameters);
     }
 
     private void createDroneModels() throws URISyntaxException, IOException {

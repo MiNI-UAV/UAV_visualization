@@ -12,7 +12,7 @@ public class DroneStatus {
     public Quaternionf rotation;
     public Vector3f linearVelocity;
     public Vector3f angularVelocity;
-    public Vector<Float> propellers;
+    public Vector<Float> propellersRadps;
 
     public DroneStatus() {
         id = 0;
@@ -20,6 +20,6 @@ public class DroneStatus {
         rotation = new Quaternionf();
         linearVelocity = new Vector3f();
         angularVelocity = new Vector3f();
-        propellers = new Vector<>();
+        propellersRadps = new Vector<>();
     }
 }

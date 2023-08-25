@@ -1,12 +1,13 @@
 package org.uav.scene.drawable.gui;
 
 import org.uav.config.Config;
+import org.uav.config.DroneParameters;
 import org.uav.model.SimulationState;
 import org.uav.scene.drawable.gui.widget.ControlPanelWidget;
 import org.uav.scene.drawable.gui.widget.artificialHorizon.ArtificialHorizonWidget;
 import org.uav.scene.drawable.gui.widget.map.MapWidget;
+import org.uav.scene.drawable.gui.widget.propellersDisplay.PropellersDisplayWidget;
 import org.uav.scene.drawable.gui.widget.radar.RadarWidget;
-import org.uav.scene.drawable.gui.widget.rotorDisplay.RotorDisplayWidget;
 import org.uav.scene.shader.Shader;
 
 import javax.imageio.ImageIO;
@@ -19,9 +20,9 @@ public class Gui {
     private final RadarWidget radar;
     private final ArtificialHorizonWidget artificialHorizon;
     private final MapWidget map;
-    private final RotorDisplayWidget rotorDisplay;
+    private final PropellersDisplayWidget rotorDisplay;
 
-    public Gui(SimulationState simulationState, Config config) {
+    public Gui(SimulationState simulationState, Config config, DroneParameters droneParameters) {
         var assetsDirectory = simulationState.getAssetsDirectory() + "/core/GUI/";
         var background = loadImage(assetsDirectory + "background.png");
 
@@ -43,7 +44,7 @@ public class Gui {
                 config
         );
 
-        rotorDisplay = new RotorDisplayWidget(simulationState, config);
+        rotorDisplay = new PropellersDisplayWidget(simulationState, config, droneParameters);
 
         String mapPath = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap() + "/model/minimap.png";
         map = new MapWidget(

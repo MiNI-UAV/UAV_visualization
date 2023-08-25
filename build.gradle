@@ -37,11 +37,13 @@ dependencies {
     implementation "de.javagl:jgltf-model:2.0.0"
     implementation "org.zeromq:jeromq:0.5.3"
     implementation "org.joml:joml:1.10.5"
-    implementation "org.yaml:snakeyaml:2.0"
     implementation 'org.json:json:20230618'
     implementation 'commons-io:commons-io:2.13.0'
     implementation 'org.apache.commons:commons-compress:1.23.0'
     implementation 'org.javatuples:javatuples:1.2'
+    implementation 'com.fasterxml.woodstox:woodstox-core:6.5.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.15.2'
 
     // LWJGL
     implementation "org.lwjgl:lwjgl"

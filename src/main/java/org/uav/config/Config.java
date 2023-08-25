@@ -1,17 +1,15 @@
 package org.uav.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.DroneMovement;
 import org.uav.queue.Actions;
 import org.uav.queue.ControlMode;
-import org.yaml.snakeyaml.LoaderOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Map;
 
 public class Config {
@@ -49,12 +47,10 @@ public class Config {
         public int droneStatuses;
         public int projectileStatuses;
     }
-    public static Config loadConfig(String path) {
-        try (InputStream inputStream = new FileInputStream(System.getProperty("user.dir") + "/" + path)) {
-            var constructor = new Constructor(Config.class, new LoaderOptions());
-            var yaml = new Yaml(constructor);
-            // yaml.setBeanAccess(BeanAccess.FIELD); TODO: Privatize config
-            return yaml.load(inputStream);
+    public static Config load(String path) {
+        try {
+            ObjectMapper mapper = new YAMLMapper();
+            return mapper.readValue(new File(System.getProperty("user.dir") + "/" + path), Config.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
