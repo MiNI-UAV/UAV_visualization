@@ -58,7 +58,7 @@ public class UavVisualization {
 
     private void init() throws IOException, URISyntaxException {
         config = Config.load("config.yaml");
-        droneParameters = DroneParameters.load("drones/" + config.droneModel + ".xml");
+        droneParameters = DroneParameters.load("drones/" + config.getDroneModel() + ".xml");
         initializeOpenGlEnvironment();
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
@@ -70,7 +70,7 @@ public class UavVisualization {
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
-        simulationStateProcessor.saveDroneModelChecksum(config.droneModel);
+        simulationStateProcessor.saveDroneModelChecksum(config.getDroneModel());
         loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
 
@@ -101,7 +101,7 @@ public class UavVisualization {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(config.windowWidth, config.windowHeight, "UAV visualization", NULL, NULL);
+        window = glfwCreateWindow(config.getWindowWidth(), config.getWindowHeight(), "UAV visualization", NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 

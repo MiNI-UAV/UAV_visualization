@@ -17,6 +17,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.uav.utils.ZmqUtils.checkErrno;
+
 public class DroneRequester {
     private final Config config;
     private final SimulationState simulationState;
@@ -28,14 +30,16 @@ public class DroneRequester {
         this.simulationState = simulationState;
         this.context = context;
         this.config = config;
-        String address = "tcp://" + config.serverAddress + ":" + config.ports.droneRequester;
+        String address = "tcp://" + config.getServerAddress() + ":" + config.getPorts().getDroneRequester();
         messageParser = new DroneRequestReplyParser();
         socket = context.createSocket(SocketType.REQ);
+        socket.setSendTimeOut(config.getServerTimoutMs());
+        socket.setReceiveTimeOut(config.getServerTimoutMs());
         socket.connect(address);
     }
 
     public Optional<Drone> requestNewDrone(String droneName, String configNameHash) {
-        socket.send(("s:" + droneName + ";" + configNameHash).getBytes(ZMQ.CHARSET), 0);
+        if(!socket.send(("s:" + droneName + ";" + configNameHash).getBytes(ZMQ.CHARSET), 0)) checkErrno(socket);
         byte[] reply = socket.recv();
         String message = new String(reply, ZMQ.CHARSET);
 
@@ -63,10 +67,10 @@ public class DroneRequester {
     }
 
     public ServerInfo fetchServerInfo() {
-        socket.send(("i").getBytes(ZMQ.CHARSET), 0);
+        if(!socket.send(("i").getBytes(ZMQ.CHARSET), 0)) checkErrno(socket);
         byte[] reply = socket.recv();
+        if(reply == null) checkErrno(socket);
         String message = new String(reply, ZMQ.CHARSET);
-
         JSONObject obj = new JSONObject(message);
         String assetChecksum = obj.getString("checksum");
         String serverMap = obj.getString("map");
@@ -74,7 +78,6 @@ public class DroneRequester {
         JSONArray arr = obj.getJSONArray("configs");
         for (int i = 0; i < arr.length(); i++)
             configs.add(arr.getString(i));
-
         return new ServerInfo(assetChecksum, serverMap, configs);
     }
 
@@ -89,8 +92,9 @@ public class DroneRequester {
         }
 
         String sb = "c:" + configContent;
-        socket.send(sb.getBytes(ZMQ.CHARSET), 0);
+        if(!socket.send(sb.getBytes(ZMQ.CHARSET), 0)) checkErrno(socket);
         byte[] reply = socket.recv();
+        if(reply == null) checkErrno(socket);
         String message = new String(reply, ZMQ.CHARSET);
         return message.substring(message.lastIndexOf(';') + 1);
     }

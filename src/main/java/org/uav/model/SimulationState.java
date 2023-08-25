@@ -51,8 +51,8 @@ public class SimulationState {
         projectileStatuses = new ProjectileStatuses();
         projectileStatusesMutex = new ReentrantLock();
         notifications = new Notifications();
-        currentCameraMode = config.defaultCamera;
-        currentControlMode = config.defaultControlMode;
+        currentCameraMode = config.getDefaultCamera();
+        currentControlMode = config.getDefaultControlMode();
         currentlyControlledDrone = null;
         currPassDroneStatuses = new DroneStatuses(droneStatuses.map);
         currPassProjectileStatuses = new ProjectileStatuses(projectileStatuses.map);

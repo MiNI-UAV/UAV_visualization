@@ -54,7 +54,7 @@ public class SimulationStateProcessor implements AutoCloseable {
     }
 
     public void requestNewDrone() {
-        var newDroneResult = droneRequester.requestNewDrone(config.droneName, simulationState.getDroneModelChecksum());
+        var newDroneResult = droneRequester.requestNewDrone(config.getDroneName(), simulationState.getDroneModelChecksum());
         simulationState.setCurrentlyControlledDrone(newDroneResult.orElseThrow());
     }
 
@@ -79,7 +79,7 @@ public class SimulationStateProcessor implements AutoCloseable {
         Drone oldDrone = simulationState.getCurrentlyControlledDrone();
         requestNewDrone();
         oldDrone.sendUtilsCommand(KILL_COMMAND);
-        simulationState.setCurrentControlMode(config.defaultControlMode);
+        simulationState.setCurrentControlMode(config.getDefaultControlMode());
     }
 
     public void checkAndUpdateAssets(SimulationState simulationState, LoadingScreen loadingScreen) throws IOException {

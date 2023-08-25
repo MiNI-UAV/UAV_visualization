@@ -13,6 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.uav.utils.ZmqUtils.checkErrno;
+
 public class ProjectileStatusesConsumer {
     private final ProjectileStatuses projectileStatuses;
     private final ReentrantLock projectileStatusesMutex;
@@ -24,9 +26,11 @@ public class ProjectileStatusesConsumer {
     public ProjectileStatusesConsumer(ZContext context, SimulationState simulationState, Config config) {
         this.projectileStatuses = simulationState.getProjectileStatuses();
         this.projectileStatusesMutex = simulationState.getProjectileStatusesMutex();
-        String address = "tcp://" + config.serverAddress + ":" + config.ports.projectileStatuses;
+        String address = "tcp://" + config.getServerAddress() + ":" + config.getPorts().getProjectileStatuses();
         messageParser = new ProjectileStatusMessageParser();
         socket = context.createSocket(SocketType.SUB);
+        socket.setSendTimeOut(config.getServerTimoutMs());
+        socket.setReceiveTimeOut(config.getServerTimoutMs());
         socket.connect(address);
         socket.subscribe("");
         thread = new ProjectileStatusesThread();
@@ -46,6 +50,7 @@ public class ProjectileStatusesConsumer {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     byte[] reply = socket.recv(0);
+                    if(reply == null) checkErrno(socket);
                     String message = new String(reply, ZMQ.CHARSET);
                     //System.out.println("Received: [" + message + "]");
                     projectileStatusesMutex.lock();

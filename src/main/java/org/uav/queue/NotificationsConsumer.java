@@ -14,14 +14,18 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import static org.uav.utils.ZmqUtils.checkErrno;
+
 public class NotificationsConsumer extends Thread {
     private final Notifications notifications;
     private final ZMQ.Socket socket;
 
     public NotificationsConsumer(ZContext context, Config config, SimulationState simulationState) {
         notifications = simulationState.getNotifications();
-        String address = "tcp://" + config.serverAddress + ":" + config.ports.notifications;
+        String address = "tcp://" + config.getServerAddress() + ":" + config.getPorts().getNotifications();
         socket = context.createSocket(SocketType.SUB);
+        socket.setSendTimeOut(config.getServerTimoutMs());
+        socket.setReceiveTimeOut(config.getServerTimoutMs());
         socket.connect(address);
         socket.subscribe("");
     }
@@ -30,6 +34,7 @@ public class NotificationsConsumer extends Thread {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 byte[] reply = socket.recv(0);
+                if(reply == null) checkErrno(socket);
                 String message = new String(reply, ZMQ.CHARSET);
                 //System.out.println("Received: [" + message + "]");
                 parseMessage(message);

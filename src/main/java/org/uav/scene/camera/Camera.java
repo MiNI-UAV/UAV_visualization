@@ -27,7 +27,7 @@ public class Camera {
 
     public Camera(SimulationState simulationState, Config config) {
         this.simulationState = simulationState;
-        fov = config.fov;
+        fov = config.getFov();
     }
 
     public Vector3f getCameraPos() {

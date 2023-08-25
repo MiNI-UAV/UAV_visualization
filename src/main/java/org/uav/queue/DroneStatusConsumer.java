@@ -13,6 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.uav.utils.ZmqUtils.checkErrno;
+
 public class DroneStatusConsumer {
 
     private final DroneStatuses droneStatuses;
@@ -25,9 +27,11 @@ public class DroneStatusConsumer {
     public DroneStatusConsumer(ZContext context, SimulationState simulationState, Config config) {
         this.droneStatuses = simulationState.getDroneStatuses();
         this.droneStatusMutex = simulationState.getDroneStatusesMutex();
-        String address = "tcp://" + config.serverAddress + ":" + config.ports.droneStatuses;
+        String address = "tcp://" + config.getServerAddress() + ":" + config.getPorts().getDroneStatuses();
         messageParser = new DroneStatusMessageParser();
         socket = context.createSocket(SocketType.SUB);
+        socket.setSendTimeOut(config.getServerTimoutMs());
+        socket.setReceiveTimeOut(config.getServerTimoutMs());
         socket.connect(address);
         socket.subscribe("");
         thread = new PositionThread();
@@ -47,6 +51,7 @@ public class DroneStatusConsumer {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     byte[] reply = socket.recv(0);
+                    if(reply == null) checkErrno(socket);
                     String message = new String(reply, ZMQ.CHARSET);
                     //System.out.println("Received: [" + message + "]");
                     droneStatusMutex.lock();

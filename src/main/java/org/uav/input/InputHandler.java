@@ -30,7 +30,7 @@ public class InputHandler {
         this.config = config;
         this.simulationState = simulationState;
         this.simulationStateProcessor = simulationStateProcessor;
-        int joystickAxisCount = config.joystick.mappings.axes.size();
+        int joystickAxisCount = config.getJoystick().getMappings().getAxes().size();
         joystickStatus = new JoystickStatus(joystickAxisCount);
         joystickProducer = new JoystickProducer();
     }
@@ -77,10 +77,10 @@ public class InputHandler {
 
             while (floatBuffer != null && floatBuffer.hasRemaining()) {
                 float axes = floatBuffer.get();
-                if(config.joystick.mappings.axes.containsKey(count1))
-                    joystickStatus.rawData[config.joystick.mappings.axes.get(count1).getRawDataArrayIndex()] = convertToRawData(count1, axes);
-                if(config.joystick.mappings.axisActions.containsKey(count1))
-                    handleAxis(config.joystick.mappings.axisActions.get(count1),axes);
+                if(config.getJoystick().getMappings().getAxes().containsKey(count1))
+                    joystickStatus.rawData[config.getJoystick().getMappings().getAxes().get(count1).getRawDataArrayIndex()] = convertToRawData(count1, axes);
+                if(config.getJoystick().getMappings().getAxisActions().containsKey(count1))
+                    handleAxis(config.getJoystick().getMappings().getAxisActions().get(count1),axes);
                 count1++;
             }
 
@@ -108,12 +108,12 @@ public class InputHandler {
 
         for (int i = 0; i < buttonState.length; i++) {
             if(buttonState[i] == 0 || buttonState[i] == prevButtonsState[i]) continue;
-            if(!config.joystick.mappings.buttonActions.containsKey(i))
+            if(!config.getJoystick().getMappings().getButtonActions().containsKey(i))
             {
                 System.out.println("Unknown button: " + i);
                 continue;
             }
-            switch(config.joystick.mappings.buttonActions.getOrDefault(i,JoystickButtonFunctions.unused))
+            switch(config.getJoystick().getMappings().getButtonActions().getOrDefault(i,JoystickButtonFunctions.unused))
             {
                 case respawn -> simulationStateProcessor.respawnDrone();
                 case map -> simulationState.setMapOverlay(!simulationState.isMapOverlay());
@@ -174,11 +174,11 @@ public class InputHandler {
     private int convertToRawData(int index, float axes) {
         // axes is standardized to be in [-1,1]
         // Our standard requires [0,1024] and should take into account axis inversion
-        Boolean inverted = config.joystick.mappings.axisInversions.get(index);
+        Boolean inverted = config.getJoystick().getMappings().getAxisInversions().get(index);
         return (int)((inverted? -1.0f: 1.0f) * deadZone(axes) * 512.0f + 512.0f);
     }
 
     private float deadZone(float axes) {
-        return abs(axes) < config.joystick.deadZoneFactor ? 0.0f : axes;
+        return abs(axes) < config.getJoystick().getDeadZoneFactor() ? 0.0f : axes;
     }
 }

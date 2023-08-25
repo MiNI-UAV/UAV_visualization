@@ -9,6 +9,8 @@ import org.zeromq.ZMQ;
 
 import java.util.Scanner;
 
+import static org.uav.utils.ZmqUtils.checkErrno;
+
 public class Drone {
 
     @Getter
@@ -22,17 +24,22 @@ public class Drone {
         id = droneId;
 
         steerSocket = context.createSocket(SocketType.REQ);
-        String address = "tcp://" + config.serverAddress + ":" + steerPort;
+        String address = "tcp://" + config.getServerAddress() + ":" + steerPort;
+        steerSocket.setReceiveTimeOut(config.getServerTimoutMs());
+        steerSocket.setSendTimeOut(config.getServerTimoutMs());
         steerSocket.connect(address);
 
         utilsSocket = context.createSocket(SocketType.PAIR);
-        String address2 = "tcp://" + config.serverAddress + ":" + utilsPort;
+        String address2 = "tcp://" + config.getServerAddress() + ":" + utilsPort;
+        utilsSocket.setReceiveTimeOut(config.getServerTimoutMs());
+        utilsSocket.setSendTimeOut(config.getServerTimoutMs());
         utilsSocket.connect(address2);
     }
 
     public void sendSteeringCommand(String command) {
-        steerSocket.send(command.getBytes(ZMQ.CHARSET), 0);
+        if(!steerSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkErrno(steerSocket);
         byte[] reply = steerSocket.recv(0);
+        if(reply == null) checkErrno(steerSocket);
         String message = new String(reply, ZMQ.CHARSET);
         parseSteeringCommand(message);
     }
@@ -59,6 +66,6 @@ public class Drone {
     }
 
     public void sendUtilsCommand(String command) {
-        utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0);
+        if(!utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkErrno(utilsSocket);
     }
 }

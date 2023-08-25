@@ -2,6 +2,9 @@ package org.uav.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.DroneMovement;
@@ -12,40 +15,48 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
+@Value
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Config {
 
-    public String serverAddress;
-    public int windowWidth;
-    public int windowHeight;
-    public float guiScale;
-    public float fov;
-    public String droneName;
-    public String droneModel;
-    public CameraMode defaultCamera;
-    public ControlMode defaultControlMode;
-    public boolean drawInWorldDemandedPositionalCoords;
-    public JoystickConfig joystick;
-    public Ports ports;
-    public int heartBeatIntervalMs;
+    String serverAddress;
+    int windowWidth;
+    int windowHeight;
+    float guiScale;
+    float fov;
+    String droneName;
+    String droneModel;
+    CameraMode defaultCamera;
+    ControlMode defaultControlMode;
+    boolean drawInWorldDemandedPositionalCoords;
+    JoystickConfig joystick;
+    Ports ports;
+    int heartBeatIntervalMs;
+    int serverTimoutMs;
 
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     public static class JoystickConfig {
-        public float deadZoneFactor;
-        public JoystickMappings mappings;
+        float deadZoneFactor;
+        JoystickMappings mappings;
 
+        @Value
+        @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
         public static class JoystickMappings {
-
-            public Map<Integer, JoystickButtonFunctions> buttonActions;
-            public Map<Integer, Actions> axisActions;
-            public Map<Integer, DroneMovement> axes;
-            public Map<Integer, Boolean> axisInversions;
+            Map<Integer, JoystickButtonFunctions> buttonActions;
+            Map<Integer, Actions> axisActions;
+            Map<Integer, DroneMovement> axes;
+            Map<Integer, Boolean> axisInversions;
         }
     }
 
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     public static class Ports {
-        public int notifications;
-        public int droneRequester;
-        public int droneStatuses;
-        public int projectileStatuses;
+        int notifications;
+        int droneRequester;
+        int droneStatuses;
+        int projectileStatuses;
     }
     public static Config load(String path) {
         try {

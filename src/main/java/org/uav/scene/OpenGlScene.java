@@ -122,7 +122,7 @@ public class OpenGlScene {
 
         Matrix4f view = simulationState.getCamera().getViewMatrix();
         Matrix4f projection = new Matrix4f()
-                .perspective(toRadians(simulationState.getCamera().getFov()), (float) config.windowWidth / config.windowHeight, 0.1f, 1000f);
+                .perspective(toRadians(simulationState.getCamera().getFov()), (float) config.getWindowWidth() / config.getWindowHeight(), 0.1f, 1000f);
 
         // Drawing
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -146,7 +146,7 @@ public class OpenGlScene {
                 projectileModel.setRotation(new Quaternionf());
             }
             if(
-                config.drawInWorldDemandedPositionalCoords
+                config.isDrawInWorldDemandedPositionalCoords()
                 && simulationState.getCurrentControlMode() == ControlMode.Positional
             ) {
                 Vector4f demanded = simulationState.getPositionalModeDemands();
