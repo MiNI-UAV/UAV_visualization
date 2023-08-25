@@ -84,7 +84,7 @@ public class SimulationStateProcessor implements AutoCloseable {
 
     public void checkAndUpdateAssets(SimulationState simulationState, LoadingScreen loadingScreen) throws IOException {
         var serverInfo = droneRequester.fetchServerInfo();
-        simulationState.setAssetsDirectory(System.getProperty("user.dir") + "/assets/" + serverInfo.assetChecksum.substring(0,8));
+        simulationState.setAssetsDirectory(Paths.get(System.getProperty("user.dir"), "assets", serverInfo.assetChecksum.substring(0,8)).toString());
         simulationState.setServerMap(serverInfo.serverMap);
 
         if(!assetPackExists(serverInfo.assetChecksum.substring(0,8))) {
@@ -94,10 +94,10 @@ public class SimulationStateProcessor implements AutoCloseable {
     }
 
     private void downloadAssets(String assetChecksum, LoadingScreen loadingScreen) throws IOException {
-        String assetPackDirectory = System.getProperty("user.dir") + "/assets/" + assetChecksum.substring(0,8);
+        String assetPackDirectory = Paths.get(System.getProperty("user.dir"), "assets", assetChecksum.substring(0,8)).toString();
         if(!new File(assetPackDirectory).mkdir()) throw new IOException();
-        String saveAtPath = assetPackDirectory + "/" + ASSETS_ARCHIVE;
-        String downloadUrlPath = ASSETS_DOWNLOAD_PAGE + assetChecksum + "/" + ASSETS_ARCHIVE;
+        String saveAtPath = Paths.get(assetPackDirectory, ASSETS_ARCHIVE).toString();
+        String downloadUrlPath = Paths.get(ASSETS_DOWNLOAD_PAGE, assetChecksum, ASSETS_ARCHIVE).toString();
         URL downloadUrl = new URL(downloadUrlPath);
         HttpURLConnection httpConnection = (HttpURLConnection) (downloadUrl.openConnection());
         long completeFileSize = httpConnection.getContentLength();
@@ -129,7 +129,7 @@ public class SimulationStateProcessor implements AutoCloseable {
 
         loadingScreen.render("Unpacking assets...");
         unTar(saveAtPath, assetPackDirectory);
-        File unTarredDirectory = new File(assetPackDirectory + "/assets");
+        File unTarredDirectory = new File(Paths.get(assetPackDirectory, "assets").toString());
         for(File file: unTarredDirectory.listFiles())
             FileUtils.moveDirectoryToDirectory(file, new File(assetPackDirectory), false);
         unTarredDirectory.delete();
@@ -153,17 +153,17 @@ public class SimulationStateProcessor implements AutoCloseable {
     }
 
     private boolean assetPackExists(String assetChecksum) throws IOException {
-        String assetsDirectory = System.getProperty("user.dir") + "/assets";
+        String assetsDirectory = Paths.get(System.getProperty("user.dir"), "assets").toString();
         if(!Files.exists(Paths.get(assetsDirectory))) {
             if(!new File(assetsDirectory).mkdir()) throw new IOException();
             return false;
         }
-        String assetPackDirectory = assetsDirectory + "/" + assetChecksum;
+        String assetPackDirectory = Paths.get(assetsDirectory, assetChecksum).toString();
         return Files.exists(Paths.get(assetPackDirectory));
     }
 
     public void saveDroneModelChecksum(String droneModel) {
-        String droneModelConfigPath = System.getProperty("user.dir") + "/drones/" + droneModel + ".xml";
+        String droneModelConfigPath = Paths.get(System.getProperty("user.dir"), "drones", droneModel + ".xml").toString();
         String droneModelChecksum = droneRequester.sendConfigFile(droneModelConfigPath);
         simulationState.setDroneModelChecksum(droneModelChecksum);
     }

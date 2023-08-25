@@ -13,9 +13,10 @@ import org.uav.model.*;
 import org.uav.scene.LoadingScreen;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -41,9 +42,8 @@ public class GltfImporter {
 
     public Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
         textureDirectory = textureDir;
-        String path = "file://" + resourceFile;
         GltfModelReader reader = new GltfModelReader();
-        GltfModelV2 model = (GltfModelV2) reader.read(new URI(path));
+        GltfModelV2 model = (GltfModelV2) reader.read(Paths.get(resourceFile).toUri());
         textureModels = model.getTextureModels();
 
         SceneModel sceneModel = model.getSceneModels().get(0);
@@ -209,7 +209,7 @@ public class GltfImporter {
                     Texture texture = loadTexture(textureModel);
                     meshes.add(new Mesh(vertices, ind, List.of(texture), material));
                 } else {
-                    Texture texture = loadTexture("missing", System.getProperty("user.dir") + "/assets/missing.jpg");
+                    Texture texture = loadTexture("missing", Paths.get(System.getProperty("user.dir"),"assets", "missing.jpg"));
                     meshes.add(new Mesh(vertices, ind, List.of(texture), material));
                 }
             }
@@ -224,17 +224,16 @@ public class GltfImporter {
         ImageModel imageModel = textureModel.getImageModel();
         String s = imageModel.getUri();
         String fileName = s.substring(s.lastIndexOf('/') + 1);
-        String path = textureDirectory + "/" + fileName;
-        return loadTexture(textureModel.getImageModel().getUri(), path);
+        return loadTexture(textureModel.getImageModel().getUri(), Paths.get(textureDirectory, fileName));
     }
 
-    private Texture loadTexture(String name, String path) {
+    private Texture loadTexture(String name, Path path) {
         loadingScreen.render("Loading " + name + "...");
 
         int[] w = new int[1];
         int[] h = new int[1];
         int[] components = new int[1];
-        ByteBuffer image = stbi_load(path, w, h, components, 0);
+        ByteBuffer image = stbi_load(path.toString(), w, h, components, 0);
         int format = GL_RGB;
         if(components[0] == 4) format = GL_RGBA;
         if(components[0] == 1) format = GL_BACK;

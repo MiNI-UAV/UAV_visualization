@@ -13,6 +13,7 @@ import org.uav.queue.ControlMode;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
 @Value
@@ -59,10 +60,10 @@ public class Config {
         int droneStatuses;
         int projectileStatuses;
     }
-    public static Config load(String path) {
+    public static Config load(Path path) {
         try {
             ObjectMapper mapper = new YAMLMapper();
-            return mapper.readValue(new File(System.getProperty("user.dir") + "/" + path), Config.class);
+            return mapper.readValue(new File(System.getProperty("user.dir"), path.toString()), Config.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Gui {
     private final ControlPanelWidget controlPanel;
@@ -23,35 +24,35 @@ public class Gui {
     private final PropellersDisplayWidget rotorDisplay;
 
     public Gui(SimulationState simulationState, Config config, DroneParameters droneParameters) {
-        var assetsDirectory = simulationState.getAssetsDirectory() + "/core/GUI/";
-        var background = loadImage(assetsDirectory + "background.png");
+        var assetsDirectory = Paths.get(simulationState.getAssetsDirectory() , "core", "GUI");
+        var background = loadImage(Paths.get(assetsDirectory.toString(), "background.png").toString());
 
         controlPanel = new ControlPanelWidget(background, config);
 
         radar = new RadarWidget(
-                loadImage(assetsDirectory + "radar.png"),
-                loadImage(assetsDirectory + "radarArrow.png"),
+                loadImage(Paths.get(assetsDirectory.toString(), "radar.png").toString()),
+                loadImage(Paths.get(assetsDirectory.toString(), "radarArrow.png").toString()),
                 simulationState,
                 config
         );
 
         artificialHorizon = new ArtificialHorizonWidget(
-                loadImage(assetsDirectory + "horizon.png"),
-                loadImage(assetsDirectory + "horizonCursor.png"),
-                loadImage(assetsDirectory + "horizonRoll.png"),
-                loadImage(assetsDirectory + "compass.png"),
+                loadImage(Paths.get(assetsDirectory.toString(), "horizon.png").toString()),
+                loadImage(Paths.get(assetsDirectory.toString(), "horizonCursor.png").toString()),
+                loadImage(Paths.get(assetsDirectory.toString(), "horizonRoll.png").toString()),
+                loadImage(Paths.get(assetsDirectory.toString(), "compass.png").toString()),
                 simulationState,
                 config
         );
 
         rotorDisplay = new PropellersDisplayWidget(simulationState, config, droneParameters);
 
-        String mapPath = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap() + "/model/minimap.png";
+        String mapPath = Paths.get(simulationState.getAssetsDirectory(), "maps", simulationState.getServerMap(), "model", "minimap.png").toString();
         map = new MapWidget(
                 background,
                 loadImage(mapPath),
-                loadImage(assetsDirectory + "droneIconLowRes.png"),
-                loadImage(assetsDirectory + "droneIconLowResDemanded.png"),
+                loadImage(Paths.get(assetsDirectory.toString(), "droneIconLowRes.png").toString()),
+                loadImage(Paths.get(assetsDirectory.toString(), "droneIconLowResDemanded.png").toString()),
                 simulationState,
                 config
         );

@@ -17,6 +17,7 @@ import org.uav.scene.OpenGlScene;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.IntBuffer;
+import java.nio.file.Paths;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
@@ -58,8 +59,8 @@ public class UavVisualization {
     }
 
     private void init() throws IOException, URISyntaxException {
-        config = Config.load("config.yaml");
-        droneParameters = DroneParameters.load("drones/" + config.getDroneModel() + ".xml");
+        config = Config.load(Paths.get("config.yaml"));
+        droneParameters = DroneParameters.load(Paths.get("drones",config.getDroneModel() + ".xml"));
         initializeOpenGlEnvironment();
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");

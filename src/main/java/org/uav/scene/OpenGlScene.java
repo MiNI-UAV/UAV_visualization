@@ -21,6 +21,7 @@ import org.uav.utils.Convert;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -85,34 +86,34 @@ public class OpenGlScene {
 
     private void setUpDrawables(DroneParameters droneParameters) throws URISyntaxException, IOException {
 
-        var mapDir = simulationState.getAssetsDirectory() + "/maps/" + simulationState.getServerMap();
-        var modelFile = mapDir + "/model/model.gltf";
-        var textureDir = mapDir + "/textures";
+        var mapDir = Paths.get(simulationState.getAssetsDirectory(), "maps", simulationState.getServerMap());
+        var modelFile = Paths.get(mapDir.toString(), "model", "model.gltf").toString();
+        var textureDir = Paths.get(mapDir.toString(), "textures").toString();
         environmentModel = modelImporter.loadModel(modelFile, textureDir);
         environmentModel.setPosition(new Vector3f());
         environmentModel.setRotation(new Quaternionf());
         createDroneModels();
-        projectileModel = loadModel("/core/projectile");
-        xMarkModel = loadModel("/core/xMark");
+        projectileModel = loadModel(Paths.get("core", "projectile").toString());
+        xMarkModel = loadModel(Paths.get("core", "xMark").toString());
 
         gui = new Gui(simulationState, config, droneParameters);
     }
 
     private void createDroneModels() throws URISyntaxException, IOException {
         droneModels = new HashMap<>();
-        var droneDirPath = simulationState.getAssetsDirectory() + "/drones";
+        var droneDirPath = Paths.get(simulationState.getAssetsDirectory(), "drones").toString();
         File droneDirectory = new File(droneDirPath);
         for(File drone: Objects.requireNonNull(droneDirectory.listFiles())) {
-            var modelFile = drone + "/model/model.gltf";
-            var textureDir = drone + "/textures";
+            var modelFile = Paths.get(drone.getAbsolutePath(), "model", "model.gltf").toString();
+            var textureDir = Paths.get(drone.getAbsolutePath(), "textures").toString();
             var droneModel = modelImporter.loadModel(modelFile, textureDir);
             droneModels.put(drone.getName(), droneModel);
         }
     }
 
     private Model loadModel(String dir) throws URISyntaxException, IOException {
-        String modelDir = simulationState.getAssetsDirectory() + dir;
-        return modelImporter.loadModel(modelDir + "/model/model.gltf", modelDir + "/textures");
+        String modelDir = Paths.get(simulationState.getAssetsDirectory(), dir).toString();
+        return modelImporter.loadModel(Paths.get(modelDir, "model", "model.gltf").toString(), Paths.get(modelDir, "textures").toString());
     }
 
     public void render() {

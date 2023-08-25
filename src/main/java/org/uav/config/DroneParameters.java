@@ -11,6 +11,7 @@ import org.joml.Vector3f;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,10 +49,10 @@ public class DroneParameters {
         float maxSpeed; // Radians per Second
     }
 
-    public static DroneParameters load(String path) {
+    public static DroneParameters load(Path path) {
         try {
             ObjectMapper mapper = new XmlMapper();
-            return mapper.readValue(new File(System.getProperty("user.dir") + "/" + path), DroneParameters.class);
+            return mapper.readValue(new File(System.getProperty("user.dir"), path.toString()), DroneParameters.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
