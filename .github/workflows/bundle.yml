@@ -1,0 +1,33 @@
+name: Bundling app for windows and linux
+run-name: bundle
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
+          fetch-depth: '0'
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'oracle'
+          java-version: '20'
+      - name: Put tag
+        run: |
+          version=`gradle -q printVersion`
+          name=mini-uav-$version
+          echo "Releasing ${name}"
+          if ! [ $(git tag -l "$name") ]; then
+            ./bundle.sh
+            git tag "${name}"
+            git push origin --tags
+            echo "TAG_NAME=${name}" >> "$GITHUB_ENV"
+          fi
+        shell: bash
+      - name: Release bundle
+        if: env.TAG_NAME
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.TAG_NAME }}
+          artifacts: build/mini-uav/${{ env.TAG_NAME }}.tar.gz
