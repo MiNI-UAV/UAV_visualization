@@ -223,7 +223,7 @@ public class GltfImporter {
 
         ImageModel imageModel = textureModel.getImageModel();
         String s = imageModel.getUri();
-        String fileName = s.substring(s.lastIndexOf('/') + 1);
+        String fileName = Paths.get(s).getFileName().toString();
         return loadTexture(textureModel.getImageModel().getUri(), Paths.get(textureDirectory, fileName));
     }
 
