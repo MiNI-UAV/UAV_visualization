@@ -22,6 +22,7 @@ public class Config {
     String serverAddress;
     int windowWidth;
     int windowHeight;
+    FullScreenMode fullScreenMode;
     float guiScale;
     float fov;
     String droneName;

@@ -1,10 +1,9 @@
 
 serverAddress: 127.0.0.1
-#windowWidth: 1920
-#windowHeight: 1020
-windowWidth: 1020
-windowHeight: 1020
-guiScale: 1.0
+windowWidth: 1920
+windowHeight: 1080
+fullScreenMode: Borderless
+guiScale: 1
 fov: 90 # 0 < fov < 180
 droneName: Maurice
 droneModel: buster

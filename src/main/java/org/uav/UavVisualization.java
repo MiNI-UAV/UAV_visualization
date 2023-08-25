@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
+import org.uav.config.FullScreenMode;
 import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
 import org.uav.processor.SimulationStateProcessor;
@@ -101,7 +102,9 @@ public class UavVisualization {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // Create the window
-        window = glfwCreateWindow(config.getWindowWidth(), config.getWindowHeight(), "UAV visualization", NULL, NULL);
+        if(config.getFullScreenMode() == FullScreenMode.Borderless) glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+        long fullScreen = config.getFullScreenMode() == FullScreenMode.FullScreen? glfwGetPrimaryMonitor() : NULL;
+        window = glfwCreateWindow(config.getWindowWidth(), config.getWindowHeight(), "UAV visualization", fullScreen, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
