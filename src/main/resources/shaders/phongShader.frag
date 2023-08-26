@@ -92,12 +92,16 @@ void main()
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor)
 {
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(light.direction - fragPos);
     // diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float kPi = 3.14159265;
+    float kEnergyConservation = ( 8.0 + material.shininess ) / ( 8.0 * kPi );
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+    float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+    //vec3 reflectDir = reflect(-lightDir, normal);
+    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     // PBR
     float gloss = 1.0-material.roughness;
     vec3 diffuseColor = mix(objectColor.xyz, vec3(0), material.metallic);
