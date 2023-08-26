@@ -20,7 +20,6 @@ import org.uav.utils.Convert;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +44,7 @@ public class OpenGlScene {
     private Model xMarkModel;
     private Gui gui;
 
-    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException, URISyntaxException {
+    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
 
@@ -70,6 +69,7 @@ public class OpenGlScene {
         objectShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
         objectShader.use();
         objectShader.setVec3("backgroundColor", simulationState.getSkyColor());
+        objectShader.setFloat("gammaCorrection", config.getGammaCorrection());
         setUpLights(objectShader);
 
         var lightSourceVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/lightSourceShader.vert"));
@@ -82,9 +82,10 @@ public class OpenGlScene {
         var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.frag"));
         guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
         guiShader.use();
+        guiShader.setFloat("gammaCorrection", config.getGammaCorrection());
     }
 
-    private void setUpDrawables(DroneParameters droneParameters) throws URISyntaxException, IOException {
+    private void setUpDrawables(DroneParameters droneParameters) throws IOException {
 
         var mapDir = Paths.get(simulationState.getAssetsDirectory(), "maps", simulationState.getServerMap());
         var modelFile = Paths.get(mapDir.toString(), "model", "model.gltf").toString();
@@ -99,7 +100,7 @@ public class OpenGlScene {
         gui = new Gui(simulationState, config, droneParameters);
     }
 
-    private void createDroneModels() throws URISyntaxException, IOException {
+    private void createDroneModels() throws IOException {
         droneModels = new HashMap<>();
         var droneDirPath = Paths.get(simulationState.getAssetsDirectory(), "drones").toString();
         File droneDirectory = new File(droneDirPath);
@@ -111,7 +112,7 @@ public class OpenGlScene {
         }
     }
 
-    private Model loadModel(String dir) throws URISyntaxException, IOException {
+    private Model loadModel(String dir) throws IOException {
         String modelDir = Paths.get(simulationState.getAssetsDirectory(), dir).toString();
         return modelImporter.loadModel(Paths.get(modelDir, "model", "model.gltf").toString(), Paths.get(modelDir, "textures").toString());
     }

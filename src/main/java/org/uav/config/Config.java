@@ -26,6 +26,7 @@ public class Config {
     FullScreenMode fullScreenMode;
     float guiScale;
     float fov;
+    float gammaCorrection;
     String droneName;
     String droneModel;
     CameraMode defaultCamera;

@@ -8,6 +8,7 @@ import org.uav.model.Vertex;
 import org.uav.scene.shader.Shader;
 
 import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -21,12 +22,14 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
+import static org.uav.utils.ImageUtils.extractImageData;
 
 public class GuiLayer {
     private Texture texture;
     private final int VAO;
     private final List<Integer> indices;
     private int format;
+    private int internalFormat;
     private final DrawableGuiLayer guiLayer;
     private ByteBuffer imageDirectByteBuffer;
     private final boolean  dynamicTexture;
@@ -74,6 +77,13 @@ public class GuiLayer {
             case 4 -> GL_RGBA;
             default -> GL_RGB;
         };
+        ColorSpace colorSpace = img.getColorModel().getColorSpace();
+        internalFormat = switch(components) {
+            case 1 -> GL_BACK;
+            case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
+            default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
+        };
+
 
         int textureId = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, textureId);
@@ -81,7 +91,7 @@ public class GuiLayer {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
         texture = new Texture(textureId, "texture_diffuse");
     }
@@ -111,46 +121,6 @@ public class GuiLayer {
         return VAO;
     }
 
-    private byte[] extractImageData(BufferedImage image) {
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        // Get the color model of the BufferedImage
-        int numComponents = image.getColorModel().getNumComponents();
-        boolean hasAlpha = image.getColorModel().hasAlpha();
-
-        // Determine the byte size per pixel based on the color model
-        int bytesPerPixel = numComponents;
-
-        // Create a byte array to hold the image data
-        byte[] imageData = new byte[width * height * bytesPerPixel];
-
-        // Iterate through each pixel and store the pixel data in the byte array
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int pixel = image.getRGB(x, y);
-
-                // Extract individual color components (RGBA)
-                int red = (pixel) & 0xFF;
-                int green = (pixel >> 8) & 0xFF;
-                int blue = (pixel >> 16) & 0xFF;
-                int alpha = hasAlpha ? (pixel >> 24) & 0xFF : 255;
-
-                // Calculate the starting index in the byte array for the current pixel
-                int index = (y * width + x) * bytesPerPixel;
-
-                // Store the color components in the byte array
-                imageData[index] = (byte) blue;
-                imageData[index + 1] = (byte) green;
-                imageData[index + 2] = (byte) red;
-                if (hasAlpha) {
-                    imageData[index + 3] = (byte) alpha;
-                }
-            }
-        }
-        return imageData;
-    }
-
     public void draw(Shader shader) {
         shader.use();
 
@@ -160,7 +130,7 @@ public class GuiLayer {
             imageDirectByteBuffer.put(ByteBuffer.wrap(extractImageData(overlayImg)));
             imageDirectByteBuffer.position(0);
             glBindTexture(GL_TEXTURE_2D, texture.getId());
-            glTexImage2D(GL_TEXTURE_2D, 0, format, canvasSize.x, canvasSize.y, 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, canvasSize.x, canvasSize.y, 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
         }
 
 

@@ -8,6 +8,7 @@ in vec3 fragPos;
 uniform sampler2D ourTexture;
 uniform vec3 viewPos;
 uniform vec3 backgroundColor;
+uniform float gammaCorrection;
 
 // Material
 struct Material {
@@ -84,7 +85,8 @@ void main()
     //for(int i = 0; i < NR_SPOT_LIGHTS; i++)
     //result += calcSpotLight(spotLights[i], normNormal, fragPos, viewDir);
 
-    result *= objectColor.xyz; // TODO: texture
+    result *= objectColor.xyz;
+    result = pow(result, vec3(1.0/gammaCorrection)); // Gamma Correction
     fragColor = vec4(result, objectColor.w);
 }
 

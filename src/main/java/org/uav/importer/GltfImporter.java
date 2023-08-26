@@ -12,17 +12,22 @@ import org.uav.animation.AnimationPlayer;
 import org.uav.model.*;
 import org.uav.scene.LoadingScreen;
 
+import javax.imageio.ImageIO;
+import java.awt.color.ColorSpace;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static java.nio.ByteBuffer.allocateDirect;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL21.GL_SRGB;
+import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
-import static org.lwjgl.stb.STBImage.stbi_image_free;
-import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.uav.utils.ImageUtils.extractImageData;
 
 public class GltfImporter {
 
@@ -40,7 +45,7 @@ public class GltfImporter {
         this.loadingScreen = loadingScreen;
     }
 
-    public Model loadModel(String resourceFile, String textureDir) throws URISyntaxException, IOException {
+    public Model loadModel(String resourceFile, String textureDir) throws IOException {
         textureDirectory = textureDir;
         GltfModelReader reader = new GltfModelReader();
         GltfModelV2 model = (GltfModelV2) reader.read(Paths.get(resourceFile).toUri());
@@ -176,7 +181,7 @@ public class GltfImporter {
         return animation;
     }
 
-    private List<Mesh> processMeshModels(List<MeshModel> meshModels) {
+    private List<Mesh> processMeshModels(List<MeshModel> meshModels) throws IOException {
         List<Mesh> meshes = new ArrayList<>();
         for (MeshModel meshModel : meshModels)
         {
@@ -217,7 +222,7 @@ public class GltfImporter {
         return meshes;
     }
 
-    private Texture loadTexture(TextureModel textureModel) {
+    private Texture loadTexture(TextureModel textureModel) throws IOException {
         if(loadedTextures.containsKey(textureModel.getImageModel().getUri()))
             return loadedTextures.get(textureModel.getImageModel().getUri());
 
@@ -227,25 +232,34 @@ public class GltfImporter {
         return loadTexture(textureModel.getImageModel().getUri(), Paths.get(textureDirectory, fileName));
     }
 
-    private Texture loadTexture(String name, Path path) {
+    private Texture loadTexture(String name, Path path) throws IOException {
         loadingScreen.render("Loading " + name + "...");
 
-        int[] w = new int[1];
-        int[] h = new int[1];
-        int[] components = new int[1];
-        ByteBuffer image = stbi_load(path.toString(), w, h, components, 0);
-        int format = GL_RGB;
-        if(components[0] == 4) format = GL_RGBA;
-        if(components[0] == 1) format = GL_BACK;
+        BufferedImage img = ImageIO.read(new File(path.toString()));
+        ByteBuffer imageDirectByteBuffer = allocateDirect(img.getHeight() * img.getWidth() * img.getColorModel().getNumComponents());
+        imageDirectByteBuffer.put(ByteBuffer.wrap(extractImageData(img)));
+        imageDirectByteBuffer.position(0);
+        int components = img.getColorModel().getNumComponents();
+        int format = switch(components) {
+            case 1 -> GL_BACK;
+            case 4 -> GL_RGBA;
+            default -> GL_RGB;
+        };
+        ColorSpace colorSpace = img.getColorModel().getColorSpace();
+        int internalFormat = switch(components) {
+            case 1 -> GL_BACK;
+            case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
+            default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
+        };
+
         int texture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w[0], h[0], 0, format, GL_UNSIGNED_BYTE, image);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
-        stbi_image_free(image);
 
         Texture texture1 = new Texture(texture, "texture_diffuse");
         loadedTextures.put(name, texture1);

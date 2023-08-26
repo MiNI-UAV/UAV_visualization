@@ -4,8 +4,9 @@ windowHeight: 1080
 fullScreenMode: Borderless
 guiScale: 1
 fov: 90 # 0 < fov < 180
+gammaCorrection: 2.2
 droneName: Maurice
-droneModel: buster
+droneModel: quadcopter
 defaultCamera: HorizontalCamera
 defaultControlMode: Positional
 drawInWorldDemandedPositionalCoords: false
