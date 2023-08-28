@@ -67,6 +67,10 @@ dependencies {
     runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-par::$lwjglNatives"
     runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+
+    //Music Player
+    implementation 'org.javatuples:javatuples:1.2'
+    implementation 'javazoom:jlayer:1.0.1'
 }
 
 tasks.register('printVersion') {
