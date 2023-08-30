@@ -28,7 +28,7 @@ public class SimulationStateProcessor implements AutoCloseable {
 
     private static final String KILL_COMMAND = "kill";
     public static final String ASSETS_DOWNLOAD_PAGE = "https://github.com/MiNI-UAV/UAV_aggregator/releases/download/";
-    public static final String ASSETS_ARCHIVE = "assets.tar.gz";
+    public static final String ASSETS_ARCHIVE = "/assets.tar.gz";
     private final SimulationState simulationState;
     private final Config config;
     private final DroneRequester droneRequester;
@@ -97,7 +97,7 @@ public class SimulationStateProcessor implements AutoCloseable {
         String assetPackDirectory = Paths.get(System.getProperty("user.dir"), "assets", assetChecksum.substring(0,8)).toString();
         if(!new File(assetPackDirectory).mkdir()) throw new IOException();
         String saveAtPath = Paths.get(assetPackDirectory, ASSETS_ARCHIVE).toString();
-        String downloadUrlPath = Paths.get(ASSETS_DOWNLOAD_PAGE, assetChecksum, ASSETS_ARCHIVE).toString();
+        String downloadUrlPath = ASSETS_DOWNLOAD_PAGE + assetChecksum + ASSETS_ARCHIVE;
         URL downloadUrl = new URL(downloadUrlPath);
         HttpURLConnection httpConnection = (HttpURLConnection) (downloadUrl.openConnection());
         long completeFileSize = httpConnection.getContentLength();
