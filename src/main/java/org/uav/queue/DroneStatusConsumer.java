@@ -27,11 +27,11 @@ public class DroneStatusConsumer {
     public DroneStatusConsumer(ZContext context, SimulationState simulationState, Config config) {
         this.droneStatuses = simulationState.getDroneStatuses();
         this.droneStatusMutex = simulationState.getDroneStatusesMutex();
-        String address = "tcp://" + config.getServerAddress() + ":" + config.getPorts().getDroneStatuses();
+        String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getDroneStatuses();
         messageParser = new DroneStatusMessageParser();
         socket = context.createSocket(SocketType.SUB);
-        socket.setSendTimeOut(config.getServerTimoutMs());
-        socket.setReceiveTimeOut(config.getServerTimoutMs());
+        socket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
+        socket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
         socket.connect(address);
         socket.subscribe("");
         thread = new PositionThread();

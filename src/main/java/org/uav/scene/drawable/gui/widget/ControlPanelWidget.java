@@ -16,8 +16,8 @@ public class ControlPanelWidget implements GuiWidget {
         guiElement = new GuiElement.GuiElementBuilder()
                 .setPosition(-0.4f, -1.0f, -1.0f, 1.0f)
                 .setAnchorPoint(GuiAnchorPoint.BOTTOM_FULL)
-                .setScale(config.getGuiScale())
-                .setResolution(config.getWindowWidth(), config.getWindowHeight())
+                .setScale(config.getGraphicsSettings().getGuiScale())
+                .setResolution(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight())
                 .setHidden(false)
                 .addLayer(background)
                 .build();

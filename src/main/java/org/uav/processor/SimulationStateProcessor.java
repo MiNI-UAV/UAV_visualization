@@ -27,7 +27,6 @@ import java.nio.file.Paths;
 public class SimulationStateProcessor implements AutoCloseable {
 
     private static final String KILL_COMMAND = "kill";
-    public static final String ASSETS_DOWNLOAD_PAGE = "https://github.com/MiNI-UAV/UAV_aggregator/releases/download/";
     public static final String ASSETS_ARCHIVE = "/assets.tar.gz";
     private final SimulationState simulationState;
     private final Config config;
@@ -54,7 +53,7 @@ public class SimulationStateProcessor implements AutoCloseable {
     }
 
     public void requestNewDrone() {
-        var newDroneResult = droneRequester.requestNewDrone(config.getDroneName(), simulationState.getDroneModelChecksum());
+        var newDroneResult = droneRequester.requestNewDrone(config.getDroneSettings().getDroneName(), simulationState.getDroneModelChecksum());
         simulationState.setCurrentlyControlledDrone(newDroneResult.orElseThrow());
     }
 
@@ -79,25 +78,31 @@ public class SimulationStateProcessor implements AutoCloseable {
         Drone oldDrone = simulationState.getCurrentlyControlledDrone();
         requestNewDrone();
         oldDrone.sendUtilsCommand(KILL_COMMAND);
-        simulationState.setCurrentControlMode(config.getDefaultControlMode());
+        simulationState.setCurrentControlMode(config.getDroneSettings().getDefaultControlMode());
     }
 
-    public void checkAndUpdateAssets(SimulationState simulationState, LoadingScreen loadingScreen) throws IOException {
+    public void checkAndUpdateAssets(Config config, SimulationState simulationState, LoadingScreen loadingScreen) throws IOException {
         var serverInfo = droneRequester.fetchServerInfo();
-        simulationState.setAssetsDirectory(Paths.get(System.getProperty("user.dir"), "assets", serverInfo.assetChecksum.substring(0,8)).toString());
+        if(config.getServerSettings().getAssetsToUse() != null)
+            simulationState.setAssetsDirectory(Paths.get(System.getProperty("user.dir"), "assets", config.getServerSettings().getAssetsToUse()).toString());
+        else
+            simulationState.setAssetsDirectory(Paths.get(System.getProperty("user.dir"), "assets", serverInfo.assetChecksum.substring(0,8)).toString());
         simulationState.setServerMap(serverInfo.serverMap);
 
-        if(!assetPackExists(serverInfo.assetChecksum.substring(0,8))) {
+        if(
+                config.getServerSettings().isDownloadMissingAssets()
+                && !assetPackExists(serverInfo.assetChecksum.substring(0,8))
+        ) {
             loadingScreen.render("Downloading new assets...");
-            downloadAssets(serverInfo.assetChecksum, loadingScreen);
+            downloadAssets(config.getServerSettings().getAssetsSourceUrl(), serverInfo.assetChecksum, loadingScreen);
         }
     }
 
-    private void downloadAssets(String assetChecksum, LoadingScreen loadingScreen) throws IOException {
+    private void downloadAssets(String assetsSourceUrl, String assetChecksum, LoadingScreen loadingScreen) throws IOException {
         String assetPackDirectory = Paths.get(System.getProperty("user.dir"), "assets", assetChecksum.substring(0,8)).toString();
         if(!new File(assetPackDirectory).mkdir()) throw new IOException();
         String saveAtPath = Paths.get(assetPackDirectory, ASSETS_ARCHIVE).toString();
-        String downloadUrlPath = ASSETS_DOWNLOAD_PAGE + assetChecksum + ASSETS_ARCHIVE;
+        String downloadUrlPath = assetsSourceUrl + assetChecksum + ASSETS_ARCHIVE;
         URL downloadUrl = new URL(downloadUrlPath);
         HttpURLConnection httpConnection = (HttpURLConnection) (downloadUrl.openConnection());
         long completeFileSize = httpConnection.getContentLength();

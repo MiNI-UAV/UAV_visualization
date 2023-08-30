@@ -1,15 +1,30 @@
-serverAddress: 127.0.0.1
-windowWidth: 1920
-windowHeight: 1080
-fullScreenMode: Borderless
-guiScale: 1
-fov: 90 # 0 < fov < 180
-gammaCorrection: 2.2
-droneName: Maurice
-droneModel: quadcopter
-defaultCamera: HorizontalCamera
-defaultControlMode: Positional
-drawInWorldDemandedPositionalCoords: false
+serverSettings:
+  serverAddress: 127.0.0.1
+  assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
+  downloadMissingAssets: false
+  assetsToUse: f7a4510e # Comment out if above is true.
+  heartBeatIntervalMs: 500
+  serverTimoutMs: 5000
+droneSettings:
+  droneName: Maurice
+  droneModel: buster
+  defaultCamera: HorizontalCamera
+  defaultControlMode: Positional # Only GUI
+sceneSettings:
+  drawInWorldDemandedPositionalCoords: false
+  sunAngleDayCycle: -20 # -45 Sunrise, 45 Sunset
+  sunAngleYearCycle: 70 # 15 Winter, 60 Summer (90 is not allowed)
+graphicsSettings:
+  windowWidth: 1920
+  windowHeight: 1080
+  fullScreenMode: Borderless
+  guiScale: 1
+  fov: 100 # 0 < fov < 180
+  useGammaCorrection: true
+  gammaCorrection: 2.2
+  useShadows: true
+  shadowsTextureResolution: 6072
+  shadowsRenderingDistance: 300
 joystick:
   deadZoneFactor: 0.1
   mappings:
@@ -47,5 +62,3 @@ ports:
   droneRequester: 9000
   droneStatuses: 9090
   projectileStatuses: 9100
-heartBeatIntervalMs: 500
-serverTimoutMs: 5000

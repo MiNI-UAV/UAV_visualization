@@ -30,11 +30,11 @@ public class DroneRequester {
         this.simulationState = simulationState;
         this.context = context;
         this.config = config;
-        String address = "tcp://" + config.getServerAddress() + ":" + config.getPorts().getDroneRequester();
+        String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getDroneRequester();
         messageParser = new DroneRequestReplyParser();
         socket = context.createSocket(SocketType.REQ);
-        socket.setSendTimeOut(config.getServerTimoutMs());
-        socket.setReceiveTimeOut(config.getServerTimoutMs());
+        socket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
+        socket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
         socket.connect(address);
     }
 

@@ -19,7 +19,7 @@ public class HeartbeatProducer {
 
     public void sustainHeartBeat(Drone drone) {
         float currentTimeMs = (float) glfwGetTime() * MILLISECONDS_IN_SECOND;
-        if(currentTimeMs - lastHeartBeatTimeStampMs > config.getHeartBeatIntervalMs()) {
+        if(currentTimeMs - lastHeartBeatTimeStampMs > config.getServerSettings().getHeartBeatIntervalMs()) {
             lastHeartBeatTimeStampMs = currentTimeMs;
             drone.sendUtilsCommand(HEART_BEAT_MSG);
         }

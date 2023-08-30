@@ -1,5 +1,6 @@
 package org.uav.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import lombok.AccessLevel;
@@ -20,23 +21,56 @@ import java.util.Map;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Config {
 
-    String serverAddress;
-    int windowWidth;
-    int windowHeight;
-    FullScreenMode fullScreenMode;
-    float guiScale;
-    float fov;
-    float gammaCorrection;
-    String droneName;
-    String droneModel;
-    CameraMode defaultCamera;
-    ControlMode defaultControlMode;
-    boolean drawInWorldDemandedPositionalCoords;
+    ServerSettings serverSettings;
+    DroneSettings droneSettings;
+    SceneSettings sceneSettings;
+    GraphicsSettings graphicsSettings;
     JoystickConfig joystick;
     Ports ports;
-    int heartBeatIntervalMs;
-    int serverTimoutMs;
 
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class ServerSettings {
+        String serverAddress;
+        String assetsSourceUrl;
+        boolean downloadMissingAssets;
+        String assetsToUse;
+        int heartBeatIntervalMs;
+        int serverTimoutMs;
+    }
+
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    public static class DroneSettings {
+        String droneName;
+        String droneModel;
+        CameraMode defaultCamera;
+        ControlMode defaultControlMode;
+    }
+
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    public static class SceneSettings {
+        boolean drawInWorldDemandedPositionalCoords;
+        float sunAngleDayCycle;
+        float sunAngleYearCycle;
+    }
+
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    public static class GraphicsSettings {
+        int windowWidth;
+        int windowHeight;
+        FullScreenMode fullScreenMode;
+        float guiScale;
+        float fov;
+        boolean useGammaCorrection;
+        float gammaCorrection;
+        boolean useShadows;
+        int shadowsTextureResolution;
+        int shadowsRenderingDistance;
+    }
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     public static class JoystickConfig {

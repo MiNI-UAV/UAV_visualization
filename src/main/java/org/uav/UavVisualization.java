@@ -59,7 +59,7 @@ public class UavVisualization {
 
     private void init() throws IOException {
         config = Config.load(Paths.get("config.yaml"));
-        droneParameters = DroneParameters.load(Paths.get("drones",config.getDroneModel() + ".xml"));
+        droneParameters = DroneParameters.load(Paths.get("drones",config.getDroneSettings().getDroneModel() + ".xml"));
         initializeOpenGlEnvironment();
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
@@ -67,11 +67,11 @@ public class UavVisualization {
         simulationState = new SimulationState(config, window);
         simulationStateProcessor = new SimulationStateProcessor(simulationState, config);
         loadingScreen.render("Checking assets...");
-        simulationStateProcessor.checkAndUpdateAssets(simulationState, loadingScreen);
+        simulationStateProcessor.checkAndUpdateAssets(config, simulationState, loadingScreen);
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
-        simulationStateProcessor.saveDroneModelChecksum(config.getDroneModel());
+        simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneModel());
         loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
 
@@ -102,9 +102,9 @@ public class UavVisualization {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
         // Create the window
-        if(config.getFullScreenMode() == FullScreenMode.Borderless) glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-        long fullScreen = config.getFullScreenMode() == FullScreenMode.FullScreen? glfwGetPrimaryMonitor() : NULL;
-        window = glfwCreateWindow(config.getWindowWidth(), config.getWindowHeight(), "UAV visualization", fullScreen, NULL);
+        if(config.getGraphicsSettings().getFullScreenMode() == FullScreenMode.Borderless) glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
+        long fullScreen = config.getGraphicsSettings().getFullScreenMode() == FullScreenMode.FullScreen? glfwGetPrimaryMonitor() : NULL;
+        window = glfwCreateWindow(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight(), "UAV visualization", fullScreen, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 

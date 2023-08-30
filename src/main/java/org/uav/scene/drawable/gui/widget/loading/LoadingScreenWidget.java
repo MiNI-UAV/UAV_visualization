@@ -16,8 +16,8 @@ public class LoadingScreenWidget implements GuiWidget {
         guiElement = new GuiElement.GuiElementBuilder()
                 .setPosition(1f, -1f, -1f, 1f)
                 .setAnchorPoint(GuiAnchorPoint.CENTER)
-                .setScale(config.getGuiScale())
-                .setResolution(config.getWindowWidth(), config.getWindowHeight())
+                .setScale(config.getGraphicsSettings().getGuiScale())
+                .setResolution(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight())
                 .setHidden(false)
                 .addLayer(1000, 1000, loadingDescription)
                 .build();

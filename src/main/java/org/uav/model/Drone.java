@@ -24,15 +24,15 @@ public class Drone {
         id = droneId;
 
         steerSocket = context.createSocket(SocketType.REQ);
-        String address = "tcp://" + config.getServerAddress() + ":" + steerPort;
-        steerSocket.setReceiveTimeOut(config.getServerTimoutMs());
-        steerSocket.setSendTimeOut(config.getServerTimoutMs());
+        String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + steerPort;
+        steerSocket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
+        steerSocket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
         steerSocket.connect(address);
 
         utilsSocket = context.createSocket(SocketType.PAIR);
-        String address2 = "tcp://" + config.getServerAddress() + ":" + utilsPort;
-        utilsSocket.setReceiveTimeOut(config.getServerTimoutMs());
-        utilsSocket.setSendTimeOut(config.getServerTimoutMs());
+        String address2 = "tcp://" + config.getServerSettings().getServerAddress() + ":" + utilsPort;
+        utilsSocket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
+        utilsSocket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
         utilsSocket.connect(address2);
     }
 
