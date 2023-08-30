@@ -53,8 +53,8 @@ public class UavVisualization {
     public void update() {
         heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone());
         inputHandler.handleInput(simulationState.getWindow());
-        simulationState.getCamera().updateCamera();
         simulationStateProcessor.updateCurrentEntityStatuses();
+        simulationState.getCamera().updateCamera();
     }
 
     private void init() throws IOException {

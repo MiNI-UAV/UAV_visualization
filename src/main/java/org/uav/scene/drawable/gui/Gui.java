@@ -63,7 +63,7 @@ public class Gui {
             return  ImageIO.read(new File(path));
         } catch (IOException e) {
 
-            throw new RuntimeException();
+            throw new RuntimeException("Failed to load " + path);
         }
     }
 

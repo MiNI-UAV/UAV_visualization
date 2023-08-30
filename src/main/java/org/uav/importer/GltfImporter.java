@@ -335,7 +335,7 @@ public class GltfImporter {
         var list = new ArrayList<Vector2f>();
         AccessorModel accessorModel =
                 meshPrimitiveModel.getAttributes().get("TEXCOORD_0");
-        AccessorData accessorData = accessorModel.getAccessorData();
+        AccessorData accessorData = accessorModel.getAccessorData(); // TODO [MU-119] There might be no TEXCOORD because there is only baseColor in material. Add suupport for that
         AccessorFloatData accessorFloatData =
                 (AccessorFloatData) accessorData;
         int n = accessorFloatData.getNumElements();
