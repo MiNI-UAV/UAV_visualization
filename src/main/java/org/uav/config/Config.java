@@ -59,10 +59,12 @@ public class Config {
 
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class GraphicsSettings {
         int windowWidth;
         int windowHeight;
         FullScreenMode fullScreenMode;
+        Integer monitor;
         float guiScale;
         float fov;
         boolean useGammaCorrection;

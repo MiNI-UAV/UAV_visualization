@@ -103,7 +103,25 @@ public class UavVisualization {
 
         // Create the window
         if(config.getGraphicsSettings().getFullScreenMode() == FullScreenMode.Borderless) glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-        long fullScreen = config.getGraphicsSettings().getFullScreenMode() == FullScreenMode.FullScreen? glfwGetPrimaryMonitor() : NULL;
+        long fullScreen = NULL;
+        if(config.getGraphicsSettings().getFullScreenMode() == FullScreenMode.FullScreen) {
+            var monitors = glfwGetMonitors();
+            var monitor_no = config.getGraphicsSettings().getMonitor();
+            if(monitor_no == null)
+            {
+                fullScreen = monitors.get();
+            }
+            else
+            {
+                try
+                {
+                    fullScreen = monitors.get(monitor_no.intValue());
+                } catch (IndexOutOfBoundsException e) {
+                    System.out.println("Monitor out of the range, using primary");
+                }
+            }
+        }
+
         window = glfwCreateWindow(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight(), "UAV visualization", fullScreen, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");

@@ -2,7 +2,7 @@ serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
   downloadMissingAssets: false
-  assetsToUse: f7a4510e # Comment out if above is true.
+  # assetsToUse: f7a4510e # Comment out if above is true.
   heartBeatIntervalMs: 500
   serverTimoutMs: 5000
 droneSettings:
@@ -17,7 +17,8 @@ sceneSettings:
 graphicsSettings:
   windowWidth: 1920
   windowHeight: 1080
-  fullScreenMode: Borderless
+  fullScreenMode: FullScreen
+  monitor: 0
   guiScale: 1
   fov: 100 # 0 < fov < 180
   useGammaCorrection: true
