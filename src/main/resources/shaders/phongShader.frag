@@ -11,6 +11,7 @@ uniform sampler2D shadowMap;
 uniform vec3 viewPos;
 uniform vec3 backgroundColor;
 uniform float gammaCorrection;
+uniform bool useGammaCorrection;
 
 // Material
 struct Material {
@@ -89,7 +90,8 @@ void main()
     //result += calcSpotLight(spotLights[i], normNormal, fragPos, viewDir);
 
     result *= objectColor.xyz;
-    result = pow(result, vec3(1.0/gammaCorrection)); // Gamma Correction
+    if(useGammaCorrection)
+        result = pow(result, vec3(1.0/gammaCorrection));
     fragColor = vec4(result, objectColor.w);
 }
 

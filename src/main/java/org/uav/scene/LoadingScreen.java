@@ -24,6 +24,7 @@ public class LoadingScreen {
         var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.frag"));
         shader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
         shader.use();
+        shader.setBool("useGammaCorrection", config.getGraphicsSettings().isUseGammaCorrection());
         shader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
 
         loadingScreenWidget = new LoadingScreenWidget(config, "");

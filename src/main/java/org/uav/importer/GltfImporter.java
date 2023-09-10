@@ -9,6 +9,7 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.uav.animation.Animation;
 import org.uav.animation.AnimationPlayer;
+import org.uav.config.Config;
 import org.uav.model.*;
 import org.uav.scene.LoadingScreen;
 
@@ -36,12 +37,14 @@ public class GltfImporter {
     private final Map<String, Texture> loadedTextures;
     private String textureDirectory;
     private final LoadingScreen loadingScreen;
+    private final Config config;
     private Map<String, AnimationModel.Sampler> translationAnimationSamplers;
     private Map<String, AnimationModel.Sampler> rotationAnimationSamplers;
     private Map<String, AnimationModel.Sampler> scaleAnimationSamplers;
 
-    public GltfImporter(LoadingScreen loadingScreen){
+    public GltfImporter(LoadingScreen loadingScreen, Config config){
         loadedTextures = new HashMap<>();
+        this.config = config;
         this.loadingScreen = loadingScreen;
     }
 
@@ -246,11 +249,12 @@ public class GltfImporter {
             default -> GL_RGB;
         };
         ColorSpace colorSpace = img.getColorModel().getColorSpace();
-        int internalFormat = switch(components) {
-            case 1 -> GL_BACK;
-            case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
-            default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
-        };
+        int internalFormat = config.getGraphicsSettings().isUseGammaCorrection() ?
+            switch(components) {
+                case 1 -> GL_BACK;
+                case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
+                default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
+            } : format;
 
         int texture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -335,6 +339,8 @@ public class GltfImporter {
         var list = new ArrayList<Vector2f>();
         AccessorModel accessorModel =
                 meshPrimitiveModel.getAttributes().get("TEXCOORD_0");
+        if(accessorModel== null)
+            return list;
         AccessorData accessorData = accessorModel.getAccessorData(); // TODO [MU-119] There might be no TEXCOORD because there is only baseColor in material. Add suupport for that
         AccessorFloatData accessorFloatData =
                 (AccessorFloatData) accessorData;
