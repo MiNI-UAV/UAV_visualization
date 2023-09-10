@@ -3,6 +3,7 @@ package org.uav.config;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,21 +27,26 @@ public class DroneParameters {
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Rotors {
-        List<Vector3f> positions;
-        List<Integer> direction;
+        @JacksonXmlElementWrapper(useWrapping = false)
+        List<Rotor> rotor;
 
-        public void setPositions(String[] strs) {
-            positions = Arrays.stream(strs)
-                    .map(s -> Arrays.stream(s.split(" "))
-                            .map(Float::parseFloat)
-                            .toList())
-                    .map(floats -> new Vector3f(
-                            floats.get(0),
-                            floats.get(1),
-                            floats.get(2)))
-                    .toList();
+        @Getter
+        @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+        @JsonIgnoreProperties(ignoreUnknown = true)
+        public static class Rotor {
+            Vector3f position;
+            Integer direction;
+
+            public void setPosition(String str) {
+
+                var fields = Arrays.stream(str.split(" "))
+                                .map(Float::parseFloat).toArray(Float[]::new);
+                position = new Vector3f(fields[0],fields[1], fields[2]);
+            }
         }
     }
+
+    
 
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)

@@ -1,23 +1,23 @@
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
-  downloadMissingAssets: false
+  downloadMissingAssets: true
   # assetsToUse: f7a4510e # Comment out if above is true.
   heartBeatIntervalMs: 500
   serverTimoutMs: 5000
 droneSettings:
   droneName: Maurice
-  droneModel: buster
+  droneModel: quadcopter
   defaultCamera: HorizontalCamera
   defaultControlMode: Positional # Only GUI
 sceneSettings:
-  drawInWorldDemandedPositionalCoords: false
+  drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: -20 # -45 Sunrise, 45 Sunset
   sunAngleYearCycle: 70 # 15 Winter, 60 Summer (90 is not allowed)
 graphicsSettings:
   windowWidth: 1920
   windowHeight: 1080
-  fullScreenMode: FullScreen
+  fullScreenMode: Window
   monitor: 0
   guiScale: 1
   fov: 100 # 0 < fov < 180
