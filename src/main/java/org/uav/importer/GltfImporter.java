@@ -215,10 +215,10 @@ public class GltfImporter {
                 if(materialModel.getValues().containsKey("baseColorTexture")) {
                     TextureModel textureModel = textureModels.get((Integer) materialModel.getValues().get("baseColorTexture")); // TODO Crash null when no texture on model
                     Texture texture = loadTexture(textureModel);
-                    meshes.add(new Mesh(vertices, ind, List.of(texture), material));
+                    meshes.add(new Mesh(vertices, ind, List.of(texture), texture.isTransparent(), material));
                 } else {
                     Texture texture = loadTexture("missing", Paths.get(System.getProperty("user.dir"),"assets", "missing.jpg"));
-                    meshes.add(new Mesh(vertices, ind, List.of(texture), material));
+                    meshes.add(new Mesh(vertices, ind, List.of(texture), false, material));
                 }
             }
         }
@@ -255,6 +255,9 @@ public class GltfImporter {
                 case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
                 default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
             } : format;
+        boolean transparent = Arrays.stream(
+                img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth())
+                ).anyMatch((rgb -> ((rgb >> 24) & 0xFF) != 0xFF));
 
         int texture = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -265,7 +268,7 @@ public class GltfImporter {
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        Texture texture1 = new Texture(texture, "texture_diffuse");
+        Texture texture1 = new Texture(texture, "texture_diffuse", transparent);
         loadedTextures.put(name, texture1);
         return texture1;
     }

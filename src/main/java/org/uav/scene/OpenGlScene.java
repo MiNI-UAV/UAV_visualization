@@ -14,6 +14,7 @@ import org.uav.model.SimulationState;
 import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
 import org.uav.queue.ControlMode;
+import org.uav.scene.drawable.RenderQueue;
 import org.uav.scene.drawable.gui.Gui;
 import org.uav.scene.shader.Shader;
 import org.uav.utils.Convert;
@@ -259,18 +260,20 @@ public class OpenGlScene {
     private void renderScene(MemoryStack stack, Shader shader) {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
+        float time = simulationState.getSimulationTime();
+        var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
 
-        environmentModel.draw(stack, shader, simulationState.getSimulationTime());
+        environmentModel.addToQueue(renderQueue, time);
 
         for(DroneStatus status: simulationState.getCurrPassDroneStatuses().map.values()) {
             String currentDroneModelName = simulationState.getNotifications().droneModels.getOrDefault(status.id, DEFAULT_DRONE_MODEL);
             Model currentDroneModel = droneModels.getOrDefault(currentDroneModelName, droneModels.get(DEFAULT_DRONE_MODEL));
-            currentDroneModel.draw(stack, shader, simulationState.getSimulationTime());
+            currentDroneModel.addToQueue(renderQueue, time);
             currentDroneModel.setPosition(status.position);
             currentDroneModel.setRotation(status.rotation);
         }
         for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
-            projectileModel.draw(stack, shader, simulationState.getSimulationTime());
+            projectileModel.addToQueue(renderQueue, time);
             projectileModel.setPosition(status.position);
             projectileModel.setRotation(new Quaternionf());
         }
@@ -282,9 +285,10 @@ public class OpenGlScene {
             if(demanded != null) {
                 xMarkModel.setPosition(new Vector3f(demanded.x, demanded.y, demanded.z));
                 xMarkModel.setRotation(Convert.toQuaternion(new Vector3f(0, 0, demanded.w)));
-                xMarkModel.draw(stack, shader, simulationState.getSimulationTime());
+                xMarkModel.addToQueue(renderQueue, time);
             }
         }
+        renderQueue.render(stack, shader);
     }
 
     private void renderUI() {

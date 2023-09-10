@@ -5,6 +5,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.animation.AnimationPlayer;
+import org.uav.scene.drawable.RenderQueue;
 import org.uav.scene.shader.Shader;
 
 import java.util.List;
@@ -38,14 +39,22 @@ public class ModelNode {
     }
 
     public void draw(MemoryStack stack, Shader shader, Matrix4f parentTransform, float currentTime) {
+        Matrix4f globalTransformation = getGlobalTransformation(parentTransform, currentTime);
+        meshes.forEach(m -> m.draw(stack, shader, globalTransformation));
+        children.forEach(n -> n.draw(stack, shader, globalTransformation, currentTime));
+    }
 
+    public void addToQueue(RenderQueue renderQueue, Matrix4f parentTransform, float currentTime) {
+        Matrix4f globalTransformation = getGlobalTransformation(parentTransform, currentTime);
+        meshes.forEach(m -> renderQueue.addMesh(m, globalTransformation));
+        children.forEach(n -> n.addToQueue(renderQueue, globalTransformation, currentTime));
+    }
+
+    private Matrix4f getGlobalTransformation(Matrix4f parentTransform, float currentTime) {
         Matrix4f localTransformation = new Matrix4f()
                 .translate(animationPlayer.getTranslationOrDefault(localTranslation, currentTime))
                 .rotate(animationPlayer.getRotationOrDefault(localRotation, currentTime))
                 .scale(animationPlayer.getScaleOrDefault(localScale, currentTime));
-        Matrix4f globalTransformation = new Matrix4f(parentTransform).mul(localTransformation);
-
-        meshes.forEach(m -> m.draw(stack, shader, globalTransformation));
-        children.forEach(n -> n.draw(stack, shader, globalTransformation, currentTime));
+        return new Matrix4f(parentTransform).mul(localTransformation);
     }
 }

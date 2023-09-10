@@ -6,6 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
+import org.uav.scene.drawable.RenderQueue;
 import org.uav.scene.shader.Shader;
 
 public class Model {
@@ -27,11 +28,22 @@ public class Model {
     }
 
     public void draw(MemoryStack stack, Shader shader, float currentTime) {
-        if(position == null || rotation == null) return;
-        Matrix4f modelTransformation = new Matrix4f()
+        var modelTransformation = getModelTransformation();
+        if(modelTransformation == null) return;
+        rootNode.draw(stack, shader, modelTransformation, currentTime);
+    }
+
+    public void addToQueue(RenderQueue renderQueue, float currentTime) {
+        var modelTransformation = getModelTransformation();
+        if(modelTransformation == null) return;
+        rootNode.addToQueue(renderQueue, modelTransformation, currentTime);
+    }
+
+    public Matrix4f getModelTransformation() {
+        return position == null || rotation == null ? null :
+            new Matrix4f()
                 .translate(position)
                 .rotate(rotation)
                 .scale(scale);
-        rootNode.draw(stack, shader, modelTransformation, currentTime);
     }
 }

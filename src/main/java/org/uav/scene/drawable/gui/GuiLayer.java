@@ -93,7 +93,7 @@ public class GuiLayer {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
         glGenerateMipmap(GL_TEXTURE_2D);
-        texture = new Texture(textureId, "texture_diffuse");
+        texture = new Texture(textureId, "texture_diffuse", false);
     }
 
     private int loadPrimitives(List<Vertex> vertices) {

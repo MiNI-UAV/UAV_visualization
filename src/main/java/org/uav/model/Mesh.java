@@ -19,13 +19,15 @@ public class Mesh {
     private final List<Vertex> vertices;
     private final List<Integer> indices;
     private final List<Texture> textures;
+    private final boolean transparentTexture;
     private final Material material;
     private int VAO;
 
-    public Mesh(List<Vertex> vertices, List<Integer> indices, List<Texture> textures, Material material) {
+    public Mesh(List<Vertex> vertices, List<Integer> indices, List<Texture> textures, boolean transparentTexture, Material material) {
         this.vertices = vertices;
         this.indices = indices;
         this.textures = textures;
+        this.transparentTexture = transparentTexture;
         this.material = material;
         setupMesh();
     }
@@ -84,5 +86,9 @@ public class Mesh {
         glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);
+    }
+
+    public boolean isTransparent() {
+        return transparentTexture;
     }
 }
