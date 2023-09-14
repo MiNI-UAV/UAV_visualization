@@ -1,6 +1,6 @@
 <params>
    <name>drone1</name>
-   <type>defaultDrone</type>
+   <type>quadcopter</type>
    <ineria>
       <mass>4.7</mass>
       <Ix>0.075</Ix>
@@ -10,7 +10,7 @@
       <Ixz>0.0</Ixz>
       <Iyz>0.0</Iyz>
    </ineria>
-   <rotors no='0'>
+   <rotors no='4'>
       <rotor>
          <forceCoff>0.000071</forceCoff>
          <torqueCoff>0.0000019</torqueCoff>
@@ -102,9 +102,9 @@
          0,  0,  0,  0,
          0,  0,  0,  0,
          0,  0,  0,  0,
-         1,  0,  0,  0,
-         0,  2,  2,  0,
-         0,  0,  0,  3
+         0,  0,  0,  0,
+         0,  0,  0,  0,
+         0,  0,  0,  0
       </matrix>
       <min>
          -0.1, -0.1, -0.1, -0.1
@@ -119,8 +119,8 @@
    <aero>
       <S>0.225</S>
       <d>0.01</d>
-      <eAR>4</eAR>
-      <C0>0.47, 0.47, 0.47, 0.0, 0.0, 0.0</C0>
+      <eAR>0</eAR>
+      <C0>-0.47, 0.0, -3.0, 0.0, 0.0, 0.0</C0>
       <Cpqr>
          0,  0,  0,
          0,  0,  0,
