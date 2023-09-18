@@ -14,11 +14,11 @@
       <rotor>
          <forceCoff>0.000071</forceCoff>
          <torqueCoff>0.0000019</torqueCoff>
-         <position>0.25 0.25 -0.1</position>
-         <axis>0.0 0.0 -1.0</axis>
+         <position>0.25, 0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
          <hinges no='1'>
             <hinge>
-               <axis>0.0 1.0 0.0</axis>
+               <axis>0.0, 1.0, 0.0</axis>
                <trim>0.0</trim>
                <max>1.0</max>
                <min>-1.0</min>
@@ -27,15 +27,16 @@
          <direction>1</direction>
          <timeConstant>0.05</timeConstant>
          <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
       </rotor>
       <rotor>
          <forceCoff>0.000071</forceCoff>
          <torqueCoff>0.0000019</torqueCoff>
-         <position>-0.25 0.25 -0.1</position>
-         <axis>0.0 0.0 -1.0</axis>
+         <position>-0.25, 0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
          <hinges no='1'>
             <hinge>
-               <axis>0.0 1.0 0.0</axis>
+               <axis>0.0, 1.0, 0.0</axis>
                <trim>0.0</trim>
                <max>1.0</max>
                <min>-1.0</min>
@@ -44,15 +45,16 @@
          <direction>-1</direction>
          <timeConstant>0.05</timeConstant>
          <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
       </rotor>
       <rotor>
          <forceCoff>0.000071</forceCoff>
          <torqueCoff>0.0000019</torqueCoff>
-         <position>-0.25 -0.25 -0.1</position>
-         <axis>0.0 0.0 -1.0</axis>
+         <position>-0.25, -0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
          <hinges no='1'>
             <hinge>
-               <axis>0.0 1.0 0.0</axis>
+               <axis>0.0, 1.0, 0.0</axis>
                <trim>0.0</trim>
                <max>1.0</max>
                <min>-1.0</min>
@@ -61,15 +63,16 @@
          <direction>1</direction>
          <timeConstant>0.05</timeConstant>
          <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
       </rotor>
       <rotor>
          <forceCoff>0.000071</forceCoff>
          <torqueCoff>0.0000019</torqueCoff>
-         <position>0.25 -0.25 -0.1</position>
-         <axis>0.0 0.0 -1.0</axis>
+         <position>0.25, -0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
          <hinges no='1'>
             <hinge>
-               <axis>0.0 1.0 0.0</axis>
+               <axis>0.0, 1.0, 0.0</axis>
                <trim>0.0</trim>
                <max>1.0</max>
                <min>-1.0</min>
@@ -78,23 +81,24 @@
          <direction>-1</direction>
          <timeConstant>0.05</timeConstant>
          <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
       </rotor>
    </rotors>
    <jets no='1'>
       <jet>
-         <position>0.0 0.0 0.0</position>
-         <axis>0.0 0.0 -1.0</axis>
+         <position>0.0, 0.0, 0.0</position>
+         <axis>0.0, 0.0, -1.0</axis>
          <hinges no='1'>
             <hinge>
-               <axis>0.0 1.0 0.0</axis>
+               <axis>0.0, 1.0, 0.0</axis>
                <trim>0.0</trim>
                <max>1.0</max>
                <min>-1.0</min>
             </hinge>
          </hinges>
          <phases>4</phases>
-         <thrust>200 100 80 0</thrust>
-         <time>0.5 0.7 3.0 3.2</time>
+         <thrust>200, 100, 80, 0</thrust>
+         <time>0.5, 0.7, 3.0, 3.2</time>
       </jet>
    </jets>
    <surface no='4'>
@@ -110,17 +114,17 @@
          -0.1, -0.1, -0.1, -0.1
       </min>
       <max>
-          0.1,  0.1,  0.1,  0.1
+         0.1,  0.1,  0.1,  0.1
       </max>
       <trim>
-          0.0,  0.0,  0.0,  0.0
+         0.0,  0.0,  0.0,  0.0
       </trim>
    </surface>
    <aero>
       <S>0.225</S>
       <d>0.01</d>
       <eAR>0</eAR>
-      <C0>-0.47, 0.0, -3.0, 0.0, 0.0, 0.0</C0>
+      <C0>-0.47, 0.0, 0.0, 0.0, 0.0, 0.0</C0>
       <Cpqr>
          0,  0,  0,
          0,  0,  0,
@@ -224,46 +228,50 @@
          <max>250</max>
       </Yaw>
    </PID>
-   <control>
-      <maxSpeed>1000</maxSpeed>
-      <hoverSpeed>335</hoverSpeed>
-   </control>
-   <mixer>
-      1,  1,  1,  1,
-      1,  1, -1, -1,
-      1, -1, -1,  1,
-      1, -1,  1, -1
-   </mixer>
+   <mixers>
+      <rotorMixer>
+         1,  1,  1,  1,
+         1,  1, -1, -1,
+         1, -1, -1,  1,
+         1, -1,  1, -1
+      </rotorMixer>
+      <surfaceMixer>
+         0,  0,  0,  0,
+         0,  0,  0,  0,
+         0,  0,  0,  0,
+         0,  0,  0,  0
+      </surfaceMixer>
+   </mixers>
    <navi>
       <sensors>
          <accelerometer>
             <sd>0.001</sd>
-            <bias>0.0 0.0 0.0</bias>
+            <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.0025</refreshTime>
          </accelerometer>
          <gyroscope>
             <sd>0.01</sd>
-            <bias>0.0 0.0 0.0</bias>
+            <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.0025</refreshTime>
          </gyroscope>
          <magnetometer>
             <sd>0.01</sd>
-            <bias>0.0 0.0 0.0</bias>
+            <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.0025</refreshTime>
          </magnetometer>
          <barometer>
             <sd>0.01</sd>
-            <bias>0.0 0.0 0.0</bias>
+            <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.01</refreshTime>
          </barometer>
          <GPS>
             <sd>0.2</sd>
-            <bias>0.0 0.0 0.0</bias>
+            <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.3</refreshTime>
          </GPS>
          <GPSVel>
             <sd>0.1</sd>
-            <bias>0.0 0.0 0.0</bias>
+            <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.3</refreshTime>
          </GPSVel>
       </sensors>
