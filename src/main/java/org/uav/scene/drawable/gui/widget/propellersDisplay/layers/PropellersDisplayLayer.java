@@ -25,7 +25,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
     private final Vector2i propellerPanelPadding;
     private final int textHeight;
     private final int minimalTextWidth;
-    private final float maxRPMs;
+    private final List<Float> maxRPMs;
     private List<Float> propellerRPMs;
     private int propellerUpdateFrequency = 2; // TODO [MU-78] Tie update frequency to fps
     private int propellerUpdateTick = 0;
@@ -41,7 +41,9 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         minimalTextWidth = 0;
         rotors = droneParameters.getRotors().getRotor().stream().map(rotor -> rotor.getPosition()).toList();
         rotationDirection = droneParameters.getRotors().getRotor().stream().map(rotor -> rotor.getDirection()).toList();
-        maxRPMs = droneParameters.getControl().getMaxSpeed() / (2*(float)Math.PI) * 60;
+        maxRPMs =  droneParameters.getRotors().getRotor().stream().map(
+                rotor -> rotor.getMaxSpeed() / (2.0f*(float)Math.PI) * 60.0f
+        ).toList();
         propellerRPMs = new ArrayList<>();
         initRadius();
     }
@@ -139,7 +141,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
             g.fillOval(rotor.x - 3 + canvasSize.x / 2, rotor.y - 3 + canvasSize.y / 2 - textHeight / 2, 6, 6);
 
             int rpms = propellerRPMs.get(i).intValue();
-            float ratio = (float) rpms / maxRPMs;
+            float ratio = (float) rpms / maxRPMs.get(i);
             g.fillArc(
                     rotor.x - propellerRadius + canvasSize.x / 2,
                     rotor.y - propellerRadius + canvasSize.y / 2 - textHeight / 2,

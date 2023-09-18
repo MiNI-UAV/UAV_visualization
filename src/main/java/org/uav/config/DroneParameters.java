@@ -21,7 +21,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DroneParameters {
     Rotors rotors;
-    Control control;
 
     @Getter
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
@@ -36,23 +35,16 @@ public class DroneParameters {
         public static class Rotor {
             Vector3f position;
             Integer direction;
+            Float maxSpeed;
+            Float hoverSpeed;
 
             public void setPosition(String str) {
 
-                var fields = Arrays.stream(str.split(" "))
+                var fields = Arrays.stream(str.split(","))
                                 .map(Float::parseFloat).toArray(Float[]::new);
                 position = new Vector3f(fields[0],fields[1], fields[2]);
             }
         }
-    }
-
-    
-
-    @Value
-    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Control {
-        float maxSpeed; // Radians per Second
     }
 
     public static DroneParameters load(Path path) {
