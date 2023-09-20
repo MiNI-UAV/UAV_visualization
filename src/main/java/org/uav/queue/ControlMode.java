@@ -7,10 +7,10 @@ public enum ControlMode {
         String s = "";
         switch (this)
         {
-            case Acrobatic -> s = "acro";
-            case Angle -> s = "angle";
-            case Positional -> s = "pos";
-            case None -> s = "none";
+            case Acrobatic -> s = "QACRO";
+            case Angle -> s = "QANGLE";
+            case Positional -> s = "QPOS";
+            case None -> s = "NONE";
         }
         return s;
     }
