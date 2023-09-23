@@ -1,6 +1,7 @@
 <params>
    <name>drone1</name>
    <type>quadcopter</type>
+   <initialMode>QANGLE</initialMode>
    <ineria>
       <mass>4.7</mass>
       <Ix>0.075</Ix>
@@ -114,10 +115,10 @@
          -0.1, -0.1, -0.1, -0.1
       </min>
       <max>
-         0.1,  0.1,  0.1,  0.1
+          0.1,  0.1,  0.1,  0.1
       </max>
       <trim>
-         0.0,  0.0,  0.0,  0.0
+          0.0,  0.0,  0.0,  0.0
       </trim>
    </surface>
    <aero>
