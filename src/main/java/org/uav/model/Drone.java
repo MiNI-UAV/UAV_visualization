@@ -49,9 +49,9 @@ public class Drone {
         commaIdx = commaIdx == -1? message.length(): commaIdx;
         switch(message.substring(0, commaIdx)) {
             case "ok" -> {}
-            case "QACRO" -> simulationState.setPositionalModeDemands(parseControlModeMessage(message.substring(commaIdx)));
+            case "QPOS" -> simulationState.setPositionalModeDemands(parseControlModeMessage(message.substring(commaIdx)));
             case "QANGLE" -> simulationState.setAngleModeDemands(parseControlModeMessage(message.substring(commaIdx)));
-            case "QPOS" -> simulationState.setAcroModeDemands(parseControlModeMessage(message.substring(commaIdx)));
+            case "QACRO" -> simulationState.setAcroModeDemands(parseControlModeMessage(message.substring(commaIdx)));
         }
     }
 
