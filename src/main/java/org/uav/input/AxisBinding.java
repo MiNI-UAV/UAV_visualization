@@ -25,7 +25,7 @@ public class AxisBinding extends Binding {
             axisPressed = true;
             super.action.run();
         }
-        else if(axisPressed && (lowerBound == null || axisValue <= lowerBound) && (upperBound == null || axisValue >= upperBound)) {
+        else if(axisPressed && (lowerBound != null && axisValue <= lowerBound) || (upperBound != null && axisValue >= upperBound)) {
             axisPressed = false;
         }
     }
