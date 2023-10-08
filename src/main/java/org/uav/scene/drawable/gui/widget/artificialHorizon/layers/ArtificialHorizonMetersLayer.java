@@ -1,9 +1,9 @@
 package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
 
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import org.uav.model.SimulationState;
-import org.uav.queue.ControlMode;
+import org.uav.model.controlMode.ControlModeDemanded;
+import org.uav.model.controlMode.ControlModeReply;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
 
 import java.awt.*;
@@ -25,7 +25,7 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
     private float velocity;
     private float climbRate;
     private float height;
-    private ControlMode mode;
+    private ControlModeDemanded controlModeDemanded;
     private float demandedHeight;
     private boolean drawDemandedHeight;
 
@@ -39,7 +39,6 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         velocity = 0;
         climbRate = 0;
         height = 0;
-        mode = ControlMode.None;
         drawDemandedHeight = false;
     }
 
@@ -51,24 +50,22 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         velocity = (float) Math.sqrt(drone.linearVelocity.x * drone.linearVelocity.x + drone.linearVelocity.y * drone.linearVelocity.y);
         climbRate = drone.linearVelocity.z * Z_AXIS_INVERSION;
         height = drone.position.z * Z_AXIS_INVERSION;
-        mode = simulationState.getCurrentControlMode();
+        controlModeDemanded = simulationState.getCurrentControlModeDemanded();
 
         updateDemanded(simulationState);
     }
 
     private void updateDemanded(SimulationState simulationState) {
-        if(mode == ControlMode.Positional) {
-            Vector4f demanded = simulationState.getPositionalModeDemands();
-            if (demanded == null) return;
-            demandedHeight = -demanded.z;
-            drawDemandedHeight = true;
-        } else if(mode == ControlMode.Angle) {
-            Vector4f demanded = simulationState.getAngleModeDemands();
-            if(demanded == null) return;
-            demandedHeight = -demanded.w;
-            drawDemandedHeight = true;
-        } else
+        if(
+            simulationState.getCurrentControlModeDemanded() == null ||
+            !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Z)
+        )
             drawDemandedHeight = false;
+        else {
+            float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Z);
+            demandedHeight = -demanded;
+            drawDemandedHeight = true;
+        }
     }
     @Override
     public void draw(Graphics2D g) {
@@ -86,7 +83,7 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         drawDemandedHeight(g, heightMeterLeft, heightMeterTop, heightMeterWidth, heightMeterHeight, heightMeterRight);
 
         g.setColor(Color.white);
-        String modeString = MessageFormat.format("{0}", mode);
+        String modeString = controlModeDemanded != null? MessageFormat.format("{0}", controlModeDemanded.name): "";
         g.drawString(modeString, 10, horizonScreenY * 3 / 16);
         String positionXString = MessageFormat.format("x: {0}", position.x);
         g.drawString(positionXString, 10, horizonScreenY * 14 / 16);

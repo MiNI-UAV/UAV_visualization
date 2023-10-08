@@ -3,7 +3,7 @@ package org.uav.scene.drawable.gui.widget.map.layers;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.uav.model.SimulationState;
-import org.uav.queue.ControlMode;
+import org.uav.model.controlMode.ControlModeReply;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
 import org.uav.utils.Convert;
 
@@ -49,15 +49,23 @@ public class MapProjectionLayer implements DrawableGuiLayer {
         dronePosition = new Vector2f(-drone.position.y, drone.position.x).mul(mapScale);
         droneVelocity = new Vector2f(drone.linearVelocity.y, -drone.linearVelocity.x).mul(velocityScale);
         mapZoom = simulationState.getMapZoom();
-        if(simulationState.getCurrentControlMode() == ControlMode.Positional) {
-            demandedPosition = new Vector2f(
-                    -simulationState.getPositionalModeDemands().y,
-                    simulationState.getPositionalModeDemands().x
-            ).mul(mapScale);
-            demandedRotZ = simulationState.getPositionalModeDemands().w;
-            drawDemandedPositional = true;
-        } else {
+        updateDemanded(simulationState);
+    }
+
+    private void updateDemanded(SimulationState simulationState) {
+        if(
+                simulationState.getCurrentControlModeDemanded() == null ||
+                !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.X) ||
+                !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Y) ||
+                !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.YAW)
+        )
             drawDemandedPositional = false;
+        else {
+            float demandedX = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.X);
+            float demandedY = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Y);
+            demandedRotZ = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
+            demandedPosition = new Vector2f(-demandedY, demandedX).mul(mapScale);
+            drawDemandedPositional = true;
         }
     }
 

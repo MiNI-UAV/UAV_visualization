@@ -2,9 +2,9 @@
    <name>drone1</name>
    <type>quadcopter</type>
    <initial>
-      <mode>QANGLE</mode>
+      <mode>RMANUAL</mode>
       <position>0.0, 0.0, 0.0</position>
-      <orientation>0.0, 0.0, 0.0</orientation>
+      <orientation>0.0, 0.8, 0.0</orientation>
       <velocity>0.0, 0.0, 0.0</velocity>
    </initial>
    <ineria>

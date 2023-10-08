@@ -1,13 +1,20 @@
 package org.uav.model;
 
 import lombok.Getter;
-import org.joml.Vector4f;
+import org.uav.config.AvailableControlModes;
 import org.uav.config.Config;
+import org.uav.model.controlMode.ControlModeDemanded;
+import org.uav.model.controlMode.ControlModeReply;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.uav.utils.ZmqUtils.checkErrno;
 
@@ -18,9 +25,19 @@ public class Drone {
     private final ZMQ.Socket steerSocket;
     private final ZMQ.Socket utilsSocket;
     private final SimulationState simulationState;
+    private final AvailableControlModes availableControlModes;
 
-    public Drone(ZContext context, int steerPort, int utilsPort, int droneId, SimulationState simulationState, Config config) {
+    public Drone(
+            ZContext context,
+            int steerPort,
+            int utilsPort,
+            int droneId,
+            SimulationState simulationState,
+            Config config,
+            AvailableControlModes availableControlModes
+    ) {
         this.simulationState = simulationState;
+        this.availableControlModes = availableControlModes;
         id = droneId;
 
         steerSocket = context.createSocket(SocketType.REQ);
@@ -47,22 +64,20 @@ public class Drone {
     private void parseSteeringCommand(String message) {
         int commaIdx = message.indexOf(',');
         commaIdx = commaIdx == -1? message.length(): commaIdx;
-        switch(message.substring(0, commaIdx)) {
-            case "ok" -> {}
-            case "Position" -> simulationState.setPositionalModeDemands(parseControlModeMessage(message.substring(commaIdx)));
-            case "Angle" -> simulationState.setAngleModeDemands(parseControlModeMessage(message.substring(commaIdx)));
-            case "Acro" -> simulationState.setAcroModeDemands(parseControlModeMessage(message.substring(commaIdx)));
-        }
+        String mode = message.substring(0, commaIdx);
+        if (!mode.equals("ok"))
+            simulationState.setCurrentControlModeDemanded(parseControlModeMessage(mode, message.substring(commaIdx)));
     }
 
-    private Vector4f parseControlModeMessage(String message) {
+    private ControlModeDemanded parseControlModeMessage(String mode, String message) {
         Scanner scanner = new Scanner(message);
         scanner.useDelimiter(",");
-        float f1 = Float.parseFloat(scanner.next());
-        float f2 = Float.parseFloat(scanner.next());
-        float f3 = Float.parseFloat(scanner.next());
-        float f4 = Float.parseFloat(scanner.next());
-        return new Vector4f(f1, f2, f3, f4);
+        List<ControlModeReply> replyList = availableControlModes.getModes().get(mode).getReply();
+        if(replyList == null)
+            return new ControlModeDemanded(mode, new HashMap<>());
+        Map<ControlModeReply, Float> demanded = replyList.stream()
+                .collect(Collectors.toMap(Function.identity(), e -> Float.parseFloat(scanner.next())));
+        return new ControlModeDemanded(mode, demanded);
     }
 
     public void sendUtilsCommand(String command) {

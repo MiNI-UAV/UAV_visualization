@@ -1,18 +1,21 @@
 package org.uav;
 
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-import org.uav.config.Config;
-import org.uav.config.DroneParameters;
-import org.uav.config.FullScreenMode;
+import org.uav.assets.AssetDownloader;
+import org.uav.config.*;
 import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
 import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.HeartbeatProducer;
 import org.uav.scene.LoadingScreen;
 import org.uav.scene.OpenGlScene;
+import org.uav.utils.Loader;
+import org.zeromq.ZContext;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -36,6 +39,9 @@ public class UavVisualization {
     private InputHandler inputHandler;
     private Config config;
     private DroneParameters droneParameters;
+    private BindingConfig bindingConfig;
+    private AvailableControlModes availableControlModes;
+
 
     public void run() throws IOException {
         init();
@@ -52,23 +58,27 @@ public class UavVisualization {
 
     public void update() {
         heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone());
-        inputHandler.handleInput(simulationState.getWindow());
+        inputHandler.handleInput();
         simulationStateProcessor.updateCurrentEntityStatuses();
         simulationState.getCamera().updateCamera();
     }
 
     private void init() throws IOException {
-        config = Config.load(Paths.get("config.yaml"));
-        droneParameters = DroneParameters.load(Paths.get("drones",config.getDroneSettings().getDroneModel() + ".xml"));
+        config = Loader.load(Config.class, Paths.get(System.getProperty("user.dir"), "config.yaml"), new YAMLMapper());
+        droneParameters = Loader.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneModel() + ".xml"), new XmlMapper());
+        bindingConfig = Loader.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig()), new YAMLMapper());
         initializeOpenGlEnvironment();
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
         heartbeatProducer = new HeartbeatProducer(config);
         simulationState = new SimulationState(config, window);
-        simulationStateProcessor = new SimulationStateProcessor(simulationState, config);
+        var context = new ZContext();
         loadingScreen.render("Checking assets...");
-        simulationStateProcessor.checkAndUpdateAssets(config, simulationState, loadingScreen);
-        inputHandler = new InputHandler(simulationStateProcessor, simulationState, config);
+        var assetDownloader = new AssetDownloader(context, config);
+        assetDownloader.checkAndUpdateAssets(config, simulationState, loadingScreen);
+        availableControlModes = Loader.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
+        simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes);
+        inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
         simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneModel());

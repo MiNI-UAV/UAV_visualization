@@ -1,3 +1,4 @@
+bindingsConfig: bindings.yaml
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
@@ -7,11 +8,16 @@ serverSettings:
   serverTimoutMs: 5000
 droneSettings:
   droneName: Maurice
-  droneModel: buster
+  droneModel: quadcopter
   defaultCamera: HorizontalCamera
-  defaultControlMode: Positional # Only GUI
+  modes:
+    - QPOS
+    - QANGLE
+    - QACRO
+#    - FMANUAL
+#    - RMANUAL
 sceneSettings:
-  drawInWorldDemandedPositionalCoords: false
+  drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
   sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
 graphicsSettings:
@@ -23,41 +29,9 @@ graphicsSettings:
   fov: 100 # 0 < fov < 180
   useGammaCorrection: true
   gammaCorrection: 2.2
-  useShadows: true
+  useShadows: true # TODO: Unused
   shadowsTextureResolution: 6072
   shadowsRenderingDistance: 300
-joystick:
-  deadZoneFactor: 0.1
-  mappings:
-    buttonActions:
-      0: unused # A
-      1: respawn # B
-      2: unused # X
-      3: unused # Y
-      4: prevCamera # Left Bumper
-      5: nextCamera # Right Bumper
-      6: unused # Left Menu
-      7: map # Right Menu
-      8: unused # Xbox Logo
-      9: unused # Left Knob
-      10: unused # Right Knob
-      11: angleMode # Up D-Pad
-      12: acroMode # Right D-Pad
-      13: noneMode # Down D-Pad
-      14: posMode # Left D-Pad
-    axisActions:
-      2: shoot
-      5: drop
-    axes:
-      0: rotation
-      1: heightChange
-      3: sidewaysMovement
-      4: straightMovement
-    axisInversions:
-      0: false
-      1: true
-      3: false
-      4: true
 ports:
   notifications: 8000
   droneRequester: 9000

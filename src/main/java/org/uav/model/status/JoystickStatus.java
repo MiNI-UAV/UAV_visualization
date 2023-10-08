@@ -1,9 +1,12 @@
 package org.uav.model.status;
 
-public class JoystickStatus {
-    public int[] rawData;
+import java.util.ArrayList;
+import java.util.List;
 
-    public JoystickStatus(int size) {
-        rawData = new int[size];
+public class JoystickStatus {
+    public List<Float> axes;
+
+    public JoystickStatus() {
+        axes = new ArrayList<>();
     }
 }

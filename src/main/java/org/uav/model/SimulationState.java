@@ -2,12 +2,11 @@ package org.uav.model;
 
 import lombok.Data;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.uav.config.Config;
 import org.uav.input.CameraMode;
+import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.status.DroneStatuses;
 import org.uav.model.status.ProjectileStatuses;
-import org.uav.queue.ControlMode;
 import org.uav.scene.camera.Camera;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,7 +28,7 @@ public class SimulationState {
     final Camera camera;
     CameraMode currentCameraMode;
     Drone currentlyControlledDrone;
-    ControlMode currentControlMode;
+    ControlModeDemanded currentControlModeDemanded;
     final DroneStatuses currPassDroneStatuses;
     final ProjectileStatuses currPassProjectileStatuses;
 
@@ -38,10 +37,6 @@ public class SimulationState {
     boolean mapOverlay;
     float mapZoom;
     Vector3f skyColor;
-
-    Vector4f positionalModeDemands;
-    Vector4f angleModeDemands;
-    Vector4f acroModeDemands;
 
 
     public SimulationState(Config config, long window) {
@@ -52,7 +47,7 @@ public class SimulationState {
         projectileStatusesMutex = new ReentrantLock();
         notifications = new Notifications();
         currentCameraMode = config.getDroneSettings().getDefaultCamera();
-        currentControlMode = config.getDroneSettings().getDefaultControlMode();
+        currentControlModeDemanded = null;
         currentlyControlledDrone = null;
         currPassDroneStatuses = new DroneStatuses(droneStatuses.map);
         currPassProjectileStatuses = new ProjectileStatuses(projectileStatuses.map);
@@ -60,8 +55,5 @@ public class SimulationState {
         mapOverlay = false;
         mapZoom = 1;
         skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
-        positionalModeDemands = null;
-        angleModeDemands = null;
-        acroModeDemands = null;
     }
 }

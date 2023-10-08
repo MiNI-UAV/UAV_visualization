@@ -1,8 +1,7 @@
 package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
 
-import org.joml.Vector4f;
 import org.uav.model.SimulationState;
-import org.uav.queue.ControlMode;
+import org.uav.model.controlMode.ControlModeReply;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
 import org.uav.utils.Convert;
 
@@ -44,19 +43,16 @@ public class ArtificialHorizonCompassLayer implements DrawableGuiLayer {
     }
 
     private void updateDemanded(SimulationState simulationState) {
-        if(simulationState.getCurrentControlMode() == ControlMode.Positional) {
-            Vector4f demanded = simulationState.getPositionalModeDemands();
-            if(demanded == null) return;
-            demandedRotZ = compassOffset - (int) ((demanded.w+Math.PI)/(2*Math.PI) * 1440);
+        if(
+            simulationState.getCurrentControlModeDemanded() == null ||
+            !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.YAW)
+        )
+            drawDemandedRotZ = false;
+        else {
+            float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
+            demandedRotZ = compassOffset - (int) ((demanded+Math.PI)/(2*Math.PI) * 1440);
             drawDemandedRotZ = true;
         }
-        else if(simulationState.getCurrentControlMode() == ControlMode.Angle) {
-            Vector4f demanded = simulationState.getAngleModeDemands();
-            if(demanded == null) return;
-            demandedRotZ = compassOffset - (int) ((demanded.z+Math.PI)/(2*Math.PI) * 1440);
-            drawDemandedRotZ = true;
-        } else
-            drawDemandedRotZ = false;
     }
 
     @Override
