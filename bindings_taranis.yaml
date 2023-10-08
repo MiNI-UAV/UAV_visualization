@@ -28,21 +28,19 @@ actions:
     - button: 1
       inverse: false
   drop:
-    - button: 0
+    - axis: 5
       inverse: false
+      lowerBound: 0.33
+      upperBound: 1
   respawn:
     - button: 0
       inverse: false
   map:
-    - button: 2
-      inverse: false
     - key: m
   mapZoomIn:
-    - button: 13
-      inverse: false
+    - key: a
   mapZoomOut:
-    - button: 12
-      inverse: false
+    - key: q
   modes:
     - - axis: 4
         inverse: false
@@ -57,11 +55,15 @@ actions:
         lowerBound: 0.33
         upperBound: 1
   prevCamera:
-    - button: 12
+    - axis: 6
       inverse: false
+      lowerBound: -1
+      upperBound: -0.33
   nextCamera:
-    - button: 13
+    - axis: 6
       inverse: false
+      lowerBound: 0.33
+      upperBound: 1
   freeCamera:
     - key: '0'
   droneCamera:
