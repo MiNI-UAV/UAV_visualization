@@ -32,6 +32,8 @@ actions:
     - axis: 5
       inverse: false
       lowerBound: 0.6
+  release:
+    - key: r
   respawn:
     - button: 13
       inverse: false

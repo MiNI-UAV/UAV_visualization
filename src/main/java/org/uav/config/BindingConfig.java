@@ -32,6 +32,7 @@ public class BindingConfig {
     public static class Actions {
         List<Binding> shot;
         List<Binding> drop;
+        List<Binding> release;
         List<Binding> respawn;
         List<Binding> map;
         List<Binding> mapZoomIn;

@@ -32,7 +32,9 @@ actions:
   drop:
     - axis: 7
       inverse: false
-      lowerBound: -0.6
+      upperBound: -0.6
+  release:
+    - key: r
   respawn:
     - button: 7
       inverse: false

@@ -32,6 +32,11 @@ actions:
       inverse: false
       lowerBound: 0.33
       upperBound: 1.2
+  release:
+    - axis: 5
+      inverse: false
+      lowerBound: -1.2
+      upperBound: -0.33
   respawn:
     - button: 0
       inverse: false

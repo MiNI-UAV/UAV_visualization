@@ -55,6 +55,7 @@ public class InputHandler {
         }
         initAction(actions.getShot(), () -> {if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Actions.shot);});
         initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Actions.drop);});
+        initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Actions.release);});
         initAction(actions.getPrevCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());});
         initAction(actions.getNextCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());});
         initAction(actions.getRespawn(), () -> {if(!simulationState.isMapOverlay()) simulationStateProcessor.respawnDrone();});
