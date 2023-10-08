@@ -31,7 +31,7 @@ actions:
     - axis: 5
       inverse: false
       lowerBound: 0.33
-      upperBound: 1
+      upperBound: 1.2
   respawn:
     - button: 0
       inverse: false
@@ -44,7 +44,7 @@ actions:
   modes:
     - - axis: 4
         inverse: false
-        lowerBound: -1
+        lowerBound: -1.2
         upperBound: -0.33
     - - axis: 4
         inverse: false
@@ -53,17 +53,17 @@ actions:
     - - axis: 4
         inverse: false
         lowerBound: 0.33
-        upperBound: 1
+        upperBound: 1.2
   prevCamera:
     - axis: 6
       inverse: false
-      lowerBound: -1
+      lowerBound: -1.2
       upperBound: -0.33
   nextCamera:
     - axis: 6
       inverse: false
       lowerBound: 0.33
-      upperBound: 1
+      upperBound: 1.2
   freeCamera:
     - key: '0'
   droneCamera:
