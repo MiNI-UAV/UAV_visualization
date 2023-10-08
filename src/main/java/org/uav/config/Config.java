@@ -1,8 +1,6 @@
 package org.uav.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
@@ -10,17 +8,15 @@ import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.DroneMovement;
 import org.uav.queue.Actions;
-import org.uav.queue.ControlMode;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Config {
 
+    String bindingsConfig;
     ServerSettings serverSettings;
     DroneSettings droneSettings;
     SceneSettings sceneSettings;
@@ -46,7 +42,7 @@ public class Config {
         String droneName;
         String droneModel;
         CameraMode defaultCamera;
-        ControlMode defaultControlMode;
+        List<String> modes;
     }
 
     @Value
@@ -96,13 +92,5 @@ public class Config {
         int droneRequester;
         int droneStatuses;
         int projectileStatuses;
-    }
-    public static Config load(Path path) {
-        try {
-            ObjectMapper mapper = new YAMLMapper();
-            return mapper.readValue(new File(System.getProperty("user.dir"), path.toString()), Config.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

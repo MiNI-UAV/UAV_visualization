@@ -27,10 +27,6 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
     private final int minimalTextWidth;
     private final List<Float> maxRPMs;
     private List<Float> propellerRPMs;
-    private int propellerUpdateFrequency = 2; // TODO [MU-78] Tie update frequency to fps
-    private int propellerUpdateTick = 0;
-
-
 
     public PropellersDisplayLayer(Vector2i canvasSize, DroneParameters droneParameters) {
         this.canvasSize = canvasSize;
@@ -68,7 +64,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         propellerRadius = radius;
     }
 
-    private List<Vector2i> getScaledRotorsForRadius(int radius) {
+    private List<Vector2i> getScaledRotorsForRadius(int radius) { // TODO Here very strange things happen
         Vector2i noPanelCanvasSize = new Vector2i(
                 noMarginCanvasSize.x - Math.max(2 * radius, minimalTextWidth) - 2 * propellerPanelPadding.x,
                 noMarginCanvasSize.y - Math.max(2 * radius, minimalTextWidth) - 2 * propellerPanelPadding.y - textHeight
@@ -118,11 +114,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
     public void update(SimulationState simulationState) {
         var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(drone == null) return;
-        if(propellerUpdateTick > propellerUpdateFrequency) {
-            propellerUpdateTick = 0;
-            propellerRPMs = drone.propellersRadps.stream().map(radps -> radps / (2*(float)Math.PI) * 60).toList();
-        }
-        propellerUpdateTick++;
+        propellerRPMs = drone.propellersRadps.stream().map(radps -> radps / (2*(float)Math.PI) * 60).toList();
     }
 
     @Override

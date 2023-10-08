@@ -1,0 +1,75 @@
+steering:
+  - axis: 1 # Throttle
+    inverse: true
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+  - axis: 2 # Roll
+    inverse: false
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+  - axis: 3 # Pitch
+    inverse: true
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+  - axis: 0 # Yaw
+    inverse: false
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+actions:
+  shot:
+    - axis: 4
+      inverse: false
+      lowerBound: 0.6
+  drop:
+    - axis: 5
+      inverse: false
+      lowerBound: 0.6
+  respawn:
+    - button: 13
+      inverse: false
+    - key: q
+  map:
+    - button: 8
+      inverse: false
+    - key: m
+  mapZoomIn:
+    - button: 6
+      inverse: false
+  mapZoomOut:
+    - button: 7
+      inverse: false
+  modes:
+    - - button: 4
+        inverse: false
+    - - button: 3
+        inverse: false
+    - - button: 1
+        inverse: false
+  prevCamera:
+    - button: 7
+      inverse: false
+  nextCamera:
+    - button: 6
+      inverse: false
+  freeCamera:
+    - key: '0'
+  droneCamera:
+    - key: '1'
+  observerCamera:
+    - key: '2'
+  racingCamera:
+    - key: '3'
+  horizontalCamera:
+    - key: '4'
+  hardFPV:
+    - key: '5'
+  softFPV:
+    - key: '6'

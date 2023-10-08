@@ -1,0 +1,75 @@
+
+steering: # Default Throttle, Roll, Pitch, YAW. Add as many as you want
+  - axis: 2 # Throttle
+    inverse: true
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+  - axis: 0 # Roll
+    inverse: false
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+  - axis: 1 # Pitch
+    inverse: true
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+  - axis: 5 # Yaw
+    inverse: false
+    deadzone: 0.1
+    min: -0.9
+    max: 0.9
+    trim: 0
+actions:
+  shot:
+    - axis: 7
+      inverse: false
+      lowerBound: 0.6
+  drop:
+    - axis: 7
+      inverse: false
+      lowerBound: -0.6
+  respawn:
+    - button: 7
+      inverse: false
+  map:
+    - button: 14
+      inverse: false
+    - key: m
+  mapZoomIn:
+    - button: 13
+      inverse: false
+  mapZoomOut:
+    - button: 12
+      inverse: false
+  modes:
+    - - button: 4
+        inverse: false
+    - - button: 5
+        inverse: false
+    - - button: 6
+        inverse: false
+  prevCamera:
+    - button: 12
+      inverse: false
+  nextCamera:
+    - button: 13
+      inverse: false
+  freeCamera:
+    - key: '0'
+  droneCamera:
+    - key: '1'
+  observerCamera:
+    - key: '2'
+  racingCamera:
+    - key: '3'
+  horizontalCamera:
+    - key: '4'
+  hardFPV:
+    - key: '5'
+  softFPV:
+    - key: '6'

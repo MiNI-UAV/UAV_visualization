@@ -3,7 +3,6 @@ package org.uav.scene;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
@@ -11,9 +10,9 @@ import org.uav.config.DroneParameters;
 import org.uav.importer.GltfImporter;
 import org.uav.model.Model;
 import org.uav.model.SimulationState;
+import org.uav.model.controlMode.ControlModeReply;
 import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
-import org.uav.queue.ControlMode;
 import org.uav.scene.drawable.RenderQueue;
 import org.uav.scene.drawable.gui.Gui;
 import org.uav.scene.shader.Shader;
@@ -39,7 +38,6 @@ public class OpenGlScene {
     private final Config config;
     private final GltfImporter modelImporter;
     private Shader objectShader;
-//    private Shader lightSourceShader;
     private Shader guiShader;
     private Map<String, Model> droneModels;
     private Model projectileModel;
@@ -105,12 +103,6 @@ public class OpenGlScene {
         objectShader.setInt("objectTexture", 0);
         objectShader.setInt("shadowMap", 1);
         setUpLights(objectShader);
-
-//        var lightSourceVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/lightSourceShader.vert"));
-//        var lightSourceFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/lightSourceShader.frag"));
-//        lightSourceShader = new Shader(lightSourceVertexShaderSource, lightSourceFragmentShaderSource);
-//        lightSourceShader.use();
-//        lightSourceShader.setVec3("lightColor", new Vector3f(1.f, 	1.f, 1.f));
 
         var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.vert"));
         var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.frag"));
@@ -262,9 +254,14 @@ public class OpenGlScene {
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         float time = simulationState.getSimulationTime();
         var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
-
         environmentModel.addToQueue(renderQueue, time);
+        addDronesToQueue(renderQueue, time);
+        addProjectilesToQueue(renderQueue, time);
+        addXMarkToQueue(renderQueue, time);
+        renderQueue.render(stack, shader);
+    }
 
+    private void addDronesToQueue(RenderQueue renderQueue, float time) {
         for(DroneStatus status: simulationState.getCurrPassDroneStatuses().map.values()) {
             String currentDroneModelName = simulationState.getNotifications().droneModels.getOrDefault(status.id, DEFAULT_DRONE_MODEL);
             Model currentDroneModel = droneModels.getOrDefault(currentDroneModelName, droneModels.get(DEFAULT_DRONE_MODEL));
@@ -272,23 +269,33 @@ public class OpenGlScene {
             currentDroneModel.setPosition(status.position);
             currentDroneModel.setRotation(status.rotation);
         }
+    }
+
+    private void addProjectilesToQueue(RenderQueue renderQueue, float time) {
         for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
             projectileModel.addToQueue(renderQueue, time);
             projectileModel.setPosition(status.position);
             projectileModel.setRotation(new Quaternionf());
         }
+    }
+
+    private void addXMarkToQueue(RenderQueue renderQueue, float time) {
         if(
-            config.getSceneSettings().isDrawInWorldDemandedPositionalCoords()
-            && simulationState.getCurrentControlMode() == ControlMode.Positional
-        ) {
-            Vector4f demanded = simulationState.getPositionalModeDemands();
-            if(demanded != null) {
-                xMarkModel.setPosition(new Vector3f(demanded.x, demanded.y, demanded.z));
-                xMarkModel.setRotation(Convert.toQuaternion(new Vector3f(0, 0, demanded.w)));
-                xMarkModel.addToQueue(renderQueue, time);
-            }
+            config.getSceneSettings().isDrawInWorldDemandedPositionalCoords() &&
+            simulationState.getCurrentControlModeDemanded() != null &&
+            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.X) &&
+            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Y) &&
+            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Z) &&
+            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.YAW)
+        ){
+            float demandedX = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.X);
+            float demandedY = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Y);
+            float demandedZ = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Z);
+            float demandedYaw = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
+            xMarkModel.setPosition(new Vector3f(demandedX, demandedY, demandedZ));
+            xMarkModel.setRotation(Convert.toQuaternion(new Vector3f(0, 0, demandedYaw)));
+            xMarkModel.addToQueue(renderQueue, time);
         }
-        renderQueue.render(stack, shader);
     }
 
     private void renderUI() {

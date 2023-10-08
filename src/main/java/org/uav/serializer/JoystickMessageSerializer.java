@@ -1,8 +1,7 @@
 package org.uav.serializer;
 
-import org.uav.queue.Actions;
-import org.uav.queue.ControlMode;
 import org.uav.model.status.JoystickStatus;
+import org.uav.queue.Actions;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -12,15 +11,13 @@ public class JoystickMessageSerializer implements MessageSerializer {
     @Override
     public String serialize(JoystickStatus status) {
         Locale.setDefault(Locale.US);
-        return MessageFormat.format(
-                "j:{0,number,#.###},{1,number,#.###},{2,number,#.###},{3,number,#.###}",
-                status.rawData[0], status.rawData[1], status.rawData[2], status.rawData[3]);
+        return "j:" + String.join(",", status.axes.stream().map(axis -> Float.toString(axis)).toList());
     }
 
     @Override
-    public String serialize(ControlMode mode) {
+    public String serialize(String mode) {
         Locale.setDefault(Locale.US);
-        String msg = MessageFormat.format("m:{0}", mode.toMessage());
+        String msg = MessageFormat.format("m:{0}", mode);
         //System.out.println(msg);
         return msg;
     }

@@ -1,8 +1,7 @@
 package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
 
-import org.joml.Vector4f;
 import org.uav.model.SimulationState;
-import org.uav.queue.ControlMode;
+import org.uav.model.controlMode.ControlModeReply;
 import org.uav.scene.drawable.gui.DrawableGuiLayer;
 import org.uav.utils.Convert;
 
@@ -47,13 +46,16 @@ public class ArtificialHorizonBackgroundLayer implements DrawableGuiLayer {
     }
 
     private void updateDemanded(SimulationState simulationState) {
-        if(simulationState.getCurrentControlMode() == ControlMode.Angle) {
-            Vector4f demanded = simulationState.getAngleModeDemands();
-            if(demanded == null) return;
-            demandedRotY = rotY - (demanded.y / (0.5f * (float) Math.PI) * distanceToMax);
-            drawDemandedRotY = true;
-        } else
+        if(
+            simulationState.getCurrentControlModeDemanded() == null ||
+            !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.PITCH)
+        )
             drawDemandedRotY = false;
+        else {
+            float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.PITCH);
+            demandedRotY = rotY - (demanded / (0.5f * (float) Math.PI) * distanceToMax);
+            drawDemandedRotY = true;
+        }
     }
 
     @Override
