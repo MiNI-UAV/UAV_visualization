@@ -72,6 +72,7 @@
          -0.05,  0.0 ,  0.0,  0.0,
           0.0 ,  0.02,  0.0,  0.0
       </Cab>
+      <stallLimit>0.35</stallLimit>
    </aero>
    <PID>
       <X>
