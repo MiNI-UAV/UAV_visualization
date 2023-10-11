@@ -65,7 +65,7 @@ public class UavVisualization {
 
     private void init() throws IOException {
         config = Loader.load(Config.class, Paths.get(System.getProperty("user.dir"), "config.yaml"), new YAMLMapper());
-        droneParameters = Loader.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneModel() + ".xml"), new XmlMapper());
+        droneParameters = Loader.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneConfig()), new XmlMapper());
         bindingConfig = Loader.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig()), new YAMLMapper());
         initializeOpenGlEnvironment();
         var loadingScreen = new LoadingScreen(window, config);
@@ -81,7 +81,7 @@ public class UavVisualization {
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
-        simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneModel());
+        simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneConfig());
         loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
 

@@ -40,7 +40,7 @@ public class Config {
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     public static class DroneSettings {
         String droneName;
-        String droneModel;
+        String droneConfig;
         CameraMode defaultCamera;
         List<String> modes;
     }
@@ -51,6 +51,8 @@ public class Config {
         boolean drawInWorldDemandedPositionalCoords;
         float sunAngleDayCycle;
         float sunAngleYearCycle;
+        float[] cameraFPP;
+        float[] cameraTPP;
     }
 
     @Value

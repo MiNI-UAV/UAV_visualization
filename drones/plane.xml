@@ -1,9 +1,9 @@
 <params>
    <name>drone1</name>
-   <type>quadcopter</type>
+   <type>spitfire_mini</type>
    <initial>
       <mode>FMANUAL</mode>
-      <position>0.0, 0.0, -100.0</position>
+      <position>-100.0, 0.0, -100.0</position>
       <orientation>0.0, 0.0, 0.0</orientation>
       <velocity>20.0, 0.0, 0.0</velocity>
    </initial>

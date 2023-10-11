@@ -2,13 +2,13 @@ bindingsConfig: bindings.yaml
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
-  downloadMissingAssets: true
-  #assetsToUse: f7a4510e # Comment out if above is true.
+  downloadMissingAssets: false
+  assetsToUse: 4beda679 # Comment out if above is true.
   heartBeatIntervalMs: 500
   serverTimoutMs: 5000
 droneSettings:
   droneName: Maurice
-  droneModel: quadcopter
+  droneConfig: plane.xml
   defaultCamera: HorizontalCamera
   modes:
     - QPOS
@@ -20,10 +20,12 @@ sceneSettings:
   drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
   sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
+  cameraFPP: [1, 0, 0.1]
+  cameraTPP: [-1.5, 0, -.75]
 graphicsSettings:
   windowWidth: 1920
   windowHeight: 1080
-  fullScreenMode: FullScreen
+  fullScreenMode: Borderless
   monitor: 0
   guiScale: 1
   fov: 100 # 0 < fov < 180

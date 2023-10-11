@@ -11,8 +11,8 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Camera {
     private static final Vector3f CAMERA_UP = new Vector3f(0, 0, -1f);
-    private static final Vector3f CAMERA_FP = new Vector3f(1.0f,0f,0.1f);
-    private static final Vector3f CAMERA_TP = new Vector3f(-3.0f,0,-1.5f);
+    private final Vector3f cameraFPP;
+    private final Vector3f cameraTPP;
     private final SimulationState simulationState;
     private Vector3f cameraPos = new Vector3f();
     private Vector3f cameraUp = CAMERA_UP;
@@ -28,6 +28,8 @@ public class Camera {
     public Camera(SimulationState simulationState, Config config) {
         this.simulationState = simulationState;
         fov = config.getGraphicsSettings().getFov();
+        cameraFPP = new Vector3f(config.getSceneSettings().getCameraFPP());
+        cameraTPP = new Vector3f(config.getSceneSettings().getCameraTPP());
     }
 
     public Vector3f getCameraPos() {
@@ -71,7 +73,7 @@ public class Camera {
         lastTime = currTime;
         switch(simulationState.getCurrentCameraMode()) {
             case DroneCamera -> {
-                var cameraOffset = new Vector3f(CAMERA_TP);
+                var cameraOffset = new Vector3f(cameraTPP);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
@@ -83,7 +85,7 @@ public class Camera {
             }
             case RacingCamera -> {
                 var rot = new Quaternionf(droneRotation);
-                var cameraOffset = new Vector3f(CAMERA_TP).rotate(rot);
+                var cameraOffset = new Vector3f(cameraTPP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
@@ -93,7 +95,7 @@ public class Camera {
                 var rot = new Quaternionf(droneRotation);
                 rot.x = 0;
                 rot.y = 0;
-                var cameraOffset = new Vector3f(CAMERA_TP).rotate(rot);
+                var cameraOffset = new Vector3f(cameraTPP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
@@ -107,7 +109,7 @@ public class Camera {
             //TODO: SoftFPV is not implemented yet, now its copy of hardFPV
             case HardFPV, SoftFPV  -> {
                 var rot = new Quaternionf(droneRotation);
-                var cameraOffset = new Vector3f(CAMERA_FP).rotate(rot);
+                var cameraOffset = new Vector3f(cameraFPP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
                 setCameraFront(cameraOffset.normalize());

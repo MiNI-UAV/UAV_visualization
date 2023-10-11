@@ -68,8 +68,8 @@ public class SimulationStateProcessor implements AutoCloseable {
         simulationState.setCurrentControlModeDemanded(null);
     }
 
-    public void saveDroneModelChecksum(String droneModel) {
-        String droneModelConfigPath = Paths.get(System.getProperty("user.dir"), "drones", droneModel + ".xml").toString();
+    public void saveDroneModelChecksum(String droneConfig) {
+        String droneModelConfigPath = Paths.get(System.getProperty("user.dir"), "drones", droneConfig).toString();
         String droneModelChecksum = droneRequester.sendConfigFile(droneModelConfigPath);
         simulationState.setDroneModelChecksum(droneModelChecksum);
     }
