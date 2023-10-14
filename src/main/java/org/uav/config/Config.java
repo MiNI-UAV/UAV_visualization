@@ -7,7 +7,7 @@ import lombok.Value;
 import org.uav.input.CameraMode;
 import org.uav.input.JoystickButtonFunctions;
 import org.uav.model.DroneMovement;
-import org.uav.queue.Actions;
+import org.uav.queue.Action;
 
 import java.util.List;
 import java.util.Map;
@@ -81,7 +81,7 @@ public class Config {
         @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
         public static class JoystickMappings {
             Map<Integer, JoystickButtonFunctions> buttonActions;
-            Map<Integer, Actions> axisActions;
+            Map<Integer, Action> axisActions;
             Map<Integer, DroneMovement> axes;
             Map<Integer, Boolean> axisInversions;
         }

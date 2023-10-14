@@ -1,8 +1,8 @@
 package org.uav.queue;
 
-public enum Actions {
+public enum Action {
     drop,
-    shot,
+    shoot,
     release;
 
     public String toMessage() {
@@ -10,7 +10,7 @@ public enum Actions {
         switch (this)
         {
             case drop -> s = "drop";
-            case shot -> s = "shot";
+            case shoot -> s = "shoot";
             case release -> s = "release";
         }
         return s;

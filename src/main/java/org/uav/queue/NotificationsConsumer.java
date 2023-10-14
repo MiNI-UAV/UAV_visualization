@@ -47,10 +47,10 @@ public class NotificationsConsumer extends Thread {
 
     private void parseMessage(String message) {
         switch(message.charAt(0)) {
-            case 't':
-                notifications.droneModels = parseDroneModelsMessage(message);
-            default:
-                break;
+            case 't' -> notifications.droneModels = parseDroneModelsMessage(message);
+            case 'o' -> {}
+            case 'l' -> {}
+            default -> {}
         }
     }
 

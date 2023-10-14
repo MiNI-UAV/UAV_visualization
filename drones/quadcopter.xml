@@ -300,4 +300,40 @@
          <zScaler>1e1</zScaler>
       </EKF>
    </navi>
+   <ammo no='2'>
+      <paintball>
+         <model>paintball</model>
+         <V0>90.0, 0.0, 0.0</V0>
+         <position>0.0, 0.0, 0.1</position>
+         <reload>0.3</reload>
+         <radius>0.003</radius>
+         <C0>0.47</C0>
+         <mass>0.003</mass>
+         <ammount>100</ammount>
+      </paintball>
+      <bullet9mm>
+         <model>9mm</model>
+         <V0>350.0, 0.0, 0.0</V0>
+         <position>0.0, 0.0, 0.1</position>
+         <reload>0.1</reload>
+         <radius>0.0045</radius>
+         <C0>0.47</C0>
+         <mass>0.008</mass>
+         <ammount>20</ammount>
+      </bullet9mm>
+   </ammo>
+   <cargo no='1'>
+      <parcel>
+         <model>parcel</model>
+         <hook>0.0, 0.0, 0.0</hook>
+         <length>5.0</length>
+         <k>10.0</k>
+         <b>2.0</b>
+         <reload>2.0</reload>
+         <radius>0.1</radius>
+         <C0>0.47</C0>
+         <mass>0.1</mass>
+         <ammount>2</ammount>
+      </parcel>
+   </cargo>
 </params>

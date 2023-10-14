@@ -5,7 +5,7 @@ import org.uav.config.Config;
 import org.uav.model.SimulationState;
 import org.uav.model.status.JoystickStatus;
 import org.uav.processor.SimulationStateProcessor;
-import org.uav.queue.Actions;
+import org.uav.queue.Action;
 import org.uav.queue.JoystickProducer;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class InputHandler {
         this.config = config;
         this.simulationState = simulationState;
         this.simulationStateProcessor = simulationStateProcessor;
-        joystickProducer = new JoystickProducer();
+        joystickProducer = new JoystickProducer(simulationState);
         axisBindings = new ArrayList<>();
         buttonBindings = new ArrayList<>();
         keyboardBindings = new ArrayList<>();
@@ -53,9 +53,9 @@ public class InputHandler {
             var mode = actions.getModes().get(modeId);
             initAction(mode, () -> {if(!simulationState.isMapOverlay()) changeControlMode(config.getDroneSettings().getModes().get(modeId));});
         }
-        initAction(actions.getShot(), () -> {if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Actions.shot);});
-        initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Actions.drop);});
-        initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Actions.release);});
+        initAction(actions.getShot(), () -> {if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.shoot, simulationState.getCurrentlyChosenAmmo());});
+        initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.drop, simulationState.getCurrentlyChosenCargo());});
+        initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.release);});
         initAction(actions.getPrevCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());});
         initAction(actions.getNextCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());});
         initAction(actions.getRespawn(), () -> {if(!simulationState.isMapOverlay()) simulationStateProcessor.respawnDrone();});

@@ -80,7 +80,10 @@ public class Drone {
         return new ControlModeDemanded(mode, demanded);
     }
 
-    public void sendUtilsCommand(String command) {
+    public String sendUtilsCommand(String command) {
         if(!utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkErrno(utilsSocket);
+        byte[] reply = utilsSocket.recv(0);
+        if(reply == null) checkErrno(utilsSocket);
+        return new String(reply, ZMQ.CHARSET);
     }
 }

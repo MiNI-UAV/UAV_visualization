@@ -18,6 +18,7 @@ public class SimulationState {
     String droneModelChecksum;
     final long window;
     float simulationTime;
+    final Camera camera;
 
     final DroneStatuses droneStatuses;
     final ReentrantLock droneStatusesMutex;
@@ -25,15 +26,15 @@ public class SimulationState {
     final ReentrantLock projectileStatusesMutex;
     final Notifications notifications;
 
-    final Camera camera;
-    CameraMode currentCameraMode;
-    Drone currentlyControlledDrone;
-    ControlModeDemanded currentControlModeDemanded;
     final DroneStatuses currPassDroneStatuses;
     final ProjectileStatuses currPassProjectileStatuses;
 
+    CameraMode currentCameraMode;
+    Drone currentlyControlledDrone;
+    ControlModeDemanded currentControlModeDemanded;
+    int currentlyChosenAmmo;
+    int currentlyChosenCargo;
     float lastHeartBeatTimeStamp;
-
     boolean mapOverlay;
     float mapZoom;
     Vector3f skyColor;
@@ -55,5 +56,7 @@ public class SimulationState {
         mapOverlay = false;
         mapZoom = 1;
         skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
+        currentlyChosenAmmo = 0;
+        currentlyChosenCargo = 0;
     }
 }
