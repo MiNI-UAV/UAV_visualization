@@ -1,4 +1,4 @@
-package org.uav.scene.drawable.gui.widget.radar;
+package org.uav.scene.gui.widget.radar;
 
 import org.joml.Vector2f;
 

@@ -13,8 +13,7 @@ import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeReply;
 import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
-import org.uav.scene.drawable.RenderQueue;
-import org.uav.scene.drawable.gui.Gui;
+import org.uav.scene.gui.Gui;
 import org.uav.scene.shader.Shader;
 import org.uav.utils.Convert;
 

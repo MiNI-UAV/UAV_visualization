@@ -1,11 +1,11 @@
-package org.uav.scene.drawable.gui.widget.propellersDisplay.layers;
+package org.uav.scene.gui.widget.propellersDisplay;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 import org.uav.config.DroneParameters;
 import org.uav.model.SimulationState;
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.scene.gui.DrawableGuiLayer;
 
 import java.awt.*;
 import java.util.ArrayList;

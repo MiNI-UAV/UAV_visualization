@@ -4,10 +4,9 @@ import org.joml.Vector2i;
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.model.SimulationState;
-import org.uav.scene.drawable.GuiWidget;
-import org.uav.scene.drawable.gui.GuiAnchorPoint;
-import org.uav.scene.drawable.gui.GuiElement;
-import org.uav.scene.drawable.gui.widget.propellersDisplay.layers.PropellersDisplayLayer;
+import org.uav.scene.GuiWidget;
+import org.uav.scene.gui.GuiAnchorPoint;
+import org.uav.scene.gui.GuiElement;
 import org.uav.scene.shader.Shader;
 
 public class PropellersDisplayWidget implements GuiWidget {

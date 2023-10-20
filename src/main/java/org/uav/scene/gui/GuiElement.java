@@ -1,4 +1,4 @@
-package org.uav.scene.drawable.gui;
+package org.uav.scene.gui;
 
 import org.joml.Vector2f;
 import org.joml.Vector3f;

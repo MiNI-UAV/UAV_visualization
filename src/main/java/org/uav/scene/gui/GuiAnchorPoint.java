@@ -1,4 +1,4 @@
-package org.uav.scene.drawable.gui;
+package org.uav.scene.gui;
 
 public enum GuiAnchorPoint {
     NONE,

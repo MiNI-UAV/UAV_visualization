@@ -1,4 +1,4 @@
-package org.uav.scene.drawable;
+package org.uav.scene;
 
 import org.javatuples.Pair;
 import org.joml.Matrix4f;

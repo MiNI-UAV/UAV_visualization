@@ -1,13 +1,13 @@
-package org.uav.scene.drawable.gui;
+package org.uav.scene.gui;
 
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.model.SimulationState;
-import org.uav.scene.drawable.gui.widget.ControlPanelWidget;
-import org.uav.scene.drawable.gui.widget.artificialHorizon.ArtificialHorizonWidget;
-import org.uav.scene.drawable.gui.widget.map.MapWidget;
-import org.uav.scene.drawable.gui.widget.propellersDisplay.PropellersDisplayWidget;
-import org.uav.scene.drawable.gui.widget.radar.RadarWidget;
+import org.uav.scene.gui.widget.ControlPanelWidget;
+import org.uav.scene.gui.widget.artificialHorizon.ArtificialHorizonWidget;
+import org.uav.scene.gui.widget.map.MapWidget;
+import org.uav.scene.gui.widget.propellersDisplay.PropellersDisplayWidget;
+import org.uav.scene.gui.widget.radar.RadarWidget;
 import org.uav.scene.shader.Shader;
 
 import javax.imageio.ImageIO;

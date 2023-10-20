@@ -1,4 +1,4 @@
-package org.uav.scene.drawable;
+package org.uav.scene;
 
 import org.uav.scene.shader.Shader;
 

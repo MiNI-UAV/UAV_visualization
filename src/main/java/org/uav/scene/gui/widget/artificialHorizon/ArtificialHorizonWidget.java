@@ -1,14 +1,14 @@
-package org.uav.scene.drawable.gui.widget.artificialHorizon;
+package org.uav.scene.gui.widget.artificialHorizon;
 
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
-import org.uav.scene.drawable.GuiWidget;
-import org.uav.scene.drawable.gui.GuiAnchorPoint;
-import org.uav.scene.drawable.gui.GuiElement;
-import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonBackgroundLayer;
-import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonCompassLayer;
-import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonMetersLayer;
-import org.uav.scene.drawable.gui.widget.artificialHorizon.layers.ArtificialHorizonRollLayer;
+import org.uav.scene.GuiWidget;
+import org.uav.scene.gui.GuiAnchorPoint;
+import org.uav.scene.gui.GuiElement;
+import org.uav.scene.gui.widget.artificialHorizon.layers.ArtificialHorizonBackgroundLayer;
+import org.uav.scene.gui.widget.artificialHorizon.layers.ArtificialHorizonCompassLayer;
+import org.uav.scene.gui.widget.artificialHorizon.layers.ArtificialHorizonMetersLayer;
+import org.uav.scene.gui.widget.artificialHorizon.layers.ArtificialHorizonRollLayer;
 import org.uav.scene.shader.Shader;
 
 import java.awt.image.BufferedImage;

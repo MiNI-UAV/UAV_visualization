@@ -1,4 +1,4 @@
-package org.uav.scene.drawable.gui;
+package org.uav.scene.gui;
 
 import org.joml.Vector2i;
 import org.uav.importer.IndicesLoader;

@@ -6,7 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
-import org.uav.scene.drawable.RenderQueue;
+import org.uav.scene.RenderQueue;
 import org.uav.scene.shader.Shader;
 
 public class Model {

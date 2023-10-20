@@ -1,9 +1,9 @@
-package org.uav.scene.drawable.gui.widget;
+package org.uav.scene.gui.widget;
 
 import org.uav.config.Config;
-import org.uav.scene.drawable.GuiWidget;
-import org.uav.scene.drawable.gui.GuiAnchorPoint;
-import org.uav.scene.drawable.gui.GuiElement;
+import org.uav.scene.GuiWidget;
+import org.uav.scene.gui.GuiAnchorPoint;
+import org.uav.scene.gui.GuiElement;
 import org.uav.scene.shader.Shader;
 
 import java.awt.image.BufferedImage;

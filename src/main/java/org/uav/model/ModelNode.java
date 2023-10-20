@@ -5,7 +5,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.animation.AnimationPlayer;
-import org.uav.scene.drawable.RenderQueue;
+import org.uav.scene.RenderQueue;
 import org.uav.scene.shader.Shader;
 
 import java.util.List;

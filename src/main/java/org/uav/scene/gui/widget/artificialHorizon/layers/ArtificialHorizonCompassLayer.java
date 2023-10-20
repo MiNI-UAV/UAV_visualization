@@ -1,8 +1,8 @@
-package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
+package org.uav.scene.gui.widget.artificialHorizon.layers;
 
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeReply;
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.scene.gui.DrawableGuiLayer;
 import org.uav.utils.Convert;
 
 import java.awt.*;

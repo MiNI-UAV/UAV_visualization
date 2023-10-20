@@ -1,14 +1,14 @@
-package org.uav.scene.drawable.gui.widget.radar;
+package org.uav.scene.gui.widget.radar;
 
 import org.joml.Vector2f;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
 import org.uav.model.status.DroneStatus;
-import org.uav.scene.drawable.GuiWidget;
-import org.uav.scene.drawable.gui.GuiAnchorPoint;
-import org.uav.scene.drawable.gui.GuiElement;
-import org.uav.scene.drawable.gui.widget.radar.layers.RadarArrowLayer;
-import org.uav.scene.drawable.gui.widget.radar.layers.RadarPointsLayer;
+import org.uav.scene.GuiWidget;
+import org.uav.scene.gui.GuiAnchorPoint;
+import org.uav.scene.gui.GuiElement;
+import org.uav.scene.gui.widget.radar.layers.RadarArrowLayer;
+import org.uav.scene.gui.widget.radar.layers.RadarPointsLayer;
 import org.uav.scene.shader.Shader;
 import org.uav.utils.Convert;
 

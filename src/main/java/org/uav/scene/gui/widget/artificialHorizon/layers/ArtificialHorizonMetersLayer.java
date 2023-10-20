@@ -1,10 +1,10 @@
-package org.uav.scene.drawable.gui.widget.artificialHorizon.layers;
+package org.uav.scene.gui.widget.artificialHorizon.layers;
 
 import org.joml.Vector2f;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.controlMode.ControlModeReply;
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.scene.gui.DrawableGuiLayer;
 
 import java.awt.*;
 import java.text.MessageFormat;

@@ -1,6 +1,6 @@
-package org.uav.scene.drawable.gui.widget.radar.layers;
+package org.uav.scene.gui.widget.radar.layers;
 
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.scene.gui.DrawableGuiLayer;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

@@ -1,7 +1,7 @@
-package org.uav.scene.drawable.gui.widget.radar.layers;
+package org.uav.scene.gui.widget.radar.layers;
 
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
-import org.uav.scene.drawable.gui.widget.radar.RadarPoint;
+import org.uav.scene.gui.DrawableGuiLayer;
+import org.uav.scene.gui.widget.radar.RadarPoint;
 
 import java.awt.*;
 import java.util.List;

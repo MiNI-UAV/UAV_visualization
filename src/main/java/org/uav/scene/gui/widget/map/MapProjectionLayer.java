@@ -1,10 +1,10 @@
-package org.uav.scene.drawable.gui.widget.map.layers;
+package org.uav.scene.gui.widget.map;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeReply;
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.scene.gui.DrawableGuiLayer;
 import org.uav.utils.Convert;
 
 import java.awt.*;

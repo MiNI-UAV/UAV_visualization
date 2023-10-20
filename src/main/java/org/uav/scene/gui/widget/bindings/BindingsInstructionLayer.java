@@ -1,6 +1,6 @@
-package org.uav.scene.drawable.gui.widget.loading.layers;
+package org.uav.scene.gui.widget.bindings;
 
-import org.uav.scene.drawable.gui.DrawableGuiLayer;
+import org.uav.scene.gui.DrawableGuiLayer;
 
 import java.awt.*;
 

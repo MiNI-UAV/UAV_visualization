@@ -1,13 +1,12 @@
-package org.uav.scene.drawable.gui.widget.map;
+package org.uav.scene.gui.widget.map;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
-import org.uav.scene.drawable.GuiWidget;
-import org.uav.scene.drawable.gui.GuiAnchorPoint;
-import org.uav.scene.drawable.gui.GuiElement;
-import org.uav.scene.drawable.gui.widget.map.layers.MapProjectionLayer;
+import org.uav.scene.GuiWidget;
+import org.uav.scene.gui.GuiAnchorPoint;
+import org.uav.scene.gui.GuiElement;
 import org.uav.scene.shader.Shader;
 
 import java.awt.image.BufferedImage;
