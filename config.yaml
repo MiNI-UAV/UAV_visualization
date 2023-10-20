@@ -1,11 +1,13 @@
-bindingsConfig: bindings.yaml
+bindingsConfig:
+  generateOnStartUp: false
+  source: bindings_xbox_1.yaml
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
-  downloadMissingAssets: false
-  assetsToUse: 4beda679 # Comment out if above is true.
+  downloadMissingAssets: true
+  # assetsToUse: 4beda679 # Comment out if above is true.
   heartBeatIntervalMs: 500
-  serverTimoutMs: 5000
+  serverTimoutMs: 10000
 droneSettings:
   droneName: Maurice
   droneConfig: plane.xml

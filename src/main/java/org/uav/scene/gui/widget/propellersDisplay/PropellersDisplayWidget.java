@@ -1,4 +1,4 @@
-package org.uav.scene.drawable.gui.widget.propellersDisplay;
+package org.uav.scene.gui.widget.propellersDisplay;
 
 import org.joml.Vector2i;
 import org.uav.config.Config;
@@ -32,7 +32,7 @@ public class PropellersDisplayWidget implements GuiWidget {
                 .build();
     }
 
-    public void update() { //  TODO Get rid of all stupid interfaces or rethink them.
+    public void update() {
         if(guiElement.getHidden()) return;
         propellersDisplay.update(simulationState);
     }

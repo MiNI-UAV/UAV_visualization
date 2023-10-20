@@ -1,19 +1,15 @@
 package org.uav.input;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 public class KeyboardBinding extends Binding {
     public final int keyCode;
     private boolean keyPressed;
 
-    public KeyboardBinding(Runnable action, char key) {
+    public KeyboardBinding(Runnable action, int key) {
         super(action);
-        if(Character.isAlphabetic(key))
-            keyCode = GLFW_KEY_A + (key - 'a');
-        else if(Character.isDigit(key))
-            keyCode = GLFW_KEY_0 + (key - '0');
-        else
-            keyCode = -1;
+        keyCode = key;
         keyPressed = false;
     }
 

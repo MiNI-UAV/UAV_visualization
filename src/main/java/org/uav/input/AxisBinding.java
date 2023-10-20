@@ -4,16 +4,14 @@ import java.io.IOException;
 
 public class AxisBinding extends Binding {
     final int axis;
-    final boolean inverse;
     final Float lowerBound;
     final Float upperBound;
 
     boolean axisPressed;
 
-    public AxisBinding(Runnable action, int axis, boolean inverse, Float lowerBound, Float upperBound) throws IOException {
+    public AxisBinding(Runnable action, int axis, Float lowerBound, Float upperBound) throws IOException {
         super(action);
         this.axis = axis;
-        this.inverse = inverse;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
         if(lowerBound == null && upperBound == null)

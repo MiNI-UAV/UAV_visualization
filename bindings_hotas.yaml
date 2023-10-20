@@ -25,7 +25,7 @@ steering: # Default Throttle, Roll, Pitch, YAW. Add as many as you want
     max: 0.9
     trim: 0
 actions:
-  shot:
+  shoot:
     - axis: 7
       inverse: false
       lowerBound: 0.6
@@ -48,13 +48,6 @@ actions:
   mapZoomOut:
     - button: 12
       inverse: false
-  modes:
-    - - button: 4
-        inverse: false
-    - - button: 5
-        inverse: false
-    - - button: 6
-        inverse: false
   prevCamera:
     - button: 12
       inverse: false
@@ -75,3 +68,10 @@ actions:
     - key: '5'
   softFPV:
     - key: '6'
+modes:
+  - - button: 4
+      inverse: false
+  - - button: 5
+      inverse: false
+  - - button: 6
+      inverse: false

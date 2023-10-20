@@ -14,12 +14,12 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11.*;
 
-public class LoadingScreen {
+public class BindingsScreen {
     private final long window;
     private final Shader shader;
     private final DisplayWidget displayWidget;
 
-    public LoadingScreen(long window, Config config) throws IOException {
+    public BindingsScreen(long window, Config config) throws IOException {
         this.window = window;
 
         var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.vert"));
@@ -32,8 +32,8 @@ public class LoadingScreen {
         displayWidget = new DisplayWidget(config, new ArrayList<>());
     }
 
-    public void render(String description) {
-        displayWidget.update(List.of(description));
+    public void render(List<String> description) {
+        displayWidget.update(description);
         shader.use();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         displayWidget.draw(shader);

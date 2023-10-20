@@ -47,13 +47,13 @@ public class InputHandler {
         // Steering
         steeringAxisBindings.addAll(bindingConfig.getSteering());
         // Actions
-        var actions = bindingConfig.getActions();
-        for(int i=0; i<actions.getModes().size(); i++) {
+        for(int i=0; i<bindingConfig.getModes().size(); i++) {
             var modeId = i;
-            var mode = actions.getModes().get(modeId);
-            initAction(mode, () -> {if(!simulationState.isMapOverlay()) changeControlMode(config.getDroneSettings().getModes().get(modeId));});
+            var mode = bindingConfig.getModes().get(modeId);
+            initAction(mode, () -> {if(!simulationState.isMapOverlay() && modeId < config.getDroneSettings().getModes().size()) changeControlMode(config.getDroneSettings().getModes().get(modeId));});
         }
-        initAction(actions.getShot(), () -> {if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.shoot, simulationState.getCurrentlyChosenAmmo());});
+        var actions = bindingConfig.getActions();
+        initAction(actions.getShoot(), () -> {if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.shoot, simulationState.getCurrentlyChosenAmmo());});
         initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.drop, simulationState.getCurrentlyChosenCargo());});
         initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.release);});
         initAction(actions.getPrevCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());});
@@ -72,10 +72,10 @@ public class InputHandler {
         initAction(actions.getMapZoomOut(), () -> {if(simulationState.isMapOverlay()) simulationState.setMapZoom(simulationState.getMapZoom() * 0.9f);});
     }
 
-    private void initAction(List<BindingConfig.Actions.Binding> actionBindings, Runnable action) throws IOException {
-        for (BindingConfig.Actions.Binding binding: actionBindings) {
+    private void initAction(List<BindingConfig.Binding> actionBindings, Runnable action) throws IOException {
+        for (BindingConfig.Binding binding: actionBindings) {
             if(binding.getAxis() != null)
-                axisBindings.add(new AxisBinding(action, binding.getAxis(), binding.getInverse(), binding.getLowerBound(), binding.getUpperBound()));
+                axisBindings.add(new AxisBinding(action, binding.getAxis(), binding.getLowerBound(), binding.getUpperBound()));
             if(binding.getButton() != null)
                 buttonBindings.add(new ButtonBinding(action, binding.getButton(), binding.getInverse()));
             if(binding.getKey() != null)

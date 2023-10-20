@@ -5,24 +5,27 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.uav.input.CameraMode;
-import org.uav.input.JoystickButtonFunctions;
-import org.uav.model.DroneMovement;
-import org.uav.queue.Action;
 
 import java.util.List;
-import java.util.Map;
 
 @Value
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class Config {
 
-    String bindingsConfig;
+    BindingsConfig bindingsConfig;
     ServerSettings serverSettings;
     DroneSettings droneSettings;
     SceneSettings sceneSettings;
     GraphicsSettings graphicsSettings;
-    JoystickConfig joystick;
     Ports ports;
+
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class BindingsConfig {
+        boolean generateOnStartUp;
+        String source;
+    }
 
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
@@ -70,21 +73,6 @@ public class Config {
         boolean useShadows;
         int shadowsTextureResolution;
         int shadowsRenderingDistance;
-    }
-    @Value
-    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-    public static class JoystickConfig {
-        float deadZoneFactor;
-        JoystickMappings mappings;
-
-        @Value
-        @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-        public static class JoystickMappings {
-            Map<Integer, JoystickButtonFunctions> buttonActions;
-            Map<Integer, Action> axisActions;
-            Map<Integer, DroneMovement> axes;
-            Map<Integer, Boolean> axisInversions;
-        }
     }
 
     @Value

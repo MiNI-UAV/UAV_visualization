@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.assets.AssetDownloader;
+import org.uav.bindingsGeneration.BindingsLoop;
 import org.uav.config.*;
 import org.uav.input.InputHandler;
 import org.uav.model.SimulationState;
@@ -14,7 +15,7 @@ import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.HeartbeatProducer;
 import org.uav.scene.LoadingScreen;
 import org.uav.scene.OpenGlScene;
-import org.uav.utils.Loader;
+import org.uav.utils.FileMapper;
 import org.zeromq.ZContext;
 
 import java.io.IOException;
@@ -64,10 +65,13 @@ public class UavVisualization {
     }
 
     private void init() throws IOException {
-        config = Loader.load(Config.class, Paths.get(System.getProperty("user.dir"), "config.yaml"), new YAMLMapper());
-        droneParameters = Loader.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneConfig()), new XmlMapper());
-        bindingConfig = Loader.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig()), new YAMLMapper());
+        config = FileMapper.load(Config.class, Paths.get(System.getProperty("user.dir"), "config.yaml"), new YAMLMapper());
         initializeOpenGlEnvironment();
+        if(config.getBindingsConfig().isGenerateOnStartUp()) {
+            new BindingsLoop(window, config).loop();
+        }
+        droneParameters = FileMapper.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneConfig()), new XmlMapper());
+        bindingConfig = FileMapper.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig().getSource()), new YAMLMapper());
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
         heartbeatProducer = new HeartbeatProducer(config);
@@ -76,7 +80,7 @@ public class UavVisualization {
         loadingScreen.render("Checking assets...");
         var assetDownloader = new AssetDownloader(context, config);
         assetDownloader.checkAndUpdateAssets(config, simulationState, loadingScreen);
-        availableControlModes = Loader.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
+        availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
         simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes);
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
@@ -141,6 +145,7 @@ public class UavVisualization {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {

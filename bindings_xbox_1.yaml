@@ -1,0 +1,80 @@
+---
+steering:
+- axis: 1
+  inverse: true
+  deadzone: 0.050000012
+  min: -1.0
+  max: 1.0
+  trim: -0.0024567246
+- axis: 3
+  inverse: false
+  deadzone: 0.050000012
+  min: -1.0
+  max: 1.0
+  trim: 0.08278024
+- axis: 4
+  inverse: true
+  deadzone: 0.050000012
+  min: -1.0
+  max: 1.0
+  trim: 0.06453037
+- axis: 0
+  inverse: false
+  deadzone: 0.050000012
+  min: -1.0
+  max: 1.0
+  trim: 0.029617786
+actions:
+  shoot:
+  - axis: 5
+    lowerBound: 0.0
+    upperBound: 1.0500001
+  drop:
+  - axis: 2
+    lowerBound: 0.0
+    upperBound: 1.0500001
+  release:
+  - button: 3
+    inverse: false
+  respawn:
+  - button: 1
+    inverse: false
+  map:
+  - button: 7
+    inverse: false
+  - key: 77
+  mapZoomIn:
+  - button: 5
+    inverse: false
+  mapZoomOut:
+  - button: 4
+    inverse: false
+  prevCamera:
+  - button: 4
+    inverse: false
+  nextCamera:
+  - button: 5
+    inverse: false
+  freeCamera:
+  - key: 49
+  droneCamera:
+  - key: 50
+  observerCamera:
+  - key: 51
+  racingCamera:
+  - key: 52
+  horizontalCamera:
+  - key: 53
+  hardFPV:
+  - key: 54
+  softFPV:
+  - key: 55
+modes:
+- - button: 14
+    inverse: false
+- - button: 11
+    inverse: false
+- - button: 12
+    inverse: false
+- - button: 13
+    inverse: false

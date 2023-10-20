@@ -24,7 +24,7 @@ steering:
     max: 0.9
     trim: 0
 actions:
-  shot:
+  shoot:
     - axis: 4
       inverse: false
       lowerBound: 0.6
@@ -48,13 +48,6 @@ actions:
   mapZoomOut:
     - button: 7
       inverse: false
-  modes:
-    - - button: 4
-        inverse: false
-    - - button: 3
-        inverse: false
-    - - button: 1
-        inverse: false
   prevCamera:
     - button: 7
       inverse: false
@@ -75,3 +68,10 @@ actions:
     - key: '5'
   softFPV:
     - key: '6'
+modes:
+  - - button: 4
+      inverse: false
+  - - button: 3
+      inverse: false
+  - - button: 1
+      inverse: false

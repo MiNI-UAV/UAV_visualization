@@ -1,18 +1,19 @@
-package org.uav.scene.gui.widget.bindings;
+package org.uav.scene.gui.widget.display;
 
 import org.uav.scene.gui.DrawableGuiLayer;
 
 import java.awt.*;
+import java.util.List;
 
-public class LoadingDescriptionLayer implements DrawableGuiLayer {
+public class DisplayLayer implements DrawableGuiLayer {
     private static final int FONT_SIZE = 20;
-    public String description;
+    public List<String> description;
 
-    public LoadingDescriptionLayer(String description) {
+    public DisplayLayer(List<String> description) {
         this.description = description;
     }
 
-    public void update(String description) {
+    public void update(List<String> description) {
         this.description = description;
     }
 
@@ -23,6 +24,8 @@ public class LoadingDescriptionLayer implements DrawableGuiLayer {
         g.setColor(Color.white);
 
         //String modeString = MessageFormat.format("{0}", description);
-        g.drawString(description, 100, 100);
+        int fontHeight = g.getFontMetrics().getHeight();
+        for(int i=0; i<description.size(); i++)
+            g.drawString(description.get(i), 100, 100 + fontHeight * i);
     }
 }

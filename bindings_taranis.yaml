@@ -24,7 +24,7 @@ steering: # Default Throttle, Roll, Pitch, YAW. Add as many as you want
     max: 0.9
     trim: 0
 actions:
-  shot:
+  shoot:
     - button: 1
       inverse: false
   drop:
@@ -83,3 +83,13 @@ actions:
     - key: '5'
   softFPV:
     - key: '6'
+modes:
+- - axis: 4
+    lowerBound: -1.2
+    upperBound: -0.33
+- - axis: 4
+    lowerBound: -0.33
+    upperBound: 0.33
+- - axis: 4
+    lowerBound: 0.33
+    upperBound: 1.2
