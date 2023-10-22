@@ -38,6 +38,8 @@ public class BindingConfig {
         List<Binding> drop;
         List<Binding> release;
         List<Binding> respawn;
+        List<Binding> nextAmmo;
+        List<Binding> nextCargo;
         List<Binding> map;
         List<Binding> mapZoomIn;
         List<Binding> mapZoomOut;
@@ -56,6 +58,8 @@ public class BindingConfig {
             drop = new ArrayList<>();
             release = new ArrayList<>();
             respawn = new ArrayList<>();
+            nextAmmo = new ArrayList<>();
+            nextCargo = new ArrayList<>();
             map = new ArrayList<>();
             mapZoomIn = new ArrayList<>();
             mapZoomOut = new ArrayList<>();

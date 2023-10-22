@@ -99,7 +99,10 @@ public class GuiElement {
                 case BOTTOM_LEFT -> guiElement.horizontalResolution ?
                         new Vector4f(bottom - (bottom - top) * scale, bottom, left , left + (right - left) / ratio * scale):
                         new Vector4f(bottom - (bottom - top) * ratio * scale, bottom, left, left + (right - left) * scale);
-                case TOP, TOP_RIGHT, RIGHT, LEFT, TOP_LEFT, TOP_FULL, LEFT_FULL, RIGHT_FULL -> throw new RuntimeException("Not implemented");
+                case TOP_RIGHT -> guiElement.horizontalResolution ?
+                        new Vector4f(top, top - (top - bottom) * scale, right - (right - left) / ratio * scale, right):
+                        new Vector4f(top, top - (top - bottom) * ratio * scale, right - (right - left) * scale, right);
+                case TOP, RIGHT, LEFT, TOP_LEFT, TOP_FULL, LEFT_FULL, RIGHT_FULL -> throw new RuntimeException("Not implemented");
                 default -> new Vector4f(top, bottom, left, right);
             };
         }

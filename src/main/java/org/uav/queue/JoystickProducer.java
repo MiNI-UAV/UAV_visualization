@@ -26,10 +26,11 @@ public class JoystickProducer {
 //        System.out.println("Sent: [" + message + "]");
     }
 
-    public void send(Drone drone, Action action, Integer ...params) {
+    public String send(Drone drone, Action action, Integer ...params) {
         String message = messageSerializer.serializeWithParams(action, params);
-        System.out.println("Sent: [" + message + "]");
+//        System.out.println("Sent: [" + message + "]");
         String reply = drone.sendUtilsCommand(message);
-        System.out.println("Received: [" + reply + "]");
+//        System.out.println("Received: [" + reply + "]");
+        return reply;
     }
 }

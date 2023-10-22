@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.uav.config.AvailableControlModes;
 import org.uav.config.Config;
 import org.uav.model.Drone;
+import org.uav.model.Projectile;
 import org.uav.model.SimulationState;
 import org.uav.queue.DroneRequester;
 import org.uav.queue.DroneStatusConsumer;
@@ -44,14 +45,18 @@ public class SimulationStateProcessor implements AutoCloseable {
         simulationState.setCurrentlyControlledDrone(newDroneResult.orElseThrow());
     }
 
-    public void updateCurrentEntityStatuses() {
+    public void updateSimulationState() {
         simulationState.getDroneStatusesMutex().lock();
         simulationState.getCurrPassDroneStatuses().map = simulationState.getDroneStatuses().map;
         simulationState.getDroneStatusesMutex().unlock();
         simulationState.getProjectileStatusesMutex().lock();
         simulationState.getCurrPassProjectileStatuses().map = simulationState.getProjectileStatuses().map;
         simulationState.getProjectileStatusesMutex().unlock();
-        simulationState.setSimulationTime((float) GLFW.glfwGetTime());
+
+        simulationState.getAmmos().forEach(Projectile::update);
+        simulationState.getCargos().forEach(Projectile::update);
+
+        simulationState.setSimulationTimeS((float) GLFW.glfwGetTime());
     }
 
     @Override
@@ -66,6 +71,8 @@ public class SimulationStateProcessor implements AutoCloseable {
         requestNewDrone();
         oldDrone.sendUtilsCommand(KILL_COMMAND);
         simulationState.setCurrentControlModeDemanded(null);
+        simulationState.getCargos().forEach(Projectile::reset);
+        simulationState.getAmmos().forEach(Projectile::reset);
     }
 
     public void saveDroneModelChecksum(String droneConfig) {

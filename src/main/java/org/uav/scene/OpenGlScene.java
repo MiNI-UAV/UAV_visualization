@@ -251,7 +251,7 @@ public class OpenGlScene {
     private void renderScene(MemoryStack stack, Shader shader) {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
-        float time = simulationState.getSimulationTime();
+        float time = simulationState.getSimulationTimeS();
         var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
         environmentModel.addToQueue(renderQueue, time);
         addDronesToQueue(renderQueue, time);

@@ -5,25 +5,25 @@ steering:
   deadzone: 0.050000012
   min: -1.0
   max: 1.0
-  trim: -0.0024567246
+  trim: 0.002609253
 - axis: 3
   inverse: false
   deadzone: 0.050000012
   min: -1.0
   max: 1.0
-  trim: 0.08278024
+  trim: 0.07573056
 - axis: 4
   inverse: true
   deadzone: 0.050000012
   min: -1.0
   max: 1.0
-  trim: 0.06453037
+  trim: 0.07994199
 - axis: 0
   inverse: false
   deadzone: 0.050000012
   min: -1.0
   max: 1.0
-  trim: 0.029617786
+  trim: 0.06178379
 actions:
   shoot:
   - axis: 5
@@ -38,6 +38,12 @@ actions:
     inverse: false
   respawn:
   - button: 1
+    inverse: false
+  nextAmmo:
+  - button: 0
+    inverse: false
+  nextCargo:
+  - button: 2
     inverse: false
   map:
   - button: 7

@@ -3,12 +3,14 @@ package org.uav.model;
 import lombok.Data;
 import org.joml.Vector3f;
 import org.uav.config.Config;
+import org.uav.config.DroneParameters;
 import org.uav.input.CameraMode;
 import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.status.DroneStatuses;
 import org.uav.model.status.ProjectileStatuses;
 import org.uav.scene.camera.Camera;
 
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Data
@@ -17,7 +19,7 @@ public class SimulationState {
     String serverMap;
     String droneModelChecksum;
     final long window;
-    float simulationTime;
+    float simulationTimeS;
     final Camera camera;
 
     final DroneStatuses droneStatuses;
@@ -32,15 +34,18 @@ public class SimulationState {
     CameraMode currentCameraMode;
     Drone currentlyControlledDrone;
     ControlModeDemanded currentControlModeDemanded;
-    int currentlyChosenAmmo;
-    int currentlyChosenCargo;
     float lastHeartBeatTimeStamp;
     boolean mapOverlay;
     float mapZoom;
     Vector3f skyColor;
 
+    int currentlyChosenAmmo;
+    final List<Projectile>ammos;
+    int currentlyChosenCargo;
+    final List<Projectile> cargos;
 
-    public SimulationState(Config config, long window) {
+
+    public SimulationState(long window, Config config, DroneParameters droneParameters) {
         this.window = window;
         droneStatuses = new DroneStatuses();
         droneStatusesMutex = new ReentrantLock();
@@ -57,6 +62,8 @@ public class SimulationState {
         mapZoom = 1;
         skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
         currentlyChosenAmmo = 0;
+        ammos = droneParameters.getAmmo().stream().map(e -> new Projectile(e, this)).toList();
         currentlyChosenCargo = 0;
+        cargos = droneParameters.getCargo().stream().map(e -> new Projectile(e, this)).toList();
     }
 }

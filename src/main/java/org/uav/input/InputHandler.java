@@ -53,12 +53,14 @@ public class InputHandler {
             initAction(mode, () -> {if(!simulationState.isMapOverlay() && modeId < config.getDroneSettings().getModes().size()) changeControlMode(config.getDroneSettings().getModes().get(modeId));});
         }
         var actions = bindingConfig.getActions();
-        initAction(actions.getShoot(), () -> {if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.shoot, simulationState.getCurrentlyChosenAmmo());});
-        initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.drop, simulationState.getCurrentlyChosenCargo());});
+        initAction(actions.getShoot(), () -> {if(!simulationState.isMapOverlay()) simulationState.getAmmos().get(simulationState.getCurrentlyChosenAmmo()).parseProjectileMessage(joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.shoot, simulationState.getCurrentlyChosenAmmo()));});
+        initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) simulationState.getCargos().get(simulationState.getCurrentlyChosenCargo()).parseProjectileMessage(joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.drop, simulationState.getCurrentlyChosenCargo()));});
         initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.release);});
         initAction(actions.getPrevCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());});
         initAction(actions.getNextCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());});
         initAction(actions.getRespawn(), () -> {if(!simulationState.isMapOverlay()) simulationStateProcessor.respawnDrone();});
+        initAction(actions.getNextAmmo(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentlyChosenAmmo((simulationState.getCurrentlyChosenAmmo() == simulationState.getAmmos().size()-1)? 0: simulationState.getCurrentlyChosenAmmo()+1);});
+        initAction(actions.getNextCargo(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentlyChosenCargo((simulationState.getCurrentlyChosenCargo() == simulationState.getCargos().size()-1)? 0: simulationState.getCurrentlyChosenCargo()+1);});
         initAction(actions.getFreeCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(CameraMode.FreeCamera);});
         initAction(actions.getDroneCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(CameraMode.DroneCamera);});
         initAction(actions.getObserverCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(CameraMode.ObserverCamera);});

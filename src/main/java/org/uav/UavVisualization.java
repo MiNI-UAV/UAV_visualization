@@ -60,7 +60,7 @@ public class UavVisualization {
     public void update() {
         heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone());
         inputHandler.handleInput();
-        simulationStateProcessor.updateCurrentEntityStatuses();
+        simulationStateProcessor.updateSimulationState();
         simulationState.getCamera().updateCamera();
     }
 
@@ -75,7 +75,7 @@ public class UavVisualization {
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
         heartbeatProducer = new HeartbeatProducer(config);
-        simulationState = new SimulationState(config, window);
+        simulationState = new SimulationState(window, config, droneParameters);
         var context = new ZContext();
         loadingScreen.render("Checking assets...");
         var assetDownloader = new AssetDownloader(context, config);
@@ -145,7 +145,7 @@ public class UavVisualization {
             if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
         // Get the thread stack and push a new frame
         try ( MemoryStack stack = stackPush() ) {
