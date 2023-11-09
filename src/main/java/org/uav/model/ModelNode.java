@@ -44,10 +44,10 @@ public class ModelNode {
         children.forEach(n -> n.draw(stack, shader, globalTransformation, currentTime));
     }
 
-    public void addToQueue(RenderQueue renderQueue, Matrix4f parentTransform, float currentTime) {
+    public void addToQueue(RenderQueue renderQueue, Matrix4f parentTransform, Shader shader, float currentTime) {
         Matrix4f globalTransformation = getGlobalTransformation(parentTransform, currentTime);
-        meshes.forEach(m -> renderQueue.addMesh(m, globalTransformation));
-        children.forEach(n -> n.addToQueue(renderQueue, globalTransformation, currentTime));
+        meshes.forEach(m -> renderQueue.addMesh(m, globalTransformation, shader));
+        children.forEach(n -> n.addToQueue(renderQueue, globalTransformation, shader, currentTime));
     }
 
     private Matrix4f getGlobalTransformation(Matrix4f parentTransform, float currentTime) {

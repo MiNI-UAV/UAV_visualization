@@ -190,12 +190,12 @@ public class GltfImporter {
         {
             for (MeshPrimitiveModel meshPrimitiveModel : meshModel.getMeshPrimitiveModels())
             {
-                List<Vertex> vertices = new ArrayList<>();
+                List<ModelVertex> vertices = new ArrayList<>();
                 List<Vector3f> pos = getPosition(meshPrimitiveModel);
                 List<Vector3f> nor = getNormals(meshPrimitiveModel);
                 List<Vector2f> texc = getTextureCoords(meshPrimitiveModel);
                 for(int i=0; i< pos.size(); i++)
-                    vertices.add(new Vertex(pos.get(i), nor.get(i), texc.get(i)));
+                    vertices.add(new ModelVertex(pos.get(i), nor.get(i), texc.get(i)));
 
                 List<Integer> ind = getIndices(meshPrimitiveModel);
 

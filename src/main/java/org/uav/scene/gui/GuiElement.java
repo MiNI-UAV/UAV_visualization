@@ -3,7 +3,7 @@ package org.uav.scene.gui;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.uav.model.Vertex;
+import org.uav.model.ModelVertex;
 import org.uav.scene.shader.Shader;
 
 import java.awt.image.BufferedImage;
@@ -119,7 +119,7 @@ public class GuiElement {
             return this;
         }
 
-        private List<Vertex> constructVertexList(int layerNo) {
+        private List<ModelVertex> constructVertexList(int layerNo) {
             Vector4f scaledDim = scaleGui(positions.x, positions.y, positions.z, positions.w);
             float[] v = new float[] {
                     scaledDim.w, scaledDim.x,
@@ -129,22 +129,22 @@ public class GuiElement {
             };
             float z = -guiElement.overlayLevel * 0.1f - layerNo * 0.01f;
             return List.of(
-                    new Vertex(
+                    new ModelVertex(
                             new Vector3f(v[0], v[1], z),
                             new Vector3f(0,0,0),
                             new Vector2f(1,0)
                     ),
-                    new Vertex(
+                    new ModelVertex(
                             new Vector3f(v[2], v[3], z),
                             new Vector3f(0,0,0),
                             new Vector2f(1, 1)
                     ),
-                    new Vertex(
+                    new ModelVertex(
                             new Vector3f(v[4], v[5], z),
                             new Vector3f(0,0,0),
                             new Vector2f(0, 1)
                     ),
-                    new Vertex(
+                    new ModelVertex(
                             new Vector3f(v[6], v[7], -layerNo * 0.01f),
                             new Vector3f(0,0,0),
                             new Vector2f(0, 0)

@@ -3,8 +3,8 @@ package org.uav.scene.gui;
 import org.joml.Vector2i;
 import org.uav.importer.IndicesLoader;
 import org.uav.importer.VerticesLoader;
+import org.uav.model.ModelVertex;
 import org.uav.model.Texture;
-import org.uav.model.Vertex;
 import org.uav.scene.shader.Shader;
 
 import java.awt.*;
@@ -35,7 +35,7 @@ public class GuiLayer {
     private final boolean  dynamicTexture;
     private Vector2i canvasSize;
 
-    public GuiLayer(List<Vertex> vertices, BufferedImage texture) {
+    public GuiLayer(List<ModelVertex> vertices, BufferedImage texture) {
         indices = List.of(
                 1, 0, 3,   // first triangle
                 1, 2, 3    // second triangle
@@ -46,7 +46,7 @@ public class GuiLayer {
         loadTexture(texture);
     }
 
-    public GuiLayer(List<Vertex> vertices, int width, int height, DrawableGuiLayer guiLayer) {
+    public GuiLayer(List<ModelVertex> vertices, int width, int height, DrawableGuiLayer guiLayer) {
         indices = List.of(
                 1, 0, 3,   // first triangle
                 1, 2, 3    // second triangle
@@ -96,25 +96,24 @@ public class GuiLayer {
         texture = new Texture(textureId, "texture_diffuse", false);
     }
 
-    private int loadPrimitives(List<Vertex> vertices) {
+    private int loadPrimitives(List<ModelVertex> vertices) {
         final int VAO;
-        VerticesLoader verticesLoader = new VerticesLoader(vertices);
         IndicesLoader indicesLoader = new IndicesLoader(indices);
         VAO = glGenVertexArrays();
         int VBO = glGenBuffers();
         int EBO = glGenBuffers();
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, verticesLoader.loadToFloatBuffer(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, VerticesLoader.loadToFloatBuffer(vertices), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLoader.loadToIntBuffer(), GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, true, Vertex.NUMBER_OF_FLOATS * 4, 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, true, ModelVertex.NUMBER_OF_FLOATS * 4, 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, Vertex.NUMBER_OF_FLOATS * 4, 3 * 4);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, ModelVertex.NUMBER_OF_FLOATS * 4, 3 * 4);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, Vertex.NUMBER_OF_FLOATS * 4, 6 * 4);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, ModelVertex.NUMBER_OF_FLOATS * 4, 6 * 4);
         glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);

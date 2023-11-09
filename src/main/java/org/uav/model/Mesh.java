@@ -16,14 +16,14 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Mesh {
-    private final List<Vertex> vertices;
+    private final List<ModelVertex> vertices;
     private final List<Integer> indices;
     private final List<Texture> textures;
     private final boolean transparentTexture;
     private final Material material;
     private int VAO;
 
-    public Mesh(List<Vertex> vertices, List<Integer> indices, List<Texture> textures, boolean transparentTexture, Material material) {
+    public Mesh(List<ModelVertex> vertices, List<Integer> indices, List<Texture> textures, boolean transparentTexture, Material material) {
         this.vertices = vertices;
         this.indices = indices;
         this.textures = textures;
@@ -66,23 +66,22 @@ public class Mesh {
     }
 
     private void setupMesh() {
-        VerticesLoader verticesLoader = new VerticesLoader(vertices);
         IndicesLoader indicesLoader = new IndicesLoader(indices);
         VAO = glGenVertexArrays();
         int VBO = glGenBuffers();
         int EBO = glGenBuffers();
         glBindVertexArray(VAO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, verticesLoader.loadToFloatBuffer(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, VerticesLoader.loadToFloatBuffer(vertices), GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesLoader.loadToIntBuffer(), GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, true, Vertex.NUMBER_OF_FLOATS * 4, 0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, true, ModelVertex.NUMBER_OF_FLOATS * 4, 0);
         glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, Vertex.NUMBER_OF_FLOATS * 4, 3 * 4);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, ModelVertex.NUMBER_OF_FLOATS * 4, 3 * 4);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, Vertex.NUMBER_OF_FLOATS * 4, 6 * 4);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, ModelVertex.NUMBER_OF_FLOATS * 4, 6 * 4);
         glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);

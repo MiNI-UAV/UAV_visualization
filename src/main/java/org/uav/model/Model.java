@@ -33,10 +33,10 @@ public class Model {
         rootNode.draw(stack, shader, modelTransformation, currentTime);
     }
 
-    public void addToQueue(RenderQueue renderQueue, float currentTime) {
+    public void addToQueue(RenderQueue renderQueue, Shader shader, float currentTime) {
         var modelTransformation = getModelTransformation();
         if(modelTransformation == null) return;
-        rootNode.addToQueue(renderQueue, modelTransformation, currentTime);
+        rootNode.addToQueue(renderQueue, modelTransformation, shader, currentTime);
     }
 
     public Matrix4f getModelTransformation() {

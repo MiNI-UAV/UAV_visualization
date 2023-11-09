@@ -1,20 +1,15 @@
 package org.uav.importer;
 
 import org.lwjgl.system.MemoryUtil;
-import org.uav.model.Vertex;
+import org.uav.model.ShaderVertex;
 
 import java.nio.FloatBuffer;
 import java.util.List;
 
 public class VerticesLoader {
-    private final List<Vertex> vertices;
 
-    public VerticesLoader(List<Vertex> vertices) {
-        this.vertices = vertices;
-    }
-
-    public FloatBuffer loadToFloatBuffer() {
-        FloatBuffer fb = MemoryUtil.memAllocFloat(Vertex.NUMBER_OF_FLOATS * vertices.size());
+    public static <TVertex extends ShaderVertex> FloatBuffer loadToFloatBuffer(List<? extends TVertex> vertices) {
+        FloatBuffer fb = MemoryUtil.memAllocFloat(vertices.get(0).getNumberOfFloats() * vertices.size());
         vertices.forEach(vertex -> vertex.insertIntoFloatBuffer(fb));
         fb.flip();
         return fb;

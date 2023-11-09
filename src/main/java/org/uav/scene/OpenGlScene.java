@@ -11,6 +11,8 @@ import org.uav.importer.GltfImporter;
 import org.uav.model.Model;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeReply;
+import org.uav.model.rope.Rope;
+import org.uav.model.rope.RopeModel;
 import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
 import org.uav.scene.gui.Gui;
@@ -38,10 +40,12 @@ public class OpenGlScene {
     private final GltfImporter modelImporter;
     private Shader objectShader;
     private Shader guiShader;
+    private Shader ropeShader;
     private Map<String, Model> droneModels;
     private Model projectileModel;
     private Model environmentModel;
     private Model xMarkModel;
+    private RopeModel ropeModel;
     private Gui gui;
 
     // Shading
@@ -55,8 +59,8 @@ public class OpenGlScene {
 
         modelImporter = new GltfImporter(loadingScreen, config);
 
-        setUpDrawables(droneParameters);
         setUpShaders();
+        setUpDrawables(droneParameters);
         setUpShading();
     }
 
@@ -114,6 +118,14 @@ public class OpenGlScene {
         var shadingFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shadingShader.frag"));
         shadingShader = new Shader(shadingVertexShaderSource, shadingFragmentShaderSource);
         shadingShader.use();
+
+        var ropeVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ropeShader.vert"));
+        var ropeGeometryShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ropeShader.geom"));
+        var ropeFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ropeShader.frag"));
+        ropeShader = new Shader(ropeVertexShaderSource, ropeGeometryShaderSource, ropeFragmentShaderSource);
+        ropeShader.use();
+        setUpLights(ropeShader);
+        ropeShader.setVec3("backgroundColor", simulationState.getSkyColor());
     }
 
     private void setUpDrawables(DroneParameters droneParameters) throws IOException {
@@ -127,6 +139,13 @@ public class OpenGlScene {
         createDroneModels();
         projectileModel = loadModel(Paths.get("core", "projectile").toString());
         xMarkModel = loadModel(Paths.get("core", "xMark").toString());
+        ropeModel = new RopeModel(
+                Rope.SEGMENT_COUNT,
+                Rope.THICKNESS,
+                ropeShader,
+                Rope.ROPE_COLOR_1,
+                Rope.ROPE_COLOR_2
+        );
 
         gui = new Gui(simulationState, config, droneParameters);
     }
@@ -228,6 +247,10 @@ public class OpenGlScene {
         objectShader.setMatrix4f(stack,"projection", projection);
         objectShader.setMatrix4f(stack,"directionalLightView", directionalLightView);
         objectShader.setMatrix4f(stack,"directionalLightProjection", directionalLightProjection);
+        ropeShader.use();
+        ropeShader.setVec3("viewPos", viewPos);
+        ropeShader.setMatrix4f(stack,"view", view);
+        ropeShader.setMatrix4f(stack,"projection", projection);
     }
 
     private Matrix4f getSceneShaderProjectionMatrix() {
@@ -253,32 +276,47 @@ public class OpenGlScene {
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         float time = simulationState.getSimulationTimeS();
         var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
-        environmentModel.addToQueue(renderQueue, time);
-        addDronesToQueue(renderQueue, time);
-        addProjectilesToQueue(renderQueue, time);
-        addXMarkToQueue(renderQueue, time);
-        renderQueue.render(stack, shader);
+        environmentModel.addToQueue(renderQueue, shader, time);
+        addDronesToQueue(renderQueue, shader, time);
+        addProjectilesToQueue(renderQueue, shader, time);
+        addXMarkToQueue(renderQueue, shader, time);
+        renderQueue.render(stack);
+        drawRopes();
     }
 
-    private void addDronesToQueue(RenderQueue renderQueue, float time) {
+    private void drawRopes() {
+        for (Rope rope: simulationState.getNotifications().ropes) {
+            if(
+                !simulationState.getCurrPassDroneStatuses().map.containsKey(rope.ownerId) ||
+                !simulationState.getCurrPassProjectileStatuses().map.containsKey(rope.objectId)
+            )
+                continue;
+            var owner = simulationState.getCurrPassDroneStatuses().map.get(rope.ownerId);
+            var object = simulationState.getCurrPassProjectileStatuses().map.get(rope.objectId);
+            ropeModel.setParameters(new Vector3f(owner.position).add(rope.ownerOffset), object.position, rope.ropeLength);
+            ropeModel.draw();
+        }
+    }
+
+    private void addDronesToQueue(RenderQueue renderQueue, Shader shader, float time) {
         for(DroneStatus status: simulationState.getCurrPassDroneStatuses().map.values()) {
             String currentDroneModelName = simulationState.getNotifications().droneModels.getOrDefault(status.id, DEFAULT_DRONE_MODEL);
             Model currentDroneModel = droneModels.getOrDefault(currentDroneModelName, droneModels.get(DEFAULT_DRONE_MODEL));
-            currentDroneModel.addToQueue(renderQueue, time);
+            currentDroneModel.addToQueue(renderQueue, shader, time);
             currentDroneModel.setPosition(status.position);
             currentDroneModel.setRotation(status.rotation);
         }
     }
 
-    private void addProjectilesToQueue(RenderQueue renderQueue, float time) {
+    private void addProjectilesToQueue(RenderQueue renderQueue, Shader shader, float time) {
         for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
-            projectileModel.addToQueue(renderQueue, time);
+            projectileModel.addToQueue(renderQueue, shader, time);
             projectileModel.setPosition(status.position);
             projectileModel.setRotation(new Quaternionf());
         }
     }
 
-    private void addXMarkToQueue(RenderQueue renderQueue, float time) {
+    private void addXMarkToQueue(RenderQueue renderQueue, Shader shader, float time) {
         if(
             config.getSceneSettings().isDrawInWorldDemandedPositionalCoords() &&
             simulationState.getCurrentControlModeDemanded() != null &&
@@ -293,7 +331,7 @@ public class OpenGlScene {
             float demandedYaw = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
             xMarkModel.setPosition(new Vector3f(demandedX, demandedY, demandedZ));
             xMarkModel.setRotation(Convert.toQuaternion(new Vector3f(0, 0, demandedYaw)));
-            xMarkModel.addToQueue(renderQueue, time);
+            xMarkModel.addToQueue(renderQueue, shader, time);
         }
     }
 

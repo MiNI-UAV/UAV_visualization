@@ -1,6 +1,6 @@
 package org.uav.scene;
 
-import org.javatuples.Pair;
+import org.javatuples.Triplet;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
@@ -14,11 +14,12 @@ import java.util.Queue;
 
 public class RenderQueue {
 
-    private final Queue<Pair<Mesh, Matrix4f>> transparentMeshes;
-    private final Queue<Pair<Mesh, Matrix4f>> standardMeshes;
+    private final Queue<Triplet<Mesh, Matrix4f, Shader>> transparentMeshes;
+    private final Queue<Triplet<Mesh, Matrix4f, Shader>> standardMeshes;
 
     public RenderQueue(Vector3f cameraPosition) {
-        Comparator<Pair<Mesh, Matrix4f>> comparator = (Pair<Mesh, Matrix4f> p1, Pair<Mesh, Matrix4f> p2) -> {
+        Comparator<Triplet<Mesh, Matrix4f, Shader>> comparator =
+                (Triplet<Mesh, Matrix4f, Shader> p1, Triplet<Mesh, Matrix4f, Shader> p2) -> {
             Vector3f distance1 = p1.getValue1().getTranslation(new Vector3f()).sub(cameraPosition);
             Vector3f distance2 = p2.getValue1().getTranslation(new Vector3f()).sub(cameraPosition);
             return Float.compare(distance1.length(), distance2.length());
@@ -27,21 +28,21 @@ public class RenderQueue {
         standardMeshes = new ArrayDeque<>();
     }
 
-    public void addMesh(Mesh mesh, Matrix4f modelMatrix) {
+    public void addMesh(Mesh mesh, Matrix4f modelMatrix, Shader shader) {
         if(mesh.isTransparent())
-            transparentMeshes.add(Pair.with(mesh, modelMatrix));
+            transparentMeshes.add(Triplet.with(mesh, modelMatrix, shader));
         else
-            standardMeshes.add(Pair.with(mesh, modelMatrix));
+            standardMeshes.add(Triplet.with(mesh, modelMatrix, shader));
     }
 
-    public void render(MemoryStack stack, Shader shader) {
+    public void render(MemoryStack stack) {
         while(!standardMeshes.isEmpty()) {
-            var meshPair = standardMeshes.remove();
-            meshPair.getValue0().draw(stack, shader, meshPair.getValue1());
+            var drawable = standardMeshes.remove();
+            drawable.getValue0().draw(stack, drawable.getValue2(), drawable.getValue1());
         }
         while(!transparentMeshes.isEmpty()) {
-            var meshPair = transparentMeshes.remove();
-            meshPair.getValue0().draw(stack, shader, meshPair.getValue1());
+            var drawable = transparentMeshes.remove();
+            drawable.getValue0().draw(stack, drawable.getValue2(), drawable.getValue1());
         }
 
     }

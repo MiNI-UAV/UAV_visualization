@@ -12,6 +12,7 @@ import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER;
 
 public class Shader {
 
@@ -23,25 +24,8 @@ public class Shader {
         String fragmentShaderSource = IOUtils.toString(fragmentShaderStream, StandardCharsets.UTF_8);
 
         IntBuffer success = BufferUtils.createIntBuffer(1);
-        // Set Up Vertex Shader
-        int vertexShader;
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, vertexShaderSource);
-        glCompileShader(vertexShader);
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, success);
-        if(success.get() == 0)
-            System.err.println("Failed to set up vertex shader");
-        success.rewind();
-
-        // Set Up Fragment Shader
-        int fragmentShader;
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, fragmentShaderSource);
-        glCompileShader(fragmentShader);
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, success);
-        if(success.get() == 0)
-            System.err.println("Failed to set up fragment shader");
-        success.rewind();
+        int vertexShader = getVertexShader(vertexShaderSource, success);
+        int fragmentShader = getFragmentShader(fragmentShaderSource, success);
 
         // Set Up Shader Program
         shaderProgram = glCreateProgram();
@@ -55,6 +39,71 @@ public class Shader {
         // Clean up
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+    }
+
+    public Shader(InputStream vertexShaderStream, InputStream geometryShaderStream, InputStream fragmentShaderStream) throws IOException {
+        // Read GLSL files
+        String vertexShaderSource = IOUtils.toString(vertexShaderStream, StandardCharsets.UTF_8);
+        String geometryShaderSource = IOUtils.toString(geometryShaderStream, StandardCharsets.UTF_8);
+        String fragmentShaderSource = IOUtils.toString(fragmentShaderStream, StandardCharsets.UTF_8);
+
+        IntBuffer success = BufferUtils.createIntBuffer(1);
+        int vertexShader = getVertexShader(vertexShaderSource, success);
+        int geometryShader = getFragmentShader(fragmentShaderSource, success);
+        int fragmentShader = getGeometryShader(geometryShaderSource, success);
+
+        // Set Up Shader Program
+        shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, geometryShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+        glGetShaderiv(shaderProgram, GL_LINK_STATUS, success);
+        if(success.get() == 0)
+            System.err.println("Failed to set up shader program");
+
+        // Clean up
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+    }
+
+    private static int getGeometryShader(String geometryShaderSource, IntBuffer success) {
+        // Set Up Fragment Shader
+        int geometryShader;
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+        glShaderSource(geometryShader, geometryShaderSource);
+        glCompileShader(geometryShader);
+        glGetShaderiv(geometryShader, GL_COMPILE_STATUS, success);
+        if(success.get() == 0)
+            System.err.println("Failed to set up geometry shader");
+        success.rewind();
+        return geometryShader;
+    }
+
+    private static int getFragmentShader(String fragmentShaderSource, IntBuffer success) {
+        // Set Up Fragment Shader
+        int fragmentShader;
+        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fragmentShader, fragmentShaderSource);
+        glCompileShader(fragmentShader);
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, success);
+        if(success.get() == 0)
+            System.err.println("Failed to set up fragment shader");
+        success.rewind();
+        return fragmentShader;
+    }
+
+    private static int getVertexShader(String vertexShaderSource, IntBuffer success) {
+        // Set Up Vertex Shader
+        int vertexShader;
+        vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vertexShader, vertexShaderSource);
+        glCompileShader(vertexShader);
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, success);
+        if(success.get() == 0)
+            System.err.println("Failed to set up vertex shader");
+        success.rewind();
+        return vertexShader;
     }
 
     public void use() {

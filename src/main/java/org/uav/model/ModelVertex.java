@@ -6,19 +6,19 @@ import org.joml.Vector3f;
 
 import java.nio.FloatBuffer;
 
-public class Vertex {
-
+public class ModelVertex extends ShaderVertex {
     public static int NUMBER_OF_FLOATS = 8;
     private final Vector3f position;
     private final Vector3f normal;
     private final Vector2f texCoords;
 
-    public Vertex(Vector3f position, Vector3f normal, Vector2f texCoords) {
+    public ModelVertex(Vector3f position, Vector3f normal, Vector2f texCoords) {
         this.position = position;
         this.normal = normal;
         this.texCoords = texCoords;
     }
 
+    @Override
     public void insertIntoFloatBuffer(FloatBuffer fb) {
         fb.put(position.x);
         fb.put(position.y);
@@ -28,5 +28,10 @@ public class Vertex {
         fb.put(normal.z);
         fb.put(texCoords.x);
         fb.put(texCoords.y);
+    }
+
+    @Override
+    public int getNumberOfFloats() {
+        return NUMBER_OF_FLOATS;
     }
 }
