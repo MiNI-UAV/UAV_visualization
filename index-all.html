@@ -70,11 +70,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#addLayer(java.awt.image.BufferedImage)" class="member-name-link">addLayer(BufferedImage)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/RenderQueue.html#addMesh(org.uav.model.Mesh,org.joml.Matrix4f)" class="member-name-link">addMesh(Mesh, Matrix4f)</a> - Method in class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
+<dt><a href="org/uav/scene/RenderQueue.html#addMesh(org.uav.model.Mesh,org.joml.Matrix4f,org.uav.scene.shader.Shader)" class="member-name-link">addMesh(Mesh, Matrix4f, Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Model.html#addToQueue(org.uav.scene.RenderQueue,float)" class="member-name-link">addToQueue(RenderQueue, float)</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
+<dt><a href="org/uav/model/ModelNode.html#addToQueue(org.uav.scene.RenderQueue,org.joml.Matrix4f,org.uav.scene.shader.Shader,float)" class="member-name-link">addToQueue(RenderQueue, Matrix4f, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/ModelNode.html#addToQueue(org.uav.scene.RenderQueue,org.joml.Matrix4f,float)" class="member-name-link">addToQueue(RenderQueue, Matrix4f, float)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
+<dt><a href="org/uav/model/Model.html#addToQueue(org.uav.scene.RenderQueue,org.uav.scene.shader.Shader,float)" class="member-name-link">addToQueue(RenderQueue, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/PentaFunction.html#andThen(java.util.function.Function)" class="member-name-link">andThen(Function&lt;? super R, ? extends V&gt;)</a> - Method in interface org.uav.utils.<a href="org/uav/utils/PentaFunction.html" title="interface in org.uav.utils">PentaFunction</a></dt>
 <dd>&nbsp;</dd>
@@ -326,6 +326,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayWidget.html" class="type-name-link" title="class in org.uav.scene.gui.widget.display">DisplayWidget</a> - Class in <a href="org/uav/scene/gui/widget/display/package-summary.html">org.uav.scene.gui.widget.display</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayWidget.html#%3Cinit%3E(org.uav.config.Config,java.util.List)" class="member-name-link">DisplayWidget(Config, List&lt;String&gt;)</a> - Constructor for class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayWidget.html" title="class in org.uav.scene.gui.widget.display">DisplayWidget</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeModel.html#draw()" class="member-name-link">draw()</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeModel.html" title="class in org.uav.model.rope">RopeModel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/DrawableGuiLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in interface org.uav.scene.gui.<a href="org/uav/scene/gui/DrawableGuiLayer.html" title="interface in org.uav.scene.gui">DrawableGuiLayer</a></dt>
 <dd>&nbsp;</dd>
@@ -648,6 +650,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#getNotifications()" class="member-name-link">getNotifications()</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ModelVertex.html#getNumberOfFloats()" class="member-name-link">getNumberOfFloats()</a> - Method in class org.uav.model.<a href="org/uav/model/ModelVertex.html" title="class in org.uav.model">ModelVertex</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeVertex.html#getNumberOfFloats()" class="member-name-link">getNumberOfFloats()</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeVertex.html" title="class in org.uav.model.rope">RopeVertex</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ShaderVertex.html#getNumberOfFloats()" class="member-name-link">getNumberOfFloats()</a> - Method in class org.uav.model.<a href="org/uav/model/ShaderVertex.html" title="class in org.uav.model">ShaderVertex</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getObserverCamera()" class="member-name-link">getObserverCamera()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.html#getPorts()" class="member-name-link">getPorts()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.html" title="class in org.uav.config">Config</a></dt>
@@ -760,9 +768,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiLayer.html" class="type-name-link" title="class in org.uav.scene.gui">GuiLayer</a> - Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/GuiLayer.html#%3Cinit%3E(java.util.List,int,int,org.uav.scene.gui.DrawableGuiLayer)" class="member-name-link">GuiLayer(List&lt;Vertex&gt;, int, int, DrawableGuiLayer)</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiLayer.html" title="class in org.uav.scene.gui">GuiLayer</a></dt>
+<dt><a href="org/uav/scene/gui/GuiLayer.html#%3Cinit%3E(java.util.List,int,int,org.uav.scene.gui.DrawableGuiLayer)" class="member-name-link">GuiLayer(List&lt;ModelVertex&gt;, int, int, DrawableGuiLayer)</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiLayer.html" title="class in org.uav.scene.gui">GuiLayer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/GuiLayer.html#%3Cinit%3E(java.util.List,java.awt.image.BufferedImage)" class="member-name-link">GuiLayer(List&lt;Vertex&gt;, BufferedImage)</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiLayer.html" title="class in org.uav.scene.gui">GuiLayer</a></dt>
+<dt><a href="org/uav/scene/gui/GuiLayer.html#%3Cinit%3E(java.util.List,java.awt.image.BufferedImage)" class="member-name-link">GuiLayer(List&lt;ModelVertex&gt;, BufferedImage)</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiLayer.html" title="class in org.uav.scene.gui">GuiLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/GuiWidget.html" class="type-name-link" title="interface in org.uav.scene">GuiWidget</a> - Interface in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
 <dd>&nbsp;</dd>
@@ -832,7 +840,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/InputHandler.html#%3Cinit%3E(org.uav.processor.SimulationStateProcessor,org.uav.model.SimulationState,org.uav.config.Config,org.uav.config.BindingConfig)" class="member-name-link">InputHandler(SimulationStateProcessor, SimulationState, Config, BindingConfig)</a> - Constructor for class org.uav.input.<a href="org/uav/input/InputHandler.html" title="class in org.uav.input">InputHandler</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Vertex.html#insertIntoFloatBuffer(java.nio.FloatBuffer)" class="member-name-link">insertIntoFloatBuffer(FloatBuffer)</a> - Method in class org.uav.model.<a href="org/uav/model/Vertex.html" title="class in org.uav.model">Vertex</a></dt>
+<dt><a href="org/uav/model/ModelVertex.html#insertIntoFloatBuffer(java.nio.FloatBuffer)" class="member-name-link">insertIntoFloatBuffer(FloatBuffer)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelVertex.html" title="class in org.uav.model">ModelVertex</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeVertex.html#insertIntoFloatBuffer(java.nio.FloatBuffer)" class="member-name-link">insertIntoFloatBuffer(FloatBuffer)</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeVertex.html" title="class in org.uav.model.rope">RopeVertex</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ShaderVertex.html#insertIntoFloatBuffer(java.nio.FloatBuffer)" class="member-name-link">insertIntoFloatBuffer(FloatBuffer)</a> - Method in class org.uav.model.<a href="org/uav/model/ShaderVertex.html" title="class in org.uav.model">ShaderVertex</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/SlerpQuaternionInterpolator.html#interpolate(float,org.joml.Quaternionf,org.joml.Quaternionf,float,float)" class="member-name-link">interpolate(float, Quaternionf, Quaternionf, float, float)</a> - Static method in class org.uav.utils.<a href="org/uav/utils/SlerpQuaternionInterpolator.html" title="class in org.uav.utils">SlerpQuaternionInterpolator</a></dt>
 <dd>&nbsp;</dd>
@@ -899,7 +911,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/importer/GltfImporter.html#loadModel(java.lang.String,java.lang.String)" class="member-name-link">loadModel(String, String)</a> - Method in class org.uav.importer.<a href="org/uav/importer/GltfImporter.html" title="class in org.uav.importer">GltfImporter</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/importer/VerticesLoader.html#loadToFloatBuffer()" class="member-name-link">loadToFloatBuffer()</a> - Method in class org.uav.importer.<a href="org/uav/importer/VerticesLoader.html" title="class in org.uav.importer">VerticesLoader</a></dt>
+<dt><a href="org/uav/importer/VerticesLoader.html#loadToFloatBuffer(java.util.List)" class="member-name-link">loadToFloatBuffer(List&lt;? extends TVertex&gt;)</a> - Static method in class org.uav.importer.<a href="org/uav/importer/VerticesLoader.html" title="class in org.uav.importer">VerticesLoader</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/importer/IndicesLoader.html#loadToIntBuffer()" class="member-name-link">loadToIntBuffer()</a> - Method in class org.uav.importer.<a href="org/uav/importer/IndicesLoader.html" title="class in org.uav.importer">IndicesLoader</a></dt>
 <dd>&nbsp;</dd>
@@ -928,7 +940,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Mesh.html" class="type-name-link" title="class in org.uav.model">Mesh</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Mesh.html#%3Cinit%3E(java.util.List,java.util.List,java.util.List,boolean,org.uav.model.Material)" class="member-name-link">Mesh(List&lt;Vertex&gt;, List&lt;Integer&gt;, List&lt;Texture&gt;, boolean, Material)</a> - Constructor for class org.uav.model.<a href="org/uav/model/Mesh.html" title="class in org.uav.model">Mesh</a></dt>
+<dt><a href="org/uav/model/Mesh.html#%3Cinit%3E(java.util.List,java.util.List,java.util.List,boolean,org.uav.model.Material)" class="member-name-link">Mesh(List&lt;ModelVertex&gt;, List&lt;Integer&gt;, List&lt;Texture&gt;, boolean, Material)</a> - Constructor for class org.uav.model.<a href="org/uav/model/Mesh.html" title="class in org.uav.model">Mesh</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/parser/MessageParser.html" class="type-name-link" title="interface in org.uav.parser">MessageParser</a>&lt;<a href="org/uav/parser/MessageParser.html" title="type parameter in MessageParser">T</a>&gt; - Interface in <a href="org/uav/parser/package-summary.html">org.uav.parser</a></dt>
 <dd>&nbsp;</dd>
@@ -941,6 +953,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/model/ModelNode.html" class="type-name-link" title="class in org.uav.model">ModelNode</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/ModelNode.html#%3Cinit%3E(java.lang.String,java.util.List,java.util.List,org.joml.Vector3f,org.joml.Quaternionf,org.joml.Vector3f,org.uav.animation.AnimationPlayer)" class="member-name-link">ModelNode(String, List&lt;Mesh&gt;, List&lt;ModelNode&gt;, Vector3f, Quaternionf, Vector3f, AnimationPlayer)</a> - Constructor for class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ModelVertex.html" class="type-name-link" title="class in org.uav.model">ModelVertex</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ModelVertex.html#%3Cinit%3E(org.joml.Vector3f,org.joml.Vector3f,org.joml.Vector2f)" class="member-name-link">ModelVertex(Vector3f, Vector3f, Vector2f)</a> - Constructor for class org.uav.model.<a href="org/uav/model/ModelVertex.html" title="class in org.uav.model">ModelVertex</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/audio/MusicPlayer.html" class="type-name-link" title="class in org.uav.audio">MusicPlayer</a> - Class in <a href="org/uav/audio/package-summary.html">org.uav.audio</a></dt>
 <dd>&nbsp;</dd>
@@ -969,11 +985,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/NotificationsConsumer.html#%3Cinit%3E(org.zeromq.ZContext,org.uav.config.Config,org.uav.model.SimulationState)" class="member-name-link">NotificationsConsumer(ZContext, Config, SimulationState)</a> - Constructor for class org.uav.queue.<a href="org/uav/queue/NotificationsConsumer.html" title="class in org.uav.queue">NotificationsConsumer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Vertex.html#NUMBER_OF_FLOATS" class="member-name-link">NUMBER_OF_FLOATS</a> - Static variable in class org.uav.model.<a href="org/uav/model/Vertex.html" title="class in org.uav.model">Vertex</a></dt>
+<dt><a href="org/uav/model/ModelVertex.html#NUMBER_OF_FLOATS" class="member-name-link">NUMBER_OF_FLOATS</a> - Static variable in class org.uav.model.<a href="org/uav/model/ModelVertex.html" title="class in org.uav.model">ModelVertex</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeVertex.html#NUMBER_OF_FLOATS" class="member-name-link">NUMBER_OF_FLOATS</a> - Static variable in class org.uav.model.rope.<a href="org/uav/model/rope/RopeVertex.html" title="class in org.uav.model.rope">RopeVertex</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:O">O</h2>
 <dl class="index">
+<dt><a href="org/uav/model/rope/Rope.html#objectId" class="member-name-link">objectId</a> - Variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/input/CameraMode.html#ObserverCamera" class="member-name-link">ObserverCamera</a> - Enum constant in enum class org.uav.input.<a href="org/uav/input/CameraMode.html" title="enum class in org.uav.input">CameraMode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/processor/SimulationStateProcessor.html#openCommunication()" class="member-name-link">openCommunication()</a> - Method in class org.uav.processor.<a href="org/uav/processor/SimulationStateProcessor.html" title="class in org.uav.processor">SimulationStateProcessor</a></dt>
@@ -1003,6 +1023,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/model/package-summary.html">org.uav.model</a> - package org.uav.model</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/controlMode/package-summary.html">org.uav.model.controlMode</a> - package org.uav.model.controlMode</dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/package-summary.html">org.uav.model.rope</a> - package org.uav.model.rope</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/status/package-summary.html">org.uav.model.status</a> - package org.uav.model.status</dt>
 <dd>&nbsp;</dd>
@@ -1041,6 +1063,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/serializer/package-summary.html">org.uav.serializer</a> - package org.uav.serializer</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/package-summary.html">org.uav.utils</a> - package org.uav.utils</dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#ownerId" class="member-name-link">ownerId</a> - Variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#ownerOffset" class="member-name-link">ownerOffset</a> - Variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:P">P</h2>
@@ -1163,7 +1189,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/BindingsScreen.html#render(java.util.List)" class="member-name-link">render(List&lt;String&gt;)</a> - Method in class org.uav.scene.<a href="org/uav/scene/BindingsScreen.html" title="class in org.uav.scene">BindingsScreen</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/RenderQueue.html#render(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader)" class="member-name-link">render(MemoryStack, Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
+<dt><a href="org/uav/scene/RenderQueue.html#render(org.lwjgl.system.MemoryStack)" class="member-name-link">render(MemoryStack)</a> - Method in class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/RenderQueue.html" class="type-name-link" title="class in org.uav.scene">RenderQueue</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
 <dd>&nbsp;</dd>
@@ -1183,6 +1209,26 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/controlMode/ControlModeReply.html#ROLL" class="member-name-link">ROLL</a> - Enum constant in enum class org.uav.model.controlMode.<a href="org/uav/model/controlMode/ControlModeReply.html" title="enum class in org.uav.model.controlMode">ControlModeReply</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html" class="type-name-link" title="class in org.uav.model.rope">Rope</a> - Class in <a href="org/uav/model/rope/package-summary.html">org.uav.model.rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#%3Cinit%3E(float,int,int,org.joml.Vector3f)" class="member-name-link">Rope(float, int, int, Vector3f)</a> - Constructor for class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#ROPE_COLOR_1" class="member-name-link">ROPE_COLOR_1</a> - Static variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#ROPE_COLOR_2" class="member-name-link">ROPE_COLOR_2</a> - Static variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#ropeLength" class="member-name-link">ropeLength</a> - Variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeModel.html" class="type-name-link" title="class in org.uav.model.rope">RopeModel</a> - Class in <a href="org/uav/model/rope/package-summary.html">org.uav.model.rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeModel.html#%3Cinit%3E(int,float,org.uav.scene.shader.Shader,org.joml.Vector3f,org.joml.Vector3f)" class="member-name-link">RopeModel(int, float, Shader, Vector3f, Vector3f)</a> - Constructor for class org.uav.model.rope.<a href="org/uav/model/rope/RopeModel.html" title="class in org.uav.model.rope">RopeModel</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/Notifications.html#ropes" class="member-name-link">ropes</a> - Variable in class org.uav.model.<a href="org/uav/model/Notifications.html" title="class in org.uav.model">Notifications</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeVertex.html" class="type-name-link" title="class in org.uav.model.rope">RopeVertex</a> - Class in <a href="org/uav/model/rope/package-summary.html">org.uav.model.rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeVertex.html#%3Cinit%3E(float,float)" class="member-name-link">RopeVertex(float, float)</a> - Constructor for class org.uav.model.rope.<a href="org/uav/model/rope/RopeVertex.html" title="class in org.uav.model.rope">RopeVertex</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/DroneMovement.html#rotation" class="member-name-link">rotation</a> - Enum constant in enum class org.uav.model.<a href="org/uav/model/DroneMovement.html" title="enum class in org.uav.model">DroneMovement</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/status/DroneStatus.html#rotation" class="member-name-link">rotation</a> - Variable in class org.uav.model.status.<a href="org/uav/model/status/DroneStatus.html" title="class in org.uav.model.status">DroneStatus</a></dt>
@@ -1201,6 +1247,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.BindingsGenerationState.html#SaveConfig" class="member-name-link">SaveConfig</a> - Enum constant in enum class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.BindingsGenerationState.html" title="enum class in org.uav.bindingsGeneration">BindingsLoop.BindingsGenerationState</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/processor/SimulationStateProcessor.html#saveDroneModelChecksum(java.lang.String)" class="member-name-link">saveDroneModelChecksum(String)</a> - Method in class org.uav.processor.<a href="org/uav/processor/SimulationStateProcessor.html" title="class in org.uav.processor">SimulationStateProcessor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#SEGMENT_COUNT" class="member-name-link">SEGMENT_COUNT</a> - Static variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/JoystickProducer.html#send(org.uav.model.Drone,java.lang.String)" class="member-name-link">send(Drone, String)</a> - Method in class org.uav.queue.<a href="org/uav/queue/JoystickProducer.html" title="class in org.uav.queue">JoystickProducer</a></dt>
 <dd>&nbsp;</dd>
@@ -1274,6 +1322,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#setOverlayLevel(int)" class="member-name-link">setOverlayLevel(int)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeModel.html#setParameters(org.joml.Vector3f,org.joml.Vector3f,float)" class="member-name-link">setParameters(Vector3f, Vector3f, float)</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeModel.html" title="class in org.uav.model.rope">RopeModel</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#setPosition(float,float,float,float)" class="member-name-link">setPosition(float, float, float, float)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.Rotors.Rotor.html#setPosition(java.lang.String)" class="member-name-link">setPosition(String)</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.Rotors.Rotor.html" title="class in org.uav.config">DroneParameters.Rotors.Rotor</a></dt>
@@ -1306,7 +1356,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/shader/Shader.html#%3Cinit%3E(java.io.InputStream,java.io.InputStream)" class="member-name-link">Shader(InputStream, InputStream)</a> - Constructor for class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/shader/Shader.html#%3Cinit%3E(java.io.InputStream,java.io.InputStream,java.io.InputStream)" class="member-name-link">Shader(InputStream, InputStream, InputStream)</a> - Constructor for class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/shader/Shader.html#shaderProgram" class="member-name-link">shaderProgram</a> - Variable in class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ShaderVertex.html" class="type-name-link" title="class in org.uav.model">ShaderVertex</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/ShaderVertex.html#%3Cinit%3E()" class="member-name-link">ShaderVertex()</a> - Constructor for class org.uav.model.<a href="org/uav/model/ShaderVertex.html" title="class in org.uav.model">ShaderVertex</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/Action.html#shoot" class="member-name-link">shoot</a> - Enum constant in enum class org.uav.queue.<a href="org/uav/queue/Action.html" title="enum class in org.uav.queue">Action</a></dt>
 <dd>&nbsp;</dd>
@@ -1364,6 +1420,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/model/Texture.html" class="type-name-link" title="class in org.uav.model">Texture</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Texture.html#%3Cinit%3E(int,java.lang.String,boolean)" class="member-name-link">Texture(int, String, boolean)</a> - Constructor for class org.uav.model.<a href="org/uav/model/Texture.html" title="class in org.uav.model">Texture</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/Rope.html#THICKNESS" class="member-name-link">THICKNESS</a> - Static variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/status/DroneStatus.html#time" class="member-name-link">time</a> - Variable in class org.uav.model.status.<a href="org/uav/model/status/DroneStatus.html" title="class in org.uav.model.status">DroneStatus</a></dt>
 <dd>&nbsp;</dd>
@@ -1553,13 +1611,9 @@ the order they are declared.</div>
 </dd>
 <dt><a href="org/uav/model/status/ProjectileStatus.html#velocity" class="member-name-link">velocity</a> - Variable in class org.uav.model.status.<a href="org/uav/model/status/ProjectileStatus.html" title="class in org.uav.model.status">ProjectileStatus</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Vertex.html" class="type-name-link" title="class in org.uav.model">Vertex</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Vertex.html#%3Cinit%3E(org.joml.Vector3f,org.joml.Vector3f,org.joml.Vector2f)" class="member-name-link">Vertex(Vector3f, Vector3f, Vector2f)</a> - Constructor for class org.uav.model.<a href="org/uav/model/Vertex.html" title="class in org.uav.model">Vertex</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/uav/importer/VerticesLoader.html" class="type-name-link" title="class in org.uav.importer">VerticesLoader</a> - Class in <a href="org/uav/importer/package-summary.html">org.uav.importer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/importer/VerticesLoader.html#%3Cinit%3E(java.util.List)" class="member-name-link">VerticesLoader(List&lt;Vertex&gt;)</a> - Constructor for class org.uav.importer.<a href="org/uav/importer/VerticesLoader.html" title="class in org.uav.importer">VerticesLoader</a></dt>
+<dt><a href="org/uav/importer/VerticesLoader.html#%3Cinit%3E()" class="member-name-link">VerticesLoader()</a> - Constructor for class org.uav.importer.<a href="org/uav/importer/VerticesLoader.html" title="class in org.uav.importer">VerticesLoader</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:W">W</h2>

@@ -8,6 +8,7 @@ org.uav.importer
 org.uav.input
 org.uav.model
 org.uav.model.controlMode
+org.uav.model.rope
 org.uav.model.status
 org.uav.parser
 org.uav.processor
