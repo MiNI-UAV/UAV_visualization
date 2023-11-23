@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     id 'java'
     id 'application'
@@ -29,7 +31,27 @@ launch4j {
 }
 
 project.ext.lwjglVersion = "3.3.1"
-project.ext.lwjglNatives = "natives-linux"
+
+def os = DefaultNativePlatform.getCurrentOperatingSystem()
+if(os.isLinux()) {
+    project.ext.lwjglNatives = "natives-linux"
+    def osArch = System.getProperty("os.arch")
+    if (osArch.startsWith("arm") || osArch.startsWith("aarch64")) {
+        project.ext.lwjglNatives += osArch.contains("64") || osArch.startsWith("armv8") ? "-arm64" : "-arm32"
+    } else if (osArch.startsWith("ppc")) {
+        project.ext.lwjglNatives += "-ppc64le"
+    } else if (osArch.startsWith("riscv")) {
+        project.ext.lwjglNatives += "-riscv64"
+    }
+}
+if(os.isMacOsX())
+    project.ext.lwjglNatives = System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos"
+if(os.isWindows()) {
+    def osArch = System.getProperty("os.arch")
+    project.ext.lwjglNatives = osArch.contains("64")
+            ? "natives-windows${osArch.startsWith("aarch64") ? "-arm64" : ""}"
+            : "natives-windows-x86"
+}
 
 dependencies {
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
