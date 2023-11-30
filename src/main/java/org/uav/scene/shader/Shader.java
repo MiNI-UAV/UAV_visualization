@@ -1,15 +1,20 @@
 package org.uav.scene.shader;
 
+import com.google.common.primitives.Floats;
 import org.apache.commons.io.IOUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER;
@@ -122,8 +127,8 @@ public class Shader {
         glUniform1f(glGetUniformLocation(shaderProgram, name), value);
 
     }
-    public void setVec4(String name, float v1, float v2, float v3, float v4) {
-        glUniform4f(glGetUniformLocation(shaderProgram, name), v1, v2, v3, v4);
+    public void setVec4(String name, Vector4f vec) {
+        glUniform4f(glGetUniformLocation(shaderProgram, name), vec.x, vec.y, vec.z, vec.w);
     }
 
     public void setVec3(String name, Vector3f vec) {
@@ -131,6 +136,14 @@ public class Shader {
     }
     public void setMatrix4f(MemoryStack stack, String name, Matrix4f matrix) {
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), false, matrix.get(stack.mallocFloat(16)));
+    }
+
+    public void setVec3Array(MemoryStack stack, String name, List<Vector3f> value) {
+        float[] array = Floats.toArray(value.stream().flatMap(v -> Stream.of(v.x, v.y, v.z)).toList());
+        FloatBuffer buffer = stack.mallocFloat(value.size() * 3);
+        buffer.put(array);
+        buffer.rewind();
+        glUniform3fv(glGetUniformLocation(shaderProgram, name), buffer);
     }
 
 }

@@ -36,6 +36,7 @@ graphicsSettings:
   useShadows: true # TODO: Unused
   shadowsTextureResolution: 6072
   shadowsRenderingDistance: 300
+  showDebugInfo: true
 ports:
   notifications: 8000
   droneRequester: 9000

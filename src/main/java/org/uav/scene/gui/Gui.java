@@ -5,6 +5,7 @@ import org.uav.config.DroneParameters;
 import org.uav.model.SimulationState;
 import org.uav.scene.gui.widget.ControlPanelWidget;
 import org.uav.scene.gui.widget.artificialHorizon.ArtificialHorizonWidget;
+import org.uav.scene.gui.widget.debug.DebugWidget;
 import org.uav.scene.gui.widget.map.MapWidget;
 import org.uav.scene.gui.widget.projectiles.ProjectileWidget;
 import org.uav.scene.gui.widget.propellersDisplay.PropellersDisplayWidget;
@@ -24,6 +25,7 @@ public class Gui {
     private final MapWidget map;
     private final PropellersDisplayWidget rotorDisplay;
     private final ProjectileWidget projectiles;
+    private final DebugWidget debug;
 
     public Gui(SimulationState simulationState, Config config, DroneParameters droneParameters) {
         var assetsDirectory = Paths.get(simulationState.getAssetsDirectory() , "core", "GUI");
@@ -60,6 +62,8 @@ public class Gui {
         );
 
         projectiles = new ProjectileWidget(background, simulationState, config);
+
+        debug = new DebugWidget(background, simulationState, config);
     }
 
     public static BufferedImage loadImage(String path) {
@@ -78,6 +82,7 @@ public class Gui {
         rotorDisplay.draw(shader);
         map.draw(shader);
         projectiles.draw(shader);
+        debug.draw(shader);
     }
 
     public void update() {
@@ -86,6 +91,7 @@ public class Gui {
         rotorDisplay.update();
         map.update();
         projectiles.update();
+        debug.update();
     }
 
     public void openMap(boolean open) {

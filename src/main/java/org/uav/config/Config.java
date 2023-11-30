@@ -73,6 +73,7 @@ public class Config {
         boolean useShadows;
         int shadowsTextureResolution;
         int shadowsRenderingDistance;
+        boolean showDebugInfo;
     }
 
     @Value

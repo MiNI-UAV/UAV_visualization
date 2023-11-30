@@ -2,6 +2,7 @@ package org.uav.model;
 
 import lombok.Data;
 import org.joml.Vector3f;
+import org.uav.FpsCounter;
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.input.CameraMode;
@@ -20,6 +21,7 @@ public class SimulationState {
     String droneModelChecksum;
     final long window;
     float simulationTimeS;
+    FpsCounter fpsCounter;
     final Camera camera;
 
     final DroneStatuses droneStatuses;
@@ -65,5 +67,6 @@ public class SimulationState {
         ammos = droneParameters.getAmmo().stream().map(e -> new Projectile(e, this)).toList();
         currentlyChosenCargo = 0;
         cargos = droneParameters.getCargo().stream().map(e -> new Projectile(e, this)).toList();
+        fpsCounter = new FpsCounter();
     }
 }

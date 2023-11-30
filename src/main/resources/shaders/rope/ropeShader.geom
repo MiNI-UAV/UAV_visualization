@@ -1,6 +1,7 @@
 #version 330 core
+#define VERTEX_COUNT 16
 layout (points) in;
-layout (triangle_strip, max_vertices = 16) out;
+layout (triangle_strip, max_vertices = VERTEX_COUNT) out;
 
 uniform vec3 pointA;
 uniform vec3 pointB;
@@ -43,7 +44,7 @@ void main() {
     vec3 tangentNext = getTangent(ropeVector, xNext, l);
     vec3 normalNext = getNormal(ropeVector, xNext, l);
 
-    int n = 7;
+    int n = (VERTEX_COUNT-1)/2;
     float radius = thickness / 2;
     float angle = 3.14 * 2 / n;
     mat3 rotM = getRotationMatrix(tangent, angle);

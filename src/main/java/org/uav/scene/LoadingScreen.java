@@ -22,8 +22,8 @@ public class LoadingScreen {
     public LoadingScreen(long window, Config config) throws IOException {
         this.window = window;
 
-        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.vert"));
-        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/guiShader.frag"));
+        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
+        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
         shader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
         shader.use();
         shader.setBool("useGammaCorrection", config.getGraphicsSettings().isUseGammaCorrection());

@@ -25,8 +25,10 @@ import java.nio.file.Paths;
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL32C.GL_PROGRAM_POINT_SIZE;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -62,6 +64,7 @@ public class UavVisualization {
         inputHandler.handleInput();
         simulationStateProcessor.updateSimulationState();
         simulationState.getCamera().updateCamera();
+        simulationState.getFpsCounter().nextFrame();
     }
 
     private void init() throws IOException {
@@ -114,6 +117,7 @@ public class UavVisualization {
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         // Create the window
         if(config.getGraphicsSettings().getFullScreenMode() == FullScreenMode.Borderless) glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
@@ -177,6 +181,8 @@ public class UavVisualization {
 
         GL.createCapabilities();
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_MULTISAMPLE);
+        glEnable(GL_PROGRAM_POINT_SIZE);
         glEnable(GL_BLEND);
         // https://stackoverflow.com/questions/28079159/opengl-glsl-texture-transparency
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

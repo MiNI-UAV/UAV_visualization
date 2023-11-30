@@ -133,8 +133,6 @@ public class RopeModel {
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 1, GL_FLOAT, true, RopeVertex.NUMBER_OF_FLOATS * 4, 4);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(2, 1, GL_FLOAT, true, RopeVertex.NUMBER_OF_FLOATS * 4, 8);
-        glEnableVertexAttribArray(2);
 
         glBindVertexArray(0);
     }
