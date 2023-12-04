@@ -11,6 +11,7 @@ import org.uav.model.status.DroneStatuses;
 import org.uav.model.status.ProjectileStatuses;
 import org.uav.scene.camera.Camera;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -64,9 +65,11 @@ public class SimulationState {
         mapZoom = 1;
         skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
         currentlyChosenAmmo = 0;
-        ammos = droneParameters.getAmmo().stream().map(e -> new Projectile(e, this)).toList();
+        ammos = droneParameters.getAmmo() == null? new ArrayList<>():
+                droneParameters.getAmmo().stream().map(e -> new Projectile(e, this)).toList();
         currentlyChosenCargo = 0;
-        cargos = droneParameters.getCargo().stream().map(e -> new Projectile(e, this)).toList();
+        cargos = droneParameters.getCargo() == null? new ArrayList<>():
+                 droneParameters.getCargo().stream().map(e -> new Projectile(e, this)).toList();
         fpsCounter = new FpsCounter();
     }
 }

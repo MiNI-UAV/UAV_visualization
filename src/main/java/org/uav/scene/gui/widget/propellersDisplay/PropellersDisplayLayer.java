@@ -35,13 +35,18 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         propellerPanelPadding = new Vector2i((int) (0.0125 * canvasSize.x), (int) (0.0125 * canvasSize.y));
         textHeight = 20;
         minimalTextWidth = 0;
-        rotors = droneParameters.getRotors().getRotor().stream().map(rotor -> rotor.getPosition()).toList();
-        rotationDirection = droneParameters.getRotors().getRotor().stream().map(rotor -> rotor.getDirection()).toList();
-        maxRPMs =  droneParameters.getRotors().getRotor().stream().map(
+        rotors = droneParameters.getRotors() == null? new ArrayList<>():
+                droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getPosition).toList();
+        rotationDirection =  droneParameters.getRotors() == null? new ArrayList<>():
+                droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getDirection).toList();
+        maxRPMs = droneParameters.getRotors() == null? new ArrayList<>():
+                droneParameters.getRotors().getRotor().stream().map(
                 rotor -> rotor.getMaxSpeed() / (2.0f*(float)Math.PI) * 60.0f
         ).toList();
         propellerRPMs = new ArrayList<>();
-        initRadius();
+        if(droneParameters.getRotors() != null && !droneParameters.getRotors().getRotor().isEmpty())
+            initRadius();
+        else scaledPropellers = new ArrayList<>();
     }
 
     private void initRadius() {
