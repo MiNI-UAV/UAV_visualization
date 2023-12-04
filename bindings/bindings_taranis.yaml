@@ -1,95 +1,79 @@
-steering: # Default Throttle, Roll, Pitch, YAW. Add as many as you want
-  - axis: 2 # Throttle
-    inverse: false
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
-  - axis: 0 # Roll
-    inverse: false
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
-  - axis: 1 # Pitch
-    inverse: false
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
-  - axis: 3 # Yaw
-    inverse: false
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
+---
+steering:
+- axis: 2
+  inverse: false
+  deadzone: 0.030000014
+  min: -0.9970689
+  max: 0.99609184
+  trim: 0.032730818
+- axis: 0
+  inverse: false
+  deadzone: 0.030000014
+  min: -0.9970689
+  max: 0.9853444
+  trim: -0.0034196377
+- axis: 1
+  inverse: false
+  deadzone: 0.030000014
+  min: -0.9951148
+  max: 0.9951148
+  trim: -4.8851967E-4
+- axis: 3
+  inverse: false
+  deadzone: 0.030000014
+  min: -0.99609184
+  max: 0.99413776
+  trim: -0.001465559
 actions:
   shoot:
     - button: 1
       inverse: false
   drop:
-    - axis: 5
-      inverse: false
-      lowerBound: 0.33
-      upperBound: 1.2
+  - axis: 5
+    lowerBound: -0.35000002
+    upperBound: 0.35000002
   release:
-    - axis: 5
-      inverse: false
-      lowerBound: -1.2
-      upperBound: -0.33
+  - axis: 5
+    lowerBound: 0.35000002
+    upperBound: 1.2000001
   respawn:
-    - button: 0
-      inverse: false
+  - button: 0
+    inverse: false
+  nextAmmo: []
+  nextCargo: []
   map:
-    - key: m
-  mapZoomIn:
-    - key: a
-  mapZoomOut:
-    - key: q
-  modes:
-    - - axis: 4
-        inverse: false
-        lowerBound: -1.2
-        upperBound: -0.33
-    - - axis: 4
-        inverse: false
-        lowerBound: -0.33
-        upperBound: 0.33
-    - - axis: 4
-        inverse: false
-        lowerBound: 0.33
-        upperBound: 1.2
+  - key: 77
+  mapZoomIn: []
+  mapZoomOut: []
   prevCamera:
-    - axis: 6
-      inverse: false
-      lowerBound: -1.2
-      upperBound: -0.33
+  - axis: 6
+    lowerBound: -1.1999999
+    upperBound: -0.35000002
   nextCamera:
-    - axis: 6
-      inverse: false
-      lowerBound: 0.33
-      upperBound: 1.2
+  - axis: 6
+    lowerBound: 0.35000002
+    upperBound: 1.1999999
   freeCamera:
-    - key: '0'
-  droneCamera:
-    - key: '1'
+  - key: 49
+  droneCamera: 
+  - key: 50
   observerCamera:
-    - key: '2'
+  - key: 51
   racingCamera:
-    - key: '3'
+  - key: 52
   horizontalCamera:
-    - key: '4'
+  - key: 53
   hardFPV:
-    - key: '5'
+  - key: 54
   softFPV:
-    - key: '6'
+  - key: 55
 modes:
 - - axis: 4
-    lowerBound: -1.2
-    upperBound: -0.33
+    lowerBound: -1.1999999
+    upperBound: -0.35000002
 - - axis: 4
-    lowerBound: -0.33
-    upperBound: 0.33
+    lowerBound: -0.35000002
+    upperBound: 0.35000002
 - - axis: 4
-    lowerBound: 0.33
-    upperBound: 1.2
+    lowerBound: 0.35000002
+    upperBound: 1.1999999

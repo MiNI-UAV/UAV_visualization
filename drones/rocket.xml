@@ -1,126 +1,54 @@
 <params>
-   <name>drone1</name>
-   <type>quadcopter</type>
+   <name>rocket1</name>
+   <type>spitfire_mini</type>
    <initial>
-      <mode>RMANUAL</mode>
+      <mode>RAUTOLAUNCH</mode>
       <position>0.0, 0.0, 0.0</position>
-      <orientation>0.0, 0.8, 0.0</orientation>
+      <orientation>0.0, 1.57, 0.0</orientation>
       <velocity>0.0, 0.0, 0.0</velocity>
    </initial>
    <ineria>
-      <mass>4.7</mass>
-      <Ix>0.075</Ix>
-      <Iy>0.085</Iy>
-      <Iz>0.13</Iz>
+      <mass>0.216</mass>
+      <Ix>0.0000675</Ix>
+      <Iy>0.00453375</Iy>
+      <Iz>0.00453375</Iz>
       <Ixy>0.0</Ixy>
       <Ixz>0.0</Ixz>
       <Iyz>0.0</Iyz>
    </ineria>
-   <rotors no='4'>
+   <rotors no='1'>
       <rotor>
-         <forceCoff>0.000071</forceCoff>
-         <torqueCoff>0.0000019</torqueCoff>
-         <position>0.25, 0.25, -0.1</position>
-         <axis>0.0, 0.0, -1.0</axis>
-         <hinges no='1'>
-            <hinge>
-               <axis>0.0, 1.0, 0.0</axis>
-               <trim>0.0</trim>
-               <max>1.0</max>
-               <min>-1.0</min>
-            </hinge>
+         <forceCoff>0.0</forceCoff>
+         <torqueCoff>0.0</torqueCoff>
+         <position>0.0, 0.0, 0.0</position>
+         <axis>1.0, 0.0, 0.0</axis>
+         <hinges no='0'>
          </hinges>
          <direction>1</direction>
-         <timeConstant>0.05</timeConstant>
-         <maxSpeed>1000</maxSpeed>
-         <hoverSpeed>335</hoverSpeed>
-      </rotor>
-      <rotor>
-         <forceCoff>0.000071</forceCoff>
-         <torqueCoff>0.0000019</torqueCoff>
-         <position>-0.25, 0.25, -0.1</position>
-         <axis>0.0, 0.0, -1.0</axis>
-         <hinges no='1'>
-            <hinge>
-               <axis>0.0, 1.0, 0.0</axis>
-               <trim>0.0</trim>
-               <max>1.0</max>
-               <min>-1.0</min>
-            </hinge>
-         </hinges>
-         <direction>-1</direction>
-         <timeConstant>0.05</timeConstant>
-         <maxSpeed>1000</maxSpeed>
-         <hoverSpeed>335</hoverSpeed>
-      </rotor>
-      <rotor>
-         <forceCoff>0.000071</forceCoff>
-         <torqueCoff>0.0000019</torqueCoff>
-         <position>-0.25, -0.25, -0.1</position>
-         <axis>0.0, 0.0, -1.0</axis>
-         <hinges no='1'>
-            <hinge>
-               <axis>0.0, 1.0, 0.0</axis>
-               <trim>0.0</trim>
-               <max>1.0</max>
-               <min>-1.0</min>
-            </hinge>
-         </hinges>
-         <direction>1</direction>
-         <timeConstant>0.05</timeConstant>
-         <maxSpeed>1000</maxSpeed>
-         <hoverSpeed>335</hoverSpeed>
-      </rotor>
-      <rotor>
-         <forceCoff>0.000071</forceCoff>
-         <torqueCoff>0.0000019</torqueCoff>
-         <position>0.25, -0.25, -0.1</position>
-         <axis>0.0, 0.0, -1.0</axis>
-         <hinges no='1'>
-            <hinge>
-               <axis>0.0, 1.0, 0.0</axis>
-               <trim>0.0</trim>
-               <max>1.0</max>
-               <min>-1.0</min>
-            </hinge>
-         </hinges>
-         <direction>-1</direction>
-         <timeConstant>0.05</timeConstant>
-         <maxSpeed>1000</maxSpeed>
-         <hoverSpeed>335</hoverSpeed>
+         <timeConstant>0.2</timeConstant>
+         <maxSpeed>0</maxSpeed>
+         <hoverSpeed>0</hoverSpeed>
       </rotor>
    </rotors>
    <jets no='1'>
       <jet>
-         <position>-0.1, 0.0, 0.0</position>
-         <axis>1.0, 0.0, 0.0</axis>
-         <hinges no='2'>
-            <hinge>
-               <axis>0.0, 1.0, 0.0</axis>
-               <trim>0.0</trim>
-               <max>1.0</max>
-               <min>-1.0</min>
-            </hinge>
-            <hinge>
-               <axis>0.0, 0.0, 1.0</axis>
-               <trim>0.0</trim>
-               <max>1.0</max>
-               <min>-1.0</min>
-            </hinge>
+         <position>-0.15, 0.0, 0.0</position>
+         <axis>1.0, 0.001, 0.001</axis>
+         <hinges no='0'>
          </hinges>
          <phases>4</phases>
-         <thrust>100, 80, 70, 0</thrust>
-         <time>0.5, 0.7, 5.0, 5.2</time>
+         <thrust>25, 9, 9, 0</thrust>
+         <time>0.25, 0.6, 1.9, 2.15</time>
       </jet>
    </jets>
    <surface no='4'>
       <matrix>
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0
+          0.0,  0.0,  0.0,  0.0,
+          0.0,  0.0,  0.0,  0.0,
+          0.0,  0.0,  0.0,  0.0,
+         -0.5,  0.5,  0.0,  0.0,
+          0.0,  0.0,  1.0,  0.0,
+          0.0,  0.0,  0.0,  0.2
       </matrix>
       <min>
          -0.1, -0.1, -0.1, -0.1
@@ -133,26 +61,27 @@
       </trim>
    </surface>
    <aero>
-      <S>0.225</S>
-      <d>0.01</d>
+      <S>0.00153438526</S>
+      <d>0.001</d>
       <eAR>0</eAR>
-      <C0>-0.47, 0.0, 0.0, 0.0, 0.0, 0.0</C0>
+      <C0>-0.6, 0.0, 0.0, 0.0, 0.0, 0.0</C0>
       <Cpqr>
-         0,  0,  0,
-         0,  0,  0,
-         0,  0,  0,
-         0,  0,  0,
-         0,  0,  0,
-         0,  0,  0
+          0.0,   0.0,   0.0,
+          0.0,   0.0,   0.0,
+          0.0,   0.0,   0.0,
+         -3.5,   0.0,   0.0,
+          0.0,  -3.5,   0.0,
+          0.0,   0.0,  -3.5
       </Cpqr>
       <Cab>
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0
+          0.0 ,  0.0 , -0.3,  0.0,
+          0.0 , -0.1 ,  0.0,  0.0,
+         -3.8 ,  0.0 ,  0.0,  0.0,
+          0.0 ,  0.0 ,  0.0,  0.0,
+         -0.5,  0.0 ,  0.0,  0.0,
+          0.0 ,  0.5,  0.0,  0.0
       </Cab>
+      <stallLimit>0.35</stallLimit>
    </aero>
    <PID>
       <X>
@@ -242,16 +171,13 @@
    </PID>
    <mixers>
       <rotorMixer>
-         1,  1,  1,  1,
-         1,  1, -1, -1,
-         1, -1, -1,  1,
-         1, -1,  1, -1
+         1,  0,  0,  0,
       </rotorMixer>
       <surfaceMixer>
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0,
-         0,  0,  0,  0
+         0,  -0.1,   0.0,   0.0,
+         0,   0.1,   0.0,   0.0,
+         0,   0.0,   0.1,   0.0,
+         0,   0.0,   0.0,   0.1
       </surfaceMixer>
    </mixers>
    <navi>
@@ -300,4 +226,40 @@
          <zScaler>1e1</zScaler>
       </EKF>
    </navi>
+   <ammo no='2'>
+      <paintball>
+         <model>paintball</model>
+         <V0>90.0, 0.0, 0.0</V0>
+         <position>0.0, 0.0, 0.1</position>
+         <reload>0.3</reload>
+         <radius>0.003</radius>
+         <C0>0.47</C0>
+         <mass>0.003</mass>
+         <ammount>100</ammount>
+      </paintball>
+      <bullet9mm>
+         <model>9mm</model>
+         <V0>350.0, 0.0, 0.0</V0>
+         <position>0.0, 0.0, 0.1</position>
+         <reload>0.1</reload>
+         <radius>0.0045</radius>
+         <C0>0.47</C0>
+         <mass>0.008</mass>
+         <ammount>20</ammount>
+      </bullet9mm>
+   </ammo>
+   <cargo no='1'>
+      <parcel>
+         <model>parcel</model>
+         <hook>0.0, 0.0, 0.0</hook>
+         <length>5.0</length>
+         <k>10.0</k>
+         <b>2.0</b>
+         <reload>2.0</reload>
+         <radius>0.1</radius>
+         <C0>0.47</C0>
+         <mass>0.1</mass>
+         <ammount>2</ammount>
+      </parcel>
+   </cargo>
 </params>
