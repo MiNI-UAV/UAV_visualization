@@ -1,0 +1,44 @@
+bindingsConfig:
+  generateOnStartUp: false
+  source: test_bindings.yaml
+serverSettings:
+  serverAddress: 127.0.0.1
+  assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
+  downloadMissingAssets: true
+#  assetsToUse:  # Comment out if above is true.
+  heartBeatIntervalMs: 500
+  serverTimoutMs: 10000
+droneSettings:
+  droneName: Maurice
+  droneConfig: testcopter.xml
+  defaultCamera: HorizontalCamera
+  modes:
+    - QPOS
+    - QANGLE
+    - QACRO
+#    - FMANUAL
+#    - RMANUAL
+sceneSettings:
+  drawInWorldDemandedPositionalCoords: true
+  sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
+  sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
+  cameraFPP: [1, 0, 0.1]
+  cameraTPP: [-3, 0, -1.5]
+graphicsSettings:
+  windowWidth: 1920
+  windowHeight: 1080
+  fullScreenMode: Borderless
+  monitor: 0
+  guiScale: 0.7
+  fov: 100 # 0 < fov < 180
+  useGammaCorrection: true
+  gammaCorrection: 2.2
+  useShadows: true
+  shadowsTextureResolution: 6072
+  shadowsRenderingDistance: 300
+  showDebugInfo: true
+ports:
+  notifications: 8000
+  droneRequester: 9000
+  droneStatuses: 9090
+  projectileStatuses: 9100
