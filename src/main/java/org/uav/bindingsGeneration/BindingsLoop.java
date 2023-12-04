@@ -96,13 +96,19 @@ public class BindingsLoop {
         message.addAll(BINDINGS_GLOBAL_LINES_1_2.apply(config));
         joystick = handleJoystick();
         switch(state) {
-            case NoJoystick -> message.add(BINDINGS_DISCONNECTED_LINE_3);
+            case NoJoystick -> noJoystickPrompt();
             case DefaultPositionPrompt -> defaultPositionPrompt();
             case BindSteeringDetectAxis, BindSteeringSetDeadzone, BindSteeringSetInverse -> bindSteering();
             case BindActionsDetectBinding, BindActionsDetectedAxisSetLowerBound, BindActionsDetectedAxisSetUpperBound -> bindActions();
             case SaveConfig -> saveConfig();
             case Finish -> {}
         }
+    }
+
+    private void noJoystickPrompt() {
+        message.addAll(BINDINGS_DISCONNECTED_LINES_3_10);
+        if(handleKeyPress(GLFW_KEY_ESCAPE))
+            state = BindingsGenerationState.Finish;
     }
 
     private void defaultPositionPrompt() {

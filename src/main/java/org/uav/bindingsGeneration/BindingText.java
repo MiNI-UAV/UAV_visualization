@@ -23,8 +23,16 @@ public class BindingText {
     public static final Function<Config, List<String>> BINDINGS_GLOBAL_LINES_1_2 = (Config c) ->
             List.of("Setting up bindings config for " + c.getBindingsConfig().getSource(),EMPTY_LINE);
 
-    public static final String BINDINGS_DISCONNECTED_LINE_3 = "Joystick disconnected. Please connect the joystick first";
-
+    public static final List<String> BINDINGS_DISCONNECTED_LINES_3_10 = List.of(
+            "Joystick disconnected. Please connect the joystick first",
+            EMPTY_LINE,
+            EMPTY_LINE,
+            EMPTY_LINE,
+            EMPTY_LINE,
+            EMPTY_LINE,
+            EMPTY_LINE,
+            "Skip config generation (ESC)"
+    );
     public static final List<String> BINDINGS_DEFAULT_POSTION_LINES_3_10 = List.of(
             "Put joystick in the default position",
             EMPTY_LINE,
