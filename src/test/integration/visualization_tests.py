@@ -4,9 +4,7 @@ from shutil import copy2
 from time import sleep
 import zmq
 
-drone_statuses = {
-    "idle_drone_status": "1,0.006,0,0,0,1,-0,0,0,-0,-0,0.069,-0,0,0,10.053,9.786,9.819,9.944;"
-}
+import uav_state_generator
 
 
 def perform_visualization_tests(java_home, visualization_dir, visualization_binary, assets_checksum):
@@ -16,10 +14,11 @@ def perform_visualization_tests(java_home, visualization_dir, visualization_bina
 
     set_up_visualization(java_home, visualization_dir, visualization_binary, drone_requester_socket, assets_checksum)
 
+    state_generator = uav_state_generator.UAVStateGenerator()
     while True:
         server_respond_to_heartbeat(drone_utils_socket)
         server_respond_to_joystick(drone_steering_socket)
-        server_send_drone_status(drone_status_socket, drone_statuses["idle_drone_status"])
+        server_send_drone_status(drone_status_socket, state_generator.getState())
         sleep(0.01)
 
 
@@ -95,7 +94,9 @@ def server_set_up_info(socket, assets_checksum):
 
 
 def server_set_up_drone_config(socket):
-    server_expected_drone_config = 'c:<params>\n\t<name>test_configuration</name>\n</params>\n'
+    with open(os.path.join(".", "test_data", "testcopter.xml")) as f:
+        drone_config_contents = f.read()
+    server_expected_drone_config = f'c:{drone_config_contents}'
     message = socket.recv().decode("UTF-8")
     if message != server_expected_drone_config:
         raise Exception(f'Drone config message from visualization should be "{server_expected_drone_config}" '
@@ -148,6 +149,6 @@ def server_respond_to_joystick(socket):
         return
     print(f"[Mock Server] Recv: {message}")
 
-    server_joystick_response = "ok"
+    server_joystick_response = "NONE"
     socket.send(server_joystick_response.encode("UTF-8"))
     print(f"[Mock Server] Sent: {server_joystick_response}")

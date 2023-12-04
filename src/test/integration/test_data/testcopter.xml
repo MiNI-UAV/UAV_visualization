@@ -1,3 +1,77 @@
 <params>
 	<name>test_configuration</name>
+	<rotors no='4'>
+      <rotor>
+         <forceCoff>0.000071</forceCoff>
+         <torqueCoff>0.0000019</torqueCoff>
+         <position>0.25, 0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
+         <hinges no='1'>
+            <hinge>
+               <axis>0.0, 1.0, 0.0</axis>
+               <trim>0.0</trim>
+               <max>1.0</max>
+               <min>-1.0</min>
+            </hinge>
+         </hinges>
+         <direction>1</direction>
+         <timeConstant>0.05</timeConstant>
+         <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
+      </rotor>
+      <rotor>
+         <forceCoff>0.000071</forceCoff>
+         <torqueCoff>0.0000019</torqueCoff>
+         <position>-0.25, 0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
+         <hinges no='1'>
+            <hinge>
+               <axis>0.0, 1.0, 0.0</axis>
+               <trim>0.0</trim>
+               <max>1.0</max>
+               <min>-1.0</min>
+            </hinge>
+         </hinges>
+         <direction>-1</direction>
+         <timeConstant>0.05</timeConstant>
+         <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
+      </rotor>
+      <rotor>
+         <forceCoff>0.000071</forceCoff>
+         <torqueCoff>0.0000019</torqueCoff>
+         <position>-0.25, -0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
+         <hinges no='1'>
+            <hinge>
+               <axis>0.0, 1.0, 0.0</axis>
+               <trim>0.0</trim>
+               <max>1.0</max>
+               <min>-1.0</min>
+            </hinge>
+         </hinges>
+         <direction>1</direction>
+         <timeConstant>0.05</timeConstant>
+         <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
+      </rotor>
+      <rotor>
+         <forceCoff>0.000071</forceCoff>
+         <torqueCoff>0.0000019</torqueCoff>
+         <position>0.25, -0.25, -0.1</position>
+         <axis>0.0, 0.0, -1.0</axis>
+         <hinges no='1'>
+            <hinge>
+               <axis>0.0, 1.0, 0.0</axis>
+               <trim>0.0</trim>
+               <max>1.0</max>
+               <min>-1.0</min>
+            </hinge>
+         </hinges>
+         <direction>-1</direction>
+         <timeConstant>0.05</timeConstant>
+         <maxSpeed>1000</maxSpeed>
+         <hoverSpeed>335</hoverSpeed>
+      </rotor>
+   </rotors>
 </params>
