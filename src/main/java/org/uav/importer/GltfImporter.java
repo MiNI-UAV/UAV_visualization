@@ -249,7 +249,7 @@ public class GltfImporter {
             default -> GL_RGB;
         };
         ColorSpace colorSpace = img.getColorModel().getColorSpace();
-        int internalFormat = config.getGraphicsSettings().isUseGammaCorrection() ?
+        int internalFormat = config.getGraphicsSettings().getUseGammaCorrection() ?
             switch(components) {
                 case 1 -> GL_BACK;
                 case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;

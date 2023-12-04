@@ -1,5 +1,6 @@
 package org.uav.scene.camera;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -28,8 +29,8 @@ public class Camera {
     public Camera(SimulationState simulationState, Config config) {
         this.simulationState = simulationState;
         fov = config.getGraphicsSettings().getFov();
-        cameraFPP = new Vector3f(config.getSceneSettings().getCameraFPP());
-        cameraTPP = new Vector3f(config.getSceneSettings().getCameraTPP());
+        cameraFPP = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F));
+        cameraTPP = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraTPP(), 0.0F));
     }
 
     public Vector3f getCameraPos() {

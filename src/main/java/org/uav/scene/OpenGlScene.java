@@ -105,7 +105,7 @@ public class OpenGlScene {
         objectShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
         objectShader.use();
         objectShader.setVec3("backgroundColor", simulationState.getSkyColor());
-        objectShader.setBool("useGammaCorrection", config.getGraphicsSettings().isUseGammaCorrection());
+        objectShader.setBool("useGammaCorrection", config.getGraphicsSettings().getUseGammaCorrection());
         objectShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
         objectShader.setInt("objectTexture", 0);
         objectShader.setInt("shadowMap", 1);
@@ -115,7 +115,7 @@ public class OpenGlScene {
         var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
         guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
         guiShader.use();
-        guiShader.setBool("useGammaCorrection", config.getGraphicsSettings().isUseGammaCorrection());
+        guiShader.setBool("useGammaCorrection", config.getGraphicsSettings().getUseGammaCorrection());
         guiShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
 
         var shadingVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadingShader.vert"));

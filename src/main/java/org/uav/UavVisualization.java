@@ -69,8 +69,9 @@ public class UavVisualization {
 
     private void init() throws IOException {
         config = FileMapper.load(Config.class, Paths.get(System.getProperty("user.dir"), "config.yaml"), new YAMLMapper());
+        FileMapper.validateNullable(config);
         initializeOpenGlEnvironment();
-        if(config.getBindingsConfig().isGenerateOnStartUp()) {
+        if(config.getBindingsConfig().getGenerateOnStartUp()) {
             new BindingsLoop(window, config).loop();
         }
         droneParameters = FileMapper.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneConfig()), new XmlMapper());

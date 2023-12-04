@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Value;
 import org.uav.input.CameraMode;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Value
@@ -23,7 +24,7 @@ public class Config {
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class BindingsConfig {
-        boolean generateOnStartUp;
+        Boolean generateOnStartUp;
         String source;
     }
 
@@ -33,10 +34,11 @@ public class Config {
     public static class ServerSettings {
         String serverAddress;
         String assetsSourceUrl;
-        boolean downloadMissingAssets;
+        Boolean downloadMissingAssets;
+        @Nullable
         String assetsToUse;
-        int heartBeatIntervalMs;
-        int serverTimoutMs;
+        Integer heartBeatIntervalMs;
+        Integer serverTimoutMs;
     }
 
     @Value
@@ -51,29 +53,29 @@ public class Config {
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     public static class SceneSettings {
-        boolean drawInWorldDemandedPositionalCoords;
-        float sunAngleDayCycle;
-        float sunAngleYearCycle;
-        float[] cameraFPP;
-        float[] cameraTPP;
+        Boolean drawInWorldDemandedPositionalCoords;
+        Float sunAngleDayCycle;
+        Float sunAngleYearCycle;
+        Float[] cameraFPP;
+        Float[] cameraTPP;
     }
 
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class GraphicsSettings {
-        int windowWidth;
-        int windowHeight;
+        Integer windowWidth;
+        Integer windowHeight;
         FullScreenMode fullScreenMode;
         Integer monitor;
-        float guiScale;
-        float fov;
-        boolean useGammaCorrection;
-        float gammaCorrection;
-        boolean useShadows;
-        int shadowsTextureResolution;
-        int shadowsRenderingDistance;
-        boolean showDebugInfo;
+        Float guiScale;
+        Float fov;
+        Boolean useGammaCorrection;
+        Float gammaCorrection;
+        Boolean useShadows;
+        Integer shadowsTextureResolution;
+        Integer shadowsRenderingDistance;
+        Boolean showDebugInfo;
     }
 
     @Value

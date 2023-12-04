@@ -22,7 +22,7 @@ public class DebugWidget implements GuiWidget {
                 .setAnchorPoint(GuiAnchorPoint.TOP_LEFT)
                 .setScale(config.getGraphicsSettings().getGuiScale())
                 .setResolution(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight())
-                .setHidden(!config.getGraphicsSettings().isShowDebugInfo())
+                .setHidden(!config.getGraphicsSettings().getShowDebugInfo())
                 .addLayer(background)
                 .addLayer(400, 200, debugLayer)
                 .build();

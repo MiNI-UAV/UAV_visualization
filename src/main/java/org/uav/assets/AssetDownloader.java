@@ -47,7 +47,7 @@ public class AssetDownloader {
         simulationState.setServerMap(serverInfo.serverMap);
 
         if(
-                config.getServerSettings().isDownloadMissingAssets()
+                config.getServerSettings().getDownloadMissingAssets()
                         && !assetPackExists(serverInfo.assetChecksum.substring(0,8))
         ) {
             loadingScreen.render("Downloading new assets...");
