@@ -139,25 +139,25 @@
          <max>500</max>
       </Psi>
       <Roll>
-         <P>-6.249</P>
-         <I>-0.904</I>
-         <D>-0.219</D>
-         <min>-250</min>
-         <max>250</max>
+         <P>2.5</P>
+         <I>0.3</I>
+         <D>0.0</D>
+         <min>-1</min>
+         <max>1</max>
       </Roll>
       <Pitch>
-         <P>6.304</P>
-         <I>1.174</I>
-         <D>0.433</D>
-         <min>-250</min>
-         <max>250</max>
+         <P>2.5</P>
+         <I>0.3</I>
+         <D>0.0</D>
+         <min>-1</min>
+         <max>1</max>
       </Pitch>
       <Yaw>
-         <P>112.662</P>
-         <I>22.778</I>
-         <D>3.419</D>
-         <min>-250</min>
-         <max>250</max>
+         <P>1.2</P>
+         <I>0.0</I>
+         <D>0.0</D>
+         <min>-1</min>
+         <max>1</max>
       </Yaw>
    </PID>
    <mixers>
