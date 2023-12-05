@@ -1,14 +1,12 @@
 package org.uav.scene.gui.widget.artificialHorizon.layers;
 
 import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.controlMode.ControlModeReply;
 import org.uav.model.status.DroneStatus;
 import org.uav.scene.gui.DrawableGuiLayer;
-import org.uav.utils.Convert;
 
 import java.awt.*;
 import java.text.MessageFormat;
@@ -73,11 +71,11 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
             drawDemandedHeight = true;
         }
 
-        var rot_bw = new Matrix3f().rotate(drone.rotation);
-        var velocity_B = drone.linearVelocity.mul(rot_bw.transpose());
         if(simulationState.getCurrentControlModeDemanded() != null && simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.U)) {
             float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.U);
-            velocity = velocity_B.x;
+            var rotBW = new Matrix3f().rotate(drone.rotation);
+            var velocityB = drone.linearVelocity.mul(rotBW.transpose());
+            velocity = velocityB.x;
             demandedVelocityX = demanded;
             drawDemandedVelocityX = true;
         } else {
@@ -90,22 +88,19 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(new Font("SansSerif", Font.BOLD, FONT_SIZE));
 
-        int velocityMeterTop = horizonScreenY / 4;
+        int meterTop = horizonScreenY / 4;
+        int meterHeight = horizonScreenY / 2;
+        int meterWidth = horizonScreenX / 8;
+
         int velocityMeterLeft = 0;
-        int velocityMeterWidth = horizonScreenX / 8;
-        int velocityMeterRight = velocityMeterLeft + velocityMeterWidth;
-        int velocityMeterHeight = horizonScreenY / 2;
-        drawMeter(g, velocity, false, false, velocityMeterTop, velocityMeterLeft, velocityMeterWidth, velocityMeterHeight);
+        int velocityMeterRight = velocityMeterLeft + meterWidth;
+        drawMeter(g, velocity, false, false, meterTop, velocityMeterLeft, meterWidth, meterHeight);
+        drawDemanded(g, false, velocityMeterLeft, meterTop, meterWidth , meterHeight, velocityMeterRight, velocity, demandedVelocityX, drawDemandedVelocityX);
 
-        int heightMeterTop = horizonScreenY / 4;
         int heightMeterLeft = horizonScreenX * 7 / 8;
-        int heightMeterWidth = horizonScreenX / 8;
-        int heightMeterRight = heightMeterLeft + heightMeterWidth;
-        int heightMeterHeight = horizonScreenY / 2;
-        drawMeter(g, height, true, true, heightMeterTop, heightMeterLeft, heightMeterWidth, heightMeterHeight);
-
-        drawDemanded(g, true, heightMeterLeft, heightMeterTop, heightMeterWidth, heightMeterHeight, heightMeterRight, height, demandedHeight, drawDemandedHeight);
-        drawDemanded(g, false, velocityMeterLeft, velocityMeterTop, velocityMeterWidth , velocityMeterHeight, velocityMeterRight, velocity, demandedVelocityX, drawDemandedVelocityX);
+        int heightMeterRight = heightMeterLeft + meterWidth;
+        drawMeter(g, height, true, true, meterTop, heightMeterLeft, meterWidth, meterHeight);
+        drawDemanded(g, true, heightMeterLeft, meterTop, meterWidth, meterHeight, heightMeterRight, height, demandedHeight, drawDemandedHeight);
 
         g.setColor(Color.white);
         String modeString = controlModeDemanded != null? MessageFormat.format("{0}", controlModeDemanded.name): "";
