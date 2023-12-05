@@ -7,6 +7,9 @@ public enum ControlModeReply {
     ROLL,
     PITCH,
     YAW,
+    U,
+    V,
+    W,
     P,
     Q,
     R

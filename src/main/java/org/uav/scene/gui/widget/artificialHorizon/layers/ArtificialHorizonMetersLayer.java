@@ -4,6 +4,7 @@ import org.joml.Vector2f;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.controlMode.ControlModeReply;
+import org.uav.model.status.DroneStatus;
 import org.uav.scene.gui.DrawableGuiLayer;
 
 import java.awt.*;
@@ -28,6 +29,8 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
     private ControlModeDemanded controlModeDemanded;
     private float demandedHeight;
     private boolean drawDemandedHeight;
+    private float demandedVelocityX;
+    private boolean drawDemandedVelocityX;
 
     public ArtificialHorizonMetersLayer(
             int horizonScreenX,
@@ -40,6 +43,7 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         climbRate = 0;
         height = 0;
         drawDemandedHeight = false;
+        drawDemandedVelocityX = false;
     }
 
     public void update(SimulationState simulationState) {
@@ -47,15 +51,14 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         if(drone == null) return;
 
         position = new Vector2f(drone.position.x, drone.position.y);
-        velocity = (float) Math.sqrt(drone.linearVelocity.x * drone.linearVelocity.x + drone.linearVelocity.y * drone.linearVelocity.y);
         climbRate = drone.linearVelocity.z * Z_AXIS_INVERSION;
         height = drone.position.z * Z_AXIS_INVERSION;
         controlModeDemanded = simulationState.getCurrentControlModeDemanded();
 
-        updateDemanded(simulationState);
+        updateDemanded(simulationState, drone);
     }
 
-    private void updateDemanded(SimulationState simulationState) {
+    private void updateDemanded(SimulationState simulationState, DroneStatus drone) {
         if(
             simulationState.getCurrentControlModeDemanded() == null ||
             !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Z)
@@ -66,13 +69,29 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
             demandedHeight = -demanded;
             drawDemandedHeight = true;
         }
+
+        if(simulationState.getCurrentControlModeDemanded() != null && simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.U)) {
+            float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.U);
+            velocity = drone.linearVelocity.x;
+            demandedVelocityX = demanded;
+            drawDemandedVelocityX = true;
+        } else {
+            velocity = (float) Math.sqrt(drone.linearVelocity.x * drone.linearVelocity.x + drone.linearVelocity.y * drone.linearVelocity.y);
+            drawDemandedVelocityX = false;
+        }
     }
     @Override
     public void draw(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
         g.setFont(new Font("SansSerif", Font.BOLD, FONT_SIZE));
 
-        drawMeter(g, velocity, false, false, horizonScreenY / 4, 0, horizonScreenX / 8, horizonScreenY / 2);
+        int velocityMeterTop = horizonScreenY / 4;
+        int velocityMeterLeft = 0;
+        int velocityMeterWidth = horizonScreenX / 8;
+        int velocityMeterRight = velocityMeterLeft + velocityMeterWidth;
+        int velocityMeterHeight = horizonScreenY / 2;
+        drawMeter(g, velocity, false, false, velocityMeterTop, velocityMeterLeft, velocityMeterWidth, velocityMeterHeight);
+
         int heightMeterTop = horizonScreenY / 4;
         int heightMeterLeft = horizonScreenX * 7 / 8;
         int heightMeterWidth = horizonScreenX / 8;
@@ -80,7 +99,8 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         int heightMeterHeight = horizonScreenY / 2;
         drawMeter(g, height, true, true, heightMeterTop, heightMeterLeft, heightMeterWidth, heightMeterHeight);
 
-        drawDemandedHeight(g, heightMeterLeft, heightMeterTop, heightMeterWidth, heightMeterHeight, heightMeterRight);
+        drawDemanded(g, true, heightMeterLeft, heightMeterTop, heightMeterWidth, heightMeterHeight, heightMeterRight, height, demandedHeight, drawDemandedHeight);
+        drawDemanded(g, false, velocityMeterLeft, velocityMeterTop, velocityMeterWidth , velocityMeterHeight, velocityMeterRight, velocity, demandedVelocityX, drawDemandedVelocityX);
 
         g.setColor(Color.white);
         String modeString = controlModeDemanded != null? MessageFormat.format("{0}", controlModeDemanded.name): "";
@@ -93,19 +113,19 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         g.drawString(climbRateSTring, horizonScreenX - 120, horizonScreenY * 15 / 16);
     }
 
-    private void drawDemandedHeight(Graphics2D g, int heightMeterLeft, int heightMeterTop, int heightMeterWidth, int heightMeterHeight, int heightMeterRight) {
-        if(drawDemandedHeight) {
-            Shape meterBg = new Rectangle(heightMeterLeft, heightMeterTop, heightMeterWidth, heightMeterHeight);
+    private void drawDemanded(Graphics2D g, boolean inverted, int meterLeft, int meterTop, int meterWidth, int meterHeight, int meterRight, float value, float demandedValue, boolean drawDemandedValue) {
+        if(drawDemandedValue) {
+            Shape meterBg = new Rectangle(meterLeft, meterTop, meterWidth, meterHeight);
             g.setClip(meterBg);
             g.setColor(new Color(1,0,0,0.5f));
             g.setStroke(new BasicStroke(3));
-            float deltaHeight = demandedHeight - height;
+            float deltaHeight = demandedValue - value;
             float deltaDemanded = deltaHeight * METER_UNIT_HEIGHT * METER_PRECISION;
             g.drawLine(
-                    heightMeterRight - 20,
-                    heightMeterTop + heightMeterHeight / 2 - (int) deltaDemanded,
-                    heightMeterRight,
-                    heightMeterTop + heightMeterHeight / 2 - (int) deltaDemanded
+                    inverted? meterRight - 20: meterLeft,
+                    meterTop + meterHeight / 2 - (int) deltaDemanded,
+                    inverted ? meterRight: meterLeft + 20,
+                    meterTop + meterHeight / 2 - (int) deltaDemanded
             );
             g.setStroke(new BasicStroke());
             g.setClip(null);
