@@ -1,11 +1,14 @@
 package org.uav.scene.gui.widget.artificialHorizon.layers;
 
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.controlMode.ControlModeReply;
 import org.uav.model.status.DroneStatus;
 import org.uav.scene.gui.DrawableGuiLayer;
+import org.uav.utils.Convert;
 
 import java.awt.*;
 import java.text.MessageFormat;
@@ -70,9 +73,11 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
             drawDemandedHeight = true;
         }
 
+        var rot_bw = new Matrix3f().rotate(drone.rotation);
+        var velocity_B = drone.linearVelocity.mul(rot_bw.transpose());
         if(simulationState.getCurrentControlModeDemanded() != null && simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.U)) {
             float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.U);
-            velocity = drone.linearVelocity.x;
+            velocity = velocity_B.x;
             demandedVelocityX = demanded;
             drawDemandedVelocityX = true;
         } else {
