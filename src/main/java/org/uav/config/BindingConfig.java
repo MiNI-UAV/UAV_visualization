@@ -41,6 +41,8 @@ public class BindingConfig {
         List<Binding> nextAmmo;
         List<Binding> nextCargo;
         List<Binding> map;
+        List<Binding> toggleRadio;
+        List<Binding> nextSong;
         List<Binding> mapZoomIn;
         List<Binding> mapZoomOut;
         List<Binding> prevCamera;
@@ -63,6 +65,8 @@ public class BindingConfig {
             map = new ArrayList<>();
             mapZoomIn = new ArrayList<>();
             mapZoomOut = new ArrayList<>();
+            toggleRadio = new ArrayList<>();
+            nextSong = new ArrayList<>();
             prevCamera = new ArrayList<>();
             nextCamera = new ArrayList<>();
             freeCamera = new ArrayList<>();

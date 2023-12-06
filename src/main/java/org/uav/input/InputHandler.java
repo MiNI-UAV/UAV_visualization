@@ -1,5 +1,6 @@
 package org.uav.input;
 
+import org.uav.audio.MusicPlayer;
 import org.uav.config.BindingConfig;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
@@ -27,12 +28,20 @@ public class InputHandler {
     private final SimulationStateProcessor simulationStateProcessor;
     private final Config config;
     private final JoystickProducer joystickProducer;
+    private final MusicPlayer musicPlayer;
 
 
-    public InputHandler(SimulationStateProcessor simulationStateProcessor, SimulationState simulationState, Config config, BindingConfig bindingConfig) throws IOException {
+    public InputHandler(
+            SimulationStateProcessor simulationStateProcessor,
+            SimulationState simulationState,
+            Config config,
+            BindingConfig bindingConfig,
+            MusicPlayer musicPlayer
+    ) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
         this.simulationStateProcessor = simulationStateProcessor;
+        this.musicPlayer = musicPlayer;
         joystickProducer = new JoystickProducer(simulationState);
         axisBindings = new ArrayList<>();
         buttonBindings = new ArrayList<>();
@@ -72,6 +81,9 @@ public class InputHandler {
         initAction(actions.getMap(), () -> simulationState.setMapOverlay(!simulationState.isMapOverlay()));
         initAction(actions.getMapZoomIn(), () -> {if(simulationState.isMapOverlay()) simulationState.setMapZoom(simulationState.getMapZoom() * 1.1f);});
         initAction(actions.getMapZoomOut(), () -> {if(simulationState.isMapOverlay()) simulationState.setMapZoom(simulationState.getMapZoom() * 0.9f);});
+
+        initAction(actions.getToggleRadio(), musicPlayer::playOrStop);
+        initAction(actions.getNextSong(), musicPlayer::nextSong);
     }
 
     private void initAction(List<BindingConfig.Binding> actionBindings, Runnable action) throws IOException {

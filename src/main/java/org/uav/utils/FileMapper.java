@@ -16,7 +16,7 @@ public class FileMapper {
         try {
             return mapper.readValue(new File(path.toString()), targetClass);
         } catch (IOException e) {
-            throw new RuntimeException("Could not load configuration file");
+            throw new RuntimeException("Could not load configuration file: " + e.getMessage());
         }
     }
 

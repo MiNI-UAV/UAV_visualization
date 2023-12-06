@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.assets.AssetDownloader;
+import org.uav.audio.MusicPlayer;
 import org.uav.bindingsGeneration.BindingsLoop;
 import org.uav.config.*;
 import org.uav.input.InputHandler;
@@ -44,6 +45,7 @@ public class UavVisualization {
     private DroneParameters droneParameters;
     private BindingConfig bindingConfig;
     private AvailableControlModes availableControlModes;
+    private MusicPlayer musicPlayer;
 
 
     public void run() throws IOException {
@@ -80,30 +82,27 @@ public class UavVisualization {
         loadingScreen.render("Initializing...");
         heartbeatProducer = new HeartbeatProducer(config);
         simulationState = new SimulationState(window, config, droneParameters);
+        musicPlayer = new MusicPlayer();
+        if(config.getMiscSettings().getEnableMusic()) musicPlayer.setDirectory(Paths.get(System.getProperty("user.dir"), config.getMiscSettings().getMusicDirectory()).toString());
+        if(config.getMiscSettings().getMusicOnStartup()) musicPlayer.playOrStop();
         var context = new ZContext();
         loadingScreen.render("Checking assets...");
         var assetDownloader = new AssetDownloader(context, config);
         assetDownloader.checkAndUpdateAssets(config, simulationState, loadingScreen);
         availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
         simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes);
-        inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig);
+        inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
         simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneConfig());
         loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
 
-//        String musicFilePath = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResource("assets/audio/music.wav")).getFile();
-//        try {
-//            musicPlayer = new MusicPlayer(musicFilePath);
-//            musicPlayer.play();
-//        } catch (UnsupportedAudioFileException | LineUnavailableException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     private void close() {
         simulationStateProcessor.close();
+        musicPlayer.close();
         closeOpenGlEnvironment();
     }
 

@@ -18,6 +18,7 @@ public class Config {
     DroneSettings droneSettings;
     SceneSettings sceneSettings;
     GraphicsSettings graphicsSettings;
+    MiscSettings miscSettings;
     Ports ports;
 
     @Value
@@ -76,6 +77,14 @@ public class Config {
         Integer shadowsTextureResolution;
         Integer shadowsRenderingDistance;
         Boolean showDebugInfo;
+    }
+
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    public static class MiscSettings {
+        Boolean enableMusic;
+        String musicDirectory;
+        Boolean musicOnStartup;
     }
 
     @Value

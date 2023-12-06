@@ -184,7 +184,7 @@ public class OpenGlScene {
     public void render() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             // Shading pass
-            if(config.getGraphicsSettings().isUseShadows()) {
+            if(config.getGraphicsSettings().getUseShadows()) {
                 glViewport(0, 0, config.getGraphicsSettings().getShadowsTextureResolution(), config.getGraphicsSettings().getShadowsTextureResolution());
                 glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
                 glClear(GL_DEPTH_BUFFER_BIT);
@@ -370,7 +370,7 @@ public class OpenGlScene {
 
     private void addXMarkToQueue(RenderQueue renderQueue, Shader shader, float time) {
         if(
-            config.getSceneSettings().isDrawInWorldDemandedPositionalCoords() &&
+            config.getSceneSettings().getDrawInWorldDemandedPositionalCoords() &&
             simulationState.getCurrentControlModeDemanded() != null &&
             simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.X) &&
             simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Y) &&
