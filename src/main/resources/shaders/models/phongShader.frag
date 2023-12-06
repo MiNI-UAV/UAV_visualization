@@ -68,10 +68,18 @@ struct SpotLight {
 uniform SpotLight spotLight;
 uniform bool spotLightOn;
 
+// Fog
+struct Fog {
+    vec3 color;
+    float density;
+};
+uniform Fog fog;
+
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal);
+float getFogFactor(Fog fog, float fogCoordinate);
 
 void main()
 {
@@ -89,6 +97,8 @@ void main()
     result += (spotLightOn == true)? calcSpotLight(spotLight, normNormal, fragPos, viewDir): vec3(0);
 
     result *= objectColor.xyz;
+    result = mix(result, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
+
     if(useGammaCorrection)
         result = pow(result, vec3(1.0/gammaCorrection));
     fragColor = vec4(result, objectColor.w);
@@ -194,4 +204,12 @@ vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     diffuse  *= attenuation * intensity;
     specular *= attenuation * intensity;
     return (ambient + diffuse + specular);
+}
+
+float getFogFactor(Fog fog, float fogCoordinate)
+{
+    float result = 0.0;
+    result = exp(-pow(fog.density * fogCoordinate, 2.0));
+    result = 1.0 - clamp(result, 0.0, 1.0);
+    return result;
 }

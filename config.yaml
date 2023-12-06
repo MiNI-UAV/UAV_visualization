@@ -22,6 +22,7 @@ sceneSettings:
   drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
   sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
+  fogDensity: 0.001
   cameraFPP: [1, 0, 0.1]
   cameraTPP: [-3.0, 0, -1.5]
 graphicsSettings:

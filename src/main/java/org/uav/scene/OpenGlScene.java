@@ -115,6 +115,7 @@ public class OpenGlScene {
         objectShader.setInt("objectTexture", 0);
         objectShader.setInt("shadowMap", 1);
         setUpLights(objectShader);
+        setUpFog(objectShader);
 
         var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
         var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
@@ -184,6 +185,11 @@ public class OpenGlScene {
     private Model loadModel(String dir) throws IOException {
         String modelDir = Paths.get(simulationState.getAssetsDirectory(), dir).toString();
         return modelImporter.loadModel(Paths.get(modelDir, "model", "model.gltf").toString(), Paths.get(modelDir, "textures").toString());
+    }
+
+    private void setUpFog(Shader shader) {
+        shader.setVec3("fog.color", simulationState.getSkyColor());
+        shader.setFloat("fog.density", config.getSceneSettings().getFogDensity());
     }
 
     public void render() {

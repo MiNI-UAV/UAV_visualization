@@ -57,6 +57,7 @@ public class Config {
         Boolean drawInWorldDemandedPositionalCoords;
         Float sunAngleDayCycle;
         Float sunAngleYearCycle;
+        Float fogDensity;
         Float[] cameraFPP;
         Float[] cameraTPP;
     }

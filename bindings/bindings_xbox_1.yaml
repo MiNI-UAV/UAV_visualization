@@ -48,7 +48,13 @@ actions:
   map:
   - button: 7
     inverse: false
-  - key: 77
+  - key:
+  toggleRadio:
+    - key: 82
+  nextSong:
+    - key: 78
+  toggleSpotLight:
+    - key: 83
   mapZoomIn:
   - button: 5
     inverse: false
