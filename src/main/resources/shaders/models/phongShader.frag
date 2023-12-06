@@ -65,8 +65,8 @@ struct SpotLight {
     vec3 diffuse;
     vec3 specular;
 };
-#define NR_SPOT_LIGHTS 3
-uniform SpotLight spotLights[NR_SPOT_LIGHTS];
+uniform SpotLight spotLight;
+uniform bool spotLightOn;
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -81,13 +81,12 @@ void main()
     vec3 result = backgroundColor;
 
     // Directional Light
-    result = (useDirectionalLight == true)? calcDirLight(dirLight, normNormal, viewDir, objectColor): vec3(0.f); // TODO return *=
+    result = (useDirectionalLight == true)? calcDirLight(dirLight, normNormal, viewDir, objectColor): vec3(0);
     // Point Lights
     //for(int i = 0; i < NR_POINT_LIGHTS; i++)
     //result += calcPointLight(pointLights[i], normNormal, fragPos, viewDir);
     // Spot Lights
-    //for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-    //result += calcSpotLight(spotLights[i], normNormal, fragPos, viewDir);
+    result += (spotLightOn == true)? calcSpotLight(spotLight, normNormal, fragPos, viewDir): vec3(0);
 
     result *= objectColor.xyz;
     if(useGammaCorrection)

@@ -1,8 +1,10 @@
 package org.uav.scene;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.joml.Math.cos;
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
@@ -97,6 +100,8 @@ public class OpenGlScene {
         shader.setVec3("dirLight.diffuse",  new Vector3f(0.5f, 0.5f, 0.5f));
         shader.setVec3("dirLight.specular",  new Vector3f(0.5f, 0.5f, 0.5f));
         shader.setBool("useDirectionalLight", true);
+
+        shader.setBool("spotLightOn",  false);
     }
 
     private void setUpShaders() throws IOException {
@@ -263,6 +268,7 @@ public class OpenGlScene {
         objectShader.setMatrix4f(stack,"projection", projection);
         objectShader.setMatrix4f(stack,"directionalLightView", directionalLightView);
         objectShader.setMatrix4f(stack,"directionalLightProjection", directionalLightProjection);
+        updateLights();
         ropeShader.use();
         ropeShader.setVec3("viewPos", viewPos);
         ropeShader.setMatrix4f(stack,"view", view);
@@ -270,6 +276,24 @@ public class OpenGlScene {
         bulletTrailShader.use();
         bulletTrailShader.setMatrix4f(stack,"view", view);
         bulletTrailShader.setMatrix4f(stack,"projection", projection);
+    }
+
+    private void updateLights() {
+        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
+        if(!simulationState.isSpotLightOn() || drone == null) {
+            objectShader.setBool("spotLightOn",  false);
+            return;
+        }
+        objectShader.setBool("spotLightOn",  true);
+        var spotlightPos = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F)).rotate(drone.rotation).add(drone.position);
+        objectShader.setVec3("spotLight.position", spotlightPos);
+        objectShader.setVec3("spotLight.direction", new Vector3f(1,0,0).rotate(drone.rotation));
+        objectShader.setFloat("spotLight.cutOff",   cos(toRadians(40f)));
+        objectShader.setFloat("spotLight.outerCutOff",   cos(toRadians(45.5f)));
+        objectShader.setVec3("spotLight.ambient",  new Vector3f(1f, 1f, 1f));
+        objectShader.setFloat("spotLight.constant", 1.0f);
+        objectShader.setFloat("spotLight.linear", 0.027f);
+        objectShader.setFloat("spotLight.quadratic", 0.0028f);
     }
 
     private Matrix4f getSceneShaderProjectionMatrix() {

@@ -41,6 +41,7 @@ public class SimulationState {
     boolean mapOverlay;
     float mapZoom;
     Vector3f skyColor;
+    boolean spotLightOn;
 
     int currentlyChosenAmmo;
     final List<Projectile>ammos;
@@ -71,5 +72,6 @@ public class SimulationState {
         cargos = droneParameters.getCargo() == null? new ArrayList<>():
                  droneParameters.getCargo().stream().map(e -> new Projectile(e, this)).toList();
         fpsCounter = new FpsCounter();
+        spotLightOn = false;
     }
 }

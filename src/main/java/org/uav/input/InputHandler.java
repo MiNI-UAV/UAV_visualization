@@ -84,6 +84,8 @@ public class InputHandler {
 
         initAction(actions.getToggleRadio(), musicPlayer::playOrStop);
         initAction(actions.getNextSong(), musicPlayer::nextSong);
+
+        initAction(actions.getToggleSpotLight(), () -> simulationState.setSpotLightOn(!simulationState.isSpotLightOn()));
     }
 
     private void initAction(List<BindingConfig.Binding> actionBindings, Runnable action) throws IOException {

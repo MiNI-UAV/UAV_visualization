@@ -2,6 +2,7 @@ package org.uav.scene.gui.widget.artificialHorizon.layers;
 
 import org.joml.Matrix3f;
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeDemanded;
 import org.uav.model.controlMode.ControlModeReply;
@@ -74,7 +75,7 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
         if(simulationState.getCurrentControlModeDemanded() != null && simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.U)) {
             float demanded = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.U);
             var rotBW = new Matrix3f().rotate(drone.rotation);
-            var velocityB = drone.linearVelocity.mul(rotBW.transpose());
+            var velocityB = new Vector3f(drone.linearVelocity).mul(rotBW.transpose());
             velocity = velocityB.x;
             demandedVelocityX = demanded;
             drawDemandedVelocityX = true;

@@ -43,6 +43,7 @@ public class BindingConfig {
         List<Binding> map;
         List<Binding> toggleRadio;
         List<Binding> nextSong;
+        List<Binding> toggleSpotLight;
         List<Binding> mapZoomIn;
         List<Binding> mapZoomOut;
         List<Binding> prevCamera;
@@ -76,6 +77,7 @@ public class BindingConfig {
             horizontalCamera = new ArrayList<>();
             hardFPV = new ArrayList<>();
             softFPV = new ArrayList<>();
+            toggleSpotLight = new ArrayList<>();
         }
     }
     @Value
