@@ -10,6 +10,7 @@ import org.uav.UavVisualization;
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.importer.GltfImporter;
+import org.uav.importer.ModelImporter;
 import org.uav.model.Model;
 import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeReply;
@@ -21,7 +22,6 @@ import org.uav.scene.bullet.BulletTrail;
 import org.uav.scene.gui.Gui;
 import org.uav.scene.shader.Shader;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
@@ -42,7 +42,6 @@ public class OpenGlScene {
     private static final String DEFAULT_PROJECTILE_MODEL = "defaultProjectile";
     private final SimulationState simulationState;
     private final Config config;
-    private final GltfImporter modelImporter;
     private Shader objectShader;
     private Shader guiShader;
     private Shader ropeShader;
@@ -66,15 +65,15 @@ public class OpenGlScene {
     private Shader flatShader;
     private Shader outlineShader;
 
-    private final Fog fog;
     private final DirectionalLight directionalLight;
     private final SpotLight spotLight;
+    private final Fog fog;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
 
-        modelImporter = new GltfImporter(loadingScreen, config);
+        var modelImporter = new ModelImporter(new GltfImporter(loadingScreen, config), simulationState.getAssetsDirectory());
         fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
         directionalLight = new DirectionalLight(
                 getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
@@ -82,7 +81,7 @@ public class OpenGlScene {
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
 
         setUpShaders();
-        setUpDrawables(droneParameters);
+        setUpDrawables(droneParameters, modelImporter);
         setUpShadingFrameBuffer();
         setUpOutlineFrameBuffer();
     }
@@ -187,17 +186,13 @@ public class OpenGlScene {
         outlineShader.setVec4("color", new Vector4f(0, 1, 0, 0.3f));
     }
 
-    private void setUpDrawables(DroneParameters droneParameters) throws IOException {
-
-        var mapDir = Paths.get(simulationState.getAssetsDirectory(), "maps", simulationState.getServerMap());
-        var modelFile = Paths.get(mapDir.toString(), "model", "model.gltf").toString();
-        var textureDir = Paths.get(mapDir.toString(), "textures").toString();
-        environmentModel = modelImporter.loadModel(modelFile, textureDir);
+    private void setUpDrawables(DroneParameters droneParameters, ModelImporter modelImporter) throws IOException {
+        environmentModel = modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString());
         environmentModel.setPosition(new Vector3f());
         environmentModel.setRotation(new Quaternionf());
-        droneModels =  loadModelMap("drones");
-        projectileModels = loadModelMap("projectiles");
-        xMarkModel = loadModel(Paths.get("core", "xMark").toString());
+        droneModels = modelImporter.loadModelMap("drones");
+        projectileModels = modelImporter.loadModelMap("projectiles");
+        xMarkModel = modelImporter.loadModel(Paths.get("core", "xMark").toString());
         ropeModel = new RopeModel(
                 Rope.SEGMENT_COUNT,
                 Rope.THICKNESS,
@@ -208,24 +203,6 @@ public class OpenGlScene {
 
         gui = new Gui(simulationState, config, droneParameters);
         bulletTrails = new HashMap<>();
-    }
-
-    private Map<String, Model> loadModelMap(String directoryName) throws IOException {
-        Map<String, Model> map = new HashMap<>();
-        var dirPath = Paths.get(simulationState.getAssetsDirectory(), directoryName).toString();
-        File directory = new File(dirPath);
-        for(File model: Objects.requireNonNull(directory.listFiles())) {
-            var modelFile = Paths.get(model.getAbsolutePath(), "model", "model.gltf").toString();
-            var textureDir = Paths.get(model.getAbsolutePath(), "textures").toString();
-            var droneModel = modelImporter.loadModel(modelFile, textureDir);
-            map.put(model.getName(), droneModel);
-        }
-        return map;
-    }
-
-    private Model loadModel(String dir) throws IOException {
-        String modelDir = Paths.get(simulationState.getAssetsDirectory(), dir).toString();
-        return modelImporter.loadModel(Paths.get(modelDir, "model", "model.gltf").toString(), Paths.get(modelDir, "textures").toString());
     }
 
     public void render() {
