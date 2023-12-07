@@ -66,11 +66,14 @@ public class OpenGlScene {
     private Shader flatShader;
     private Shader outlineShader;
 
+    private final Fog fog;
+
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
 
         modelImporter = new GltfImporter(loadingScreen, config);
+        fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
 
         setUpShaders();
         setUpDrawables(droneParameters);
@@ -145,7 +148,7 @@ public class OpenGlScene {
         objectShader.setInt("objectTexture", 0);
         objectShader.setInt("shadowMap", 1);
         setUpLights(objectShader);
-        setUpFog(objectShader);
+        fog.applyTo(objectShader);
 
         var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
         var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
@@ -154,8 +157,8 @@ public class OpenGlScene {
         guiShader.setBool("useGammaCorrection", config.getGraphicsSettings().getUseGammaCorrection());
         guiShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
 
-        var shadingVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadingShader.vert"));
-        var shadingFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadingShader.frag"));
+        var shadingVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadowShader.vert"));
+        var shadingFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadowShader.frag"));
         shadingShader = new Shader(shadingVertexShaderSource, shadingFragmentShaderSource);
         shadingShader.use();
 
@@ -227,11 +230,6 @@ public class OpenGlScene {
     private Model loadModel(String dir) throws IOException {
         String modelDir = Paths.get(simulationState.getAssetsDirectory(), dir).toString();
         return modelImporter.loadModel(Paths.get(modelDir, "model", "model.gltf").toString(), Paths.get(modelDir, "textures").toString());
-    }
-
-    private void setUpFog(Shader shader) {
-        shader.setVec3("fog.color", simulationState.getSkyColor());
-        shader.setFloat("fog.density", config.getSceneSettings().getFogDensity());
     }
 
     public void render() {
