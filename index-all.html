@@ -70,11 +70,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#addLayer(java.awt.image.BufferedImage)" class="member-name-link">addLayer(BufferedImage)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/RenderQueue.html#addMesh(org.uav.model.Mesh,org.joml.Matrix4f,org.uav.scene.shader.Shader)" class="member-name-link">addMesh(Mesh, Matrix4f, Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
+<dt><a href="org/uav/scene/OrderedRenderQueue.html#addMesh(org.uav.model.Mesh,org.joml.Matrix4f,org.uav.scene.shader.Shader)" class="member-name-link">addMesh(Mesh, Matrix4f, Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/OrderedRenderQueue.html" title="class in org.uav.scene">OrderedRenderQueue</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/ModelNode.html#addToQueue(org.uav.scene.RenderQueue,org.joml.Matrix4f,org.uav.scene.shader.Shader,float)" class="member-name-link">addToQueue(RenderQueue, Matrix4f, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
+<dt><a href="org/uav/scene/bullet/BulletTrail.html#addPoint(org.joml.Vector3f)" class="member-name-link">addPoint(Vector3f)</a> - Method in class org.uav.scene.bullet.<a href="org/uav/scene/bullet/BulletTrail.html" title="class in org.uav.scene.bullet">BulletTrail</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Model.html#addToQueue(org.uav.scene.RenderQueue,org.uav.scene.shader.Shader,float)" class="member-name-link">addToQueue(RenderQueue, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
+<dt><a href="org/uav/model/ModelNode.html#addToQueue(org.uav.scene.OrderedRenderQueue,org.joml.Matrix4f,org.uav.scene.shader.Shader,float)" class="member-name-link">addToQueue(OrderedRenderQueue, Matrix4f, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/Model.html#addToQueue(org.uav.scene.OrderedRenderQueue,org.uav.scene.shader.Shader,float)" class="member-name-link">addToQueue(OrderedRenderQueue, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/PentaFunction.html#andThen(java.util.function.Function)" class="member-name-link">andThen(Function&lt;? super R, ? extends V&gt;)</a> - Method in interface org.uav.utils.<a href="org/uav/utils/PentaFunction.html" title="interface in org.uav.utils">PentaFunction</a></dt>
 <dd>&nbsp;</dd>
@@ -97,6 +99,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/utils/TetraFunction.html#apply(A,B,C,D)" class="member-name-link">apply(A, B, C, D)</a> - Method in interface org.uav.utils.<a href="org/uav/utils/TetraFunction.html" title="interface in org.uav.utils">TetraFunction</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/PentaFunction.html#apply(A,B,C,D,E)" class="member-name-link">apply(A, B, C, D, E)</a> - Method in interface org.uav.utils.<a href="org/uav/utils/PentaFunction.html" title="interface in org.uav.utils">PentaFunction</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DirectionalLight.html#applyTo(org.uav.scene.shader.Shader)" class="member-name-link">applyTo(Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/DirectionalLight.html" title="class in org.uav.scene">DirectionalLight</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/Fog.html#applyTo(org.uav.scene.shader.Shader)" class="member-name-link">applyTo(Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/Fog.html" title="class in org.uav.scene">Fog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.html#applyTo(org.uav.scene.shader.Shader)" class="member-name-link">applyTo(Shader)</a> - Method in class org.uav.scene.<a href="org/uav/scene/SpotLight.html" title="class in org.uav.scene">SpotLight</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonBackgroundLayer.html" class="type-name-link" title="class in org.uav.scene.gui.widget.artificialHorizon.layers">ArtificialHorizonBackgroundLayer</a> - Class in <a href="org/uav/scene/gui/widget/artificialHorizon/layers/package-summary.html">org.uav.scene.gui.widget.artificialHorizon.layers</a></dt>
 <dd>&nbsp;</dd>
@@ -189,7 +197,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingText.html#BINDINGS_DEFAULT_POSTION_LINES_3_10" class="member-name-link">BINDINGS_DEFAULT_POSTION_LINES_3_10</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingText.html" title="class in org.uav.bindingsGeneration">BindingText</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/bindingsGeneration/BindingText.html#BINDINGS_DISCONNECTED_LINE_3" class="member-name-link">BINDINGS_DISCONNECTED_LINE_3</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingText.html" title="class in org.uav.bindingsGeneration">BindingText</a></dt>
+<dt><a href="org/uav/bindingsGeneration/BindingText.html#BINDINGS_DISCONNECTED_LINES_3_10" class="member-name-link">BINDINGS_DISCONNECTED_LINES_3_10</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingText.html" title="class in org.uav.bindingsGeneration">BindingText</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingText.html#BINDINGS_GENERAL_ACTIONS_LINE_3" class="member-name-link">BINDINGS_GENERAL_ACTIONS_LINE_3</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingText.html" title="class in org.uav.bindingsGeneration">BindingText</a></dt>
 <dd>&nbsp;</dd>
@@ -239,6 +247,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#build()" class="member-name-link">build()</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/BulletTrail.html" class="type-name-link" title="class in org.uav.scene.bullet">BulletTrail</a> - Class in <a href="org/uav/scene/bullet/package-summary.html">org.uav.scene.bullet</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/BulletTrail.html#%3Cinit%3E(org.uav.scene.shader.Shader)" class="member-name-link">BulletTrail(Shader)</a> - Constructor for class org.uav.scene.bullet.<a href="org/uav/scene/bullet/BulletTrail.html" title="class in org.uav.scene.bullet">BulletTrail</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/BulletTrailEntity.html" class="type-name-link" title="class in org.uav.scene.bullet">BulletTrailEntity</a> - Class in <a href="org/uav/scene/bullet/package-summary.html">org.uav.scene.bullet</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/BulletTrailEntity.html#%3Cinit%3E()" class="member-name-link">BulletTrailEntity()</a> - Constructor for class org.uav.scene.bullet.<a href="org/uav/scene/bullet/BulletTrailEntity.html" title="class in org.uav.scene.bullet">BulletTrailEntity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/input/ButtonBinding.html#button" class="member-name-link">button</a> - Variable in class org.uav.input.<a href="org/uav/input/ButtonBinding.html" title="class in org.uav.input">ButtonBinding</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/ButtonBinding.html" class="type-name-link" title="class in org.uav.input">ButtonBinding</a> - Class in <a href="org/uav/input/package-summary.html">org.uav.input</a></dt>
@@ -266,6 +282,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/ZmqUtils.html#checkErrno(org.zeromq.ZMQ.Socket)" class="member-name-link">checkErrno(ZMQ.Socket)</a> - Static method in class org.uav.utils.<a href="org/uav/utils/ZmqUtils.html" title="class in org.uav.utils">ZmqUtils</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayer.html#close()" class="member-name-link">close()</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/processor/SimulationStateProcessor.html#close()" class="member-name-link">close()</a> - Method in class org.uav.processor.<a href="org/uav/processor/SimulationStateProcessor.html" title="class in org.uav.processor">SimulationStateProcessor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.html" class="type-name-link" title="class in org.uav.config">Config</a> - Class in <a href="org/uav/config/package-summary.html">org.uav.config</a></dt>
@@ -275,6 +293,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/config/Config.DroneSettings.html" class="type-name-link" title="class in org.uav.config">Config.DroneSettings</a> - Class in <a href="org/uav/config/package-summary.html">org.uav.config</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html" class="type-name-link" title="class in org.uav.config">Config.GraphicsSettings</a> - Class in <a href="org/uav/config/package-summary.html">org.uav.config</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html" class="type-name-link" title="class in org.uav.config">Config.MiscSettings</a> - Class in <a href="org/uav/config/package-summary.html">org.uav.config</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.Ports.html" class="type-name-link" title="class in org.uav.config">Config.Ports</a> - Class in <a href="org/uav/config/package-summary.html">org.uav.config</a></dt>
 <dd>&nbsp;</dd>
@@ -302,12 +322,22 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/radar/RadarPoint.html#coordinates" class="member-name-link">coordinates</a> - Variable in class org.uav.scene.gui.widget.radar.<a href="org/uav/scene/gui/widget/radar/RadarPoint.html" title="class in org.uav.scene.gui.widget.radar">RadarPoint</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.SpotlightFactory.html#createDroneSpotlight()" class="member-name-link">createDroneSpotlight()</a> - Static method in class org.uav.scene.<a href="org/uav/scene/SpotLight.SpotlightFactory.html" title="class in org.uav.scene">SpotLight.SpotlightFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Projectile.html#currentAmount" class="member-name-link">currentAmount</a> - Variable in class org.uav.model.<a href="org/uav/model/Projectile.html" title="class in org.uav.model">Projectile</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:D">D</h2>
 <dl class="index">
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.html#DEADZONE_CHANGE_DELTA" class="member-name-link">DEADZONE_CHANGE_DELTA</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.html" title="class in org.uav.bindingsGeneration">BindingsLoop</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugLayer.html" class="type-name-link" title="class in org.uav.scene.gui.widget.debug">DebugLayer</a> - Class in <a href="org/uav/scene/gui/widget/debug/package-summary.html">org.uav.scene.gui.widget.debug</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugLayer.html#%3Cinit%3E()" class="member-name-link">DebugLayer()</a> - Constructor for class org.uav.scene.gui.widget.debug.<a href="org/uav/scene/gui/widget/debug/DebugLayer.html" title="class in org.uav.scene.gui.widget.debug">DebugLayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugWidget.html" class="type-name-link" title="class in org.uav.scene.gui.widget.debug">DebugWidget</a> - Class in <a href="org/uav/scene/gui/widget/debug/package-summary.html">org.uav.scene.gui.widget.debug</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugWidget.html#%3Cinit%3E(java.awt.image.BufferedImage,org.uav.model.SimulationState,org.uav.config.Config)" class="member-name-link">DebugWidget(BufferedImage, SimulationState, Config)</a> - Constructor for class org.uav.scene.gui.widget.debug.<a href="org/uav/scene/gui/widget/debug/DebugWidget.html" title="class in org.uav.scene.gui.widget.debug">DebugWidget</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.html#DEFAULT_AXIS_DEADZONE" class="member-name-link">DEFAULT_AXIS_DEADZONE</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.html" title="class in org.uav.bindingsGeneration">BindingsLoop</a></dt>
 <dd>&nbsp;</dd>
@@ -319,6 +349,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.ProjectileDeserializer.html#deserialize(com.fasterxml.jackson.core.JsonParser,com.fasterxml.jackson.databind.DeserializationContext)" class="member-name-link">deserialize(JsonParser, DeserializationContext)</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.ProjectileDeserializer.html" title="class in org.uav.config">DroneParameters.ProjectileDeserializer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DirectionalLight.html" class="type-name-link" title="class in org.uav.scene">DirectionalLight</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DirectionalLight.html#%3Cinit%3E(org.joml.Vector3f,org.joml.Vector3f,org.joml.Vector3f,org.joml.Vector3f)" class="member-name-link">DirectionalLight(Vector3f, Vector3f, Vector3f, Vector3f)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/DirectionalLight.html" title="class in org.uav.scene">DirectionalLight</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayLayer.html" class="type-name-link" title="class in org.uav.scene.gui.widget.display">DisplayLayer</a> - Class in <a href="org/uav/scene/gui/widget/display/package-summary.html">org.uav.scene.gui.widget.display</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayLayer.html#%3Cinit%3E(java.util.List)" class="member-name-link">DisplayLayer(List&lt;String&gt;)</a> - Constructor for class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayLayer.html" title="class in org.uav.scene.gui.widget.display">DisplayLayer</a></dt>
@@ -327,7 +361,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayWidget.html#%3Cinit%3E(org.uav.config.Config,java.util.List)" class="member-name-link">DisplayWidget(Config, List&lt;String&gt;)</a> - Constructor for class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayWidget.html" title="class in org.uav.scene.gui.widget.display">DisplayWidget</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/rope/RopeModel.html#draw()" class="member-name-link">draw()</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeModel.html" title="class in org.uav.model.rope">RopeModel</a></dt>
+<dt><a href="org/uav/scene/gui/GuiEntity.html#draw(boolean)" class="member-name-link">draw(boolean)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiEntity.html" title="class in org.uav.scene.gui">GuiEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/DrawableGuiLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in interface org.uav.scene.gui.<a href="org/uav/scene/gui/DrawableGuiLayer.html" title="interface in org.uav.scene.gui">DrawableGuiLayer</a></dt>
 <dd>&nbsp;</dd>
@@ -338,6 +372,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonMetersLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in class org.uav.scene.gui.widget.artificialHorizon.layers.<a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonMetersLayer.html" title="class in org.uav.scene.gui.widget.artificialHorizon.layers">ArtificialHorizonMetersLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonRollLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in class org.uav.scene.gui.widget.artificialHorizon.layers.<a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonRollLayer.html" title="class in org.uav.scene.gui.widget.artificialHorizon.layers">ArtificialHorizonRollLayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in class org.uav.scene.gui.widget.debug.<a href="org/uav/scene/gui/widget/debug/DebugLayer.html" title="class in org.uav.scene.gui.widget.debug">DebugLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayLayer.html" title="class in org.uav.scene.gui.widget.display">DisplayLayer</a></dt>
 <dd>&nbsp;</dd>
@@ -351,13 +387,29 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/radar/layers/RadarPointsLayer.html#draw(java.awt.Graphics2D)" class="member-name-link">draw(Graphics2D)</a> - Method in class org.uav.scene.gui.widget.radar.layers.<a href="org/uav/scene/gui/widget/radar/layers/RadarPointsLayer.html" title="class in org.uav.scene.gui.widget.radar.layers">RadarPointsLayer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/BulletTrail.html#draw(org.lwjgl.system.MemoryStack)" class="member-name-link">draw(MemoryStack)</a> - Method in class org.uav.scene.bullet.<a href="org/uav/scene/bullet/BulletTrail.html" title="class in org.uav.scene.bullet">BulletTrail</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/BulletTrailEntity.html#draw(org.lwjgl.system.MemoryStack,org.joml.Matrix4f,org.joml.Matrix4f,java.util.Collection,org.uav.scene.DroneEntity)" class="member-name-link">draw(MemoryStack, Matrix4f, Matrix4f, Collection&lt;ProjectileStatus&gt;, DroneEntity)</a> - Method in class org.uav.scene.bullet.<a href="org/uav/scene/bullet/BulletTrailEntity.html" title="class in org.uav.scene.bullet">BulletTrailEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeEntity.html#draw(org.lwjgl.system.MemoryStack,org.joml.Vector3f,org.joml.Matrix4f,org.joml.Matrix4f,java.util.List,java.util.Map,java.util.Map)" class="member-name-link">draw(MemoryStack, Vector3f, Matrix4f, Matrix4f, List&lt;Rope&gt;, Map&lt;Integer, DroneStatus&gt;, Map&lt;Integer, ProjectileStatus&gt;)</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeEntity.html" title="class in org.uav.model.rope">RopeEntity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Model.html#draw(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,float)" class="member-name-link">draw(MemoryStack, Shader, float)</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DroneEntity.html#draw(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,float,java.util.Collection)" class="member-name-link">draw(MemoryStack, Shader, float, Collection&lt;DroneStatus&gt;)</a> - Method in class org.uav.scene.<a href="org/uav/scene/DroneEntity.html" title="class in org.uav.scene">DroneEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/ProjectileEntity.html#draw(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,float,java.util.Collection)" class="member-name-link">draw(MemoryStack, Shader, float, Collection&lt;ProjectileStatus&gt;)</a> - Method in class org.uav.scene.<a href="org/uav/scene/ProjectileEntity.html" title="class in org.uav.scene">ProjectileEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DroneEntity.html#draw(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,float,org.uav.model.status.DroneStatus)" class="member-name-link">draw(MemoryStack, Shader, float, DroneStatus)</a> - Method in class org.uav.scene.<a href="org/uav/scene/DroneEntity.html" title="class in org.uav.scene">DroneEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Mesh.html#draw(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,org.joml.Matrix4f)" class="member-name-link">draw(MemoryStack, Shader, Matrix4f)</a> - Method in class org.uav.model.<a href="org/uav/model/Mesh.html" title="class in org.uav.model">Mesh</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/ModelNode.html#draw(org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,org.joml.Matrix4f,float)" class="member-name-link">draw(MemoryStack, Shader, Matrix4f, float)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/Gui.html#draw(org.uav.scene.shader.Shader)" class="member-name-link">draw(Shader)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/Gui.html" title="class in org.uav.scene.gui">Gui</a></dt>
+<dt><a href="org/uav/scene/XMarkEntity.html#draw(org.uav.model.controlMode.ControlModeDemanded,org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,float)" class="member-name-link">draw(ControlModeDemanded, MemoryStack, Shader, float)</a> - Method in class org.uav.scene.<a href="org/uav/scene/XMarkEntity.html" title="class in org.uav.scene">XMarkEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/EnvironmentEntity.html#draw(org.uav.model.SimulationState,org.lwjgl.system.MemoryStack,org.uav.scene.shader.Shader,float)" class="member-name-link">draw(SimulationState, MemoryStack, Shader, float)</a> - Method in class org.uav.scene.<a href="org/uav/scene/EnvironmentEntity.html" title="class in org.uav.scene">EnvironmentEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/OutlineEntity.html#draw(org.uav.scene.DroneEntity,org.lwjgl.system.MemoryStack,float,org.joml.Matrix4f,org.joml.Matrix4f)" class="member-name-link">draw(DroneEntity, MemoryStack, float, Matrix4f, Matrix4f)</a> - Method in class org.uav.scene.<a href="org/uav/scene/OutlineEntity.html" title="class in org.uav.scene">OutlineEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.html#draw(org.uav.scene.shader.Shader)" class="member-name-link">draw(Shader)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.html" title="class in org.uav.scene.gui">GuiElement</a></dt>
 <dd>&nbsp;</dd>
@@ -366,6 +418,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/ArtificialHorizonWidget.html#draw(org.uav.scene.shader.Shader)" class="member-name-link">draw(Shader)</a> - Method in class org.uav.scene.gui.widget.artificialHorizon.<a href="org/uav/scene/gui/widget/artificialHorizon/ArtificialHorizonWidget.html" title="class in org.uav.scene.gui.widget.artificialHorizon">ArtificialHorizonWidget</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/ControlPanelWidget.html#draw(org.uav.scene.shader.Shader)" class="member-name-link">draw(Shader)</a> - Method in class org.uav.scene.gui.widget.<a href="org/uav/scene/gui/widget/ControlPanelWidget.html" title="class in org.uav.scene.gui.widget">ControlPanelWidget</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugWidget.html#draw(org.uav.scene.shader.Shader)" class="member-name-link">draw(Shader)</a> - Method in class org.uav.scene.gui.widget.debug.<a href="org/uav/scene/gui/widget/debug/DebugWidget.html" title="class in org.uav.scene.gui.widget.debug">DebugWidget</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayWidget.html#draw(org.uav.scene.shader.Shader)" class="member-name-link">draw(Shader)</a> - Method in class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayWidget.html" title="class in org.uav.scene.gui.widget.display">DisplayWidget</a></dt>
 <dd>&nbsp;</dd>
@@ -381,13 +435,19 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/DrawableGuiLayer.html" class="type-name-link" title="interface in org.uav.scene.gui">DrawableGuiLayer</a> - Interface in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/utils/OpenGLUtils.html#drawWithDepthFunc(java.lang.Runnable,int)" class="member-name-link">drawWithDepthFunc(Runnable, int)</a> - Static method in class org.uav.utils.<a href="org/uav/utils/OpenGLUtils.html" title="class in org.uav.utils">OpenGLUtils</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Drone.html" class="type-name-link" title="class in org.uav.model">Drone</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Drone.html#%3Cinit%3E(org.zeromq.ZContext,int,int,int,org.uav.model.SimulationState,org.uav.config.Config,org.uav.config.AvailableControlModes)" class="member-name-link">Drone(ZContext, int, int, int, SimulationState, Config, AvailableControlModes)</a> - Constructor for class org.uav.model.<a href="org/uav/model/Drone.html" title="class in org.uav.model">Drone</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/CameraMode.html#DroneCamera" class="member-name-link">DroneCamera</a> - Enum constant in enum class org.uav.input.<a href="org/uav/input/CameraMode.html" title="enum class in org.uav.input">CameraMode</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/Notifications.html#droneModels" class="member-name-link">droneModels</a> - Variable in class org.uav.model.<a href="org/uav/model/Notifications.html" title="class in org.uav.model">Notifications</a></dt>
+<dt><a href="org/uav/scene/DroneEntity.html" class="type-name-link" title="class in org.uav.scene">DroneEntity</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DroneEntity.html#%3Cinit%3E(org.uav.model.SimulationState,java.util.Map)" class="member-name-link">DroneEntity(SimulationState, Map&lt;String, Model&gt;)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/DroneEntity.html" title="class in org.uav.scene">DroneEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/Notifications.html#droneModelsNames" class="member-name-link">droneModelsNames</a> - Variable in class org.uav.model.<a href="org/uav/model/Notifications.html" title="class in org.uav.model">Notifications</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/DroneMovement.html" class="type-name-link" title="enum class in org.uav.model">DroneMovement</a> - Enum Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
 <dd>&nbsp;</dd>
@@ -438,6 +498,10 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="org/uav/bindingsGeneration/BindingText.html#EMPTY_LINE" class="member-name-link">EMPTY_LINE</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingText.html" title="class in org.uav.bindingsGeneration">BindingText</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/EnvironmentEntity.html" class="type-name-link" title="class in org.uav.scene">EnvironmentEntity</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/EnvironmentEntity.html#%3Cinit%3E(org.uav.model.Model)" class="member-name-link">EnvironmentEntity(Model)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/EnvironmentEntity.html" title="class in org.uav.scene">EnvironmentEntity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/AvailableControlModes.ControlModeReplyList.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.config.<a href="org/uav/config/AvailableControlModes.ControlModeReplyList.html" title="class in org.uav.config">AvailableControlModes.ControlModeReplyList</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/AvailableControlModes.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.config.<a href="org/uav/config/AvailableControlModes.html" title="class in org.uav.config">AvailableControlModes</a></dt>
@@ -458,6 +522,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.config.<a href="org/uav/config/Config.MiscSettings.html" title="class in org.uav.config">Config.MiscSettings</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.Ports.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.config.<a href="org/uav/config/Config.Ports.html" title="class in org.uav.config">Config.Ports</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.SceneSettings.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.config.<a href="org/uav/config/Config.SceneSettings.html" title="class in org.uav.config">Config.SceneSettings</a></dt>
@@ -469,6 +535,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/model/SimulationState.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/ActionReplyMessage.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class org.uav.queue.<a href="org/uav/queue/ActionReplyMessage.html" title="class in org.uav.queue">ActionReplyMessage</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html#ERROR" class="member-name-link">ERROR</a> - Enum constant in enum class org.uav.audio.<a href="org/uav/audio/MusicPlayerEvent.html" title="enum class in org.uav.audio">MusicPlayerEvent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/ButtonBinding.html#execute(byte)" class="member-name-link">execute(byte)</a> - Method in class org.uav.input.<a href="org/uav/input/ButtonBinding.html" title="class in org.uav.input">ButtonBinding</a></dt>
 <dd>&nbsp;</dd>
@@ -489,6 +557,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.BindingsGenerationState.html#Finish" class="member-name-link">Finish</a> - Enum constant in enum class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.BindingsGenerationState.html" title="enum class in org.uav.bindingsGeneration">BindingsLoop.BindingsGenerationState</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/Fog.html" class="type-name-link" title="class in org.uav.scene">Fog</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/Fog.html#%3Cinit%3E(org.joml.Vector3f,float)" class="member-name-link">Fog(Vector3f, float)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/Fog.html" title="class in org.uav.scene">Fog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/FpsCounter.html" class="type-name-link" title="class in org.uav">FpsCounter</a> - Class in <a href="org/uav/package-summary.html">org.uav</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/FpsCounter.html#%3Cinit%3E()" class="member-name-link">FpsCounter()</a> - Constructor for class org.uav.<a href="org/uav/FpsCounter.html" title="class in org.uav">FpsCounter</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/input/CameraMode.html#FreeCamera" class="member-name-link">FreeCamera</a> - Enum constant in enum class org.uav.input.<a href="org/uav/input/CameraMode.html" title="enum class in org.uav.input">CameraMode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/FullScreenMode.html#FullScreen" class="member-name-link">FullScreen</a> - Enum constant in enum class org.uav.config.<a href="org/uav/config/FullScreenMode.html" title="enum class in org.uav.config">FullScreenMode</a></dt>
@@ -498,6 +574,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:G">G</h2>
 <dl class="index">
+<dt><a href="org/uav/scene/OutlineEntity.html#generateDroneMask(org.uav.scene.DroneEntity,org.lwjgl.system.MemoryStack,float,org.joml.Matrix4f,org.joml.Matrix4f)" class="member-name-link">generateDroneMask(DroneEntity, MemoryStack, float, Matrix4f, Matrix4f)</a> - Method in class org.uav.scene.<a href="org/uav/scene/OutlineEntity.html" title="class in org.uav.scene">OutlineEntity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.html#getActions()" class="member-name-link">getActions()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.html" title="class in org.uav.config">BindingConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.html#getAmmo()" class="member-name-link">getAmmo()</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.html" title="class in org.uav.config">DroneParameters</a></dt>
@@ -554,6 +632,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.Rotors.Rotor.html#getDirection()" class="member-name-link">getDirection()</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.Rotors.Rotor.html" title="class in org.uav.config">DroneParameters.Rotors.Rotor</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.ServerSettings.html#getDownloadMissingAssets()" class="member-name-link">getDownloadMissingAssets()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.ServerSettings.html" title="class in org.uav.config">Config.ServerSettings</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.SceneSettings.html#getDrawInWorldDemandedPositionalCoords()" class="member-name-link">getDrawInWorldDemandedPositionalCoords()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.SceneSettings.html" title="class in org.uav.config">Config.SceneSettings</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getDroneCamera()" class="member-name-link">getDroneCamera()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.DroneSettings.html#getDroneConfig()" class="member-name-link">getDroneConfig()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.DroneSettings.html" title="class in org.uav.config">Config.DroneSettings</a></dt>
@@ -574,15 +656,25 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getDrop()" class="member-name-link">getDrop()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html#getEnableMusic()" class="member-name-link">getEnableMusic()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.MiscSettings.html" title="class in org.uav.config">Config.MiscSettings</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.SceneSettings.html#getFogDensity()" class="member-name-link">getFogDensity()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.SceneSettings.html" title="class in org.uav.config">Config.SceneSettings</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#getFov()" class="member-name-link">getFov()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/camera/Camera.html#getFov()" class="member-name-link">getFov()</a> - Method in class org.uav.scene.camera.<a href="org/uav/scene/camera/Camera.html" title="class in org.uav.scene.camera">Camera</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/SimulationState.html#getFpsCounter()" class="member-name-link">getFpsCounter()</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/FpsCounter.html#getFramesPerSecond()" class="member-name-link">getFramesPerSecond()</a> - Method in class org.uav.<a href="org/uav/FpsCounter.html" title="class in org.uav">FpsCounter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getFreeCamera()" class="member-name-link">getFreeCamera()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#getFullScreenMode()" class="member-name-link">getFullScreenMode()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#getGammaCorrection()" class="member-name-link">getGammaCorrection()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.BindingsConfig.html#getGenerateOnStartUp()" class="member-name-link">getGenerateOnStartUp()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.BindingsConfig.html" title="class in org.uav.config">Config.BindingsConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.html#getGraphicsSettings()" class="member-name-link">getGraphicsSettings()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.html" title="class in org.uav.config">Config</a></dt>
 <dd>&nbsp;</dd>
@@ -626,7 +718,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.Rotors.Rotor.html#getMaxSpeed()" class="member-name-link">getMaxSpeed()</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.Rotors.Rotor.html" title="class in org.uav.config">DroneParameters.Rotors.Rotor</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/FpsCounter.html#getMillisecondsPerFrame()" class="member-name-link">getMillisecondsPerFrame()</a> - Method in class org.uav.<a href="org/uav/FpsCounter.html" title="class in org.uav">FpsCounter</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.SteeringAxis.html#getMin()" class="member-name-link">getMin()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.SteeringAxis.html" title="class in org.uav.config">BindingConfig.SteeringAxis</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.html#getMiscSettings()" class="member-name-link">getMiscSettings()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.html" title="class in org.uav.config">Config</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Model.html#getModelTransformation()" class="member-name-link">getModelTransformation()</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
 <dd>&nbsp;</dd>
@@ -638,6 +734,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#getMonitor()" class="member-name-link">getMonitor()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html#getMusicDirectory()" class="member-name-link">getMusicDirectory()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.MiscSettings.html" title="class in org.uav.config">Config.MiscSettings</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html#getMusicOnStartup()" class="member-name-link">getMusicOnStartup()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.MiscSettings.html" title="class in org.uav.config">Config.MiscSettings</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.Projectile.html#getName()" class="member-name-link">getName()</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.Projectile.html" title="class in org.uav.config">DroneParameters.Projectile</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getNextAmmo()" class="member-name-link">getNextAmmo()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
@@ -645,6 +745,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getNextCamera()" class="member-name-link">getNextCamera()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getNextCargo()" class="member-name-link">getNextCargo()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/BindingConfig.Actions.html#getNextSong()" class="member-name-link">getNextSong()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.Ports.html#getNotifications()" class="member-name-link">getNotifications()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.Ports.html" title="class in org.uav.config">Config.Ports</a></dt>
 <dd>&nbsp;</dd>
@@ -657,6 +759,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/model/ShaderVertex.html#getNumberOfFloats()" class="member-name-link">getNumberOfFloats()</a> - Method in class org.uav.model.<a href="org/uav/model/ShaderVertex.html" title="class in org.uav.model">ShaderVertex</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getObserverCamera()" class="member-name-link">getObserverCamera()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/DroneEntity.html#getPlayerDrone()" class="member-name-link">getPlayerDrone()</a> - Method in class org.uav.scene.<a href="org/uav/scene/DroneEntity.html" title="class in org.uav.scene">DroneEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.html#getPorts()" class="member-name-link">getPorts()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.html" title="class in org.uav.config">Config</a></dt>
 <dd>&nbsp;</dd>
@@ -718,6 +822,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Actions.html#getShoot()" class="member-name-link">getShoot()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.GraphicsSettings.html#getShowDebugInfo()" class="member-name-link">getShowDebugInfo()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#getSimulationTimeS()" class="member-name-link">getSimulationTimeS()</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#getSkyColor()" class="member-name-link">getSkyColor()</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
@@ -732,6 +838,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.SceneSettings.html#getSunAngleYearCycle()" class="member-name-link">getSunAngleYearCycle()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.SceneSettings.html" title="class in org.uav.config">Config.SceneSettings</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/utils/OpenGLUtils.html#getSunDirectionVector(org.joml.Vector3f,float,float)" class="member-name-link">getSunDirectionVector(Vector3f, float, float)</a> - Static method in class org.uav.utils.<a href="org/uav/utils/OpenGLUtils.html" title="class in org.uav.utils">OpenGLUtils</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/BindingConfig.Actions.html#getToggleRadio()" class="member-name-link">getToggleRadio()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/BindingConfig.Actions.html#getToggleSpotLight()" class="member-name-link">getToggleSpotLight()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Actions.html" title="class in org.uav.config">BindingConfig.Actions</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/animation/Animation.html#getTranslationFrame(float)" class="member-name-link">getTranslationFrame(float)</a> - Method in class org.uav.animation.<a href="org/uav/animation/Animation.html" title="class in org.uav.animation">Animation</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/animation/AnimationPlayer.html#getTranslationOrDefault(org.joml.Vector3f,float)" class="member-name-link">getTranslationOrDefault(Vector3f, float)</a> - Method in class org.uav.animation.<a href="org/uav/animation/AnimationPlayer.html" title="class in org.uav.animation">AnimationPlayer</a></dt>
@@ -741,6 +853,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/model/Texture.html#getType()" class="member-name-link">getType()</a> - Method in class org.uav.model.<a href="org/uav/model/Texture.html" title="class in org.uav.model">Texture</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.Binding.html#getUpperBound()" class="member-name-link">getUpperBound()</a> - Method in class org.uav.config.<a href="org/uav/config/BindingConfig.Binding.html" title="class in org.uav.config">BindingConfig.Binding</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.GraphicsSettings.html#getUseGammaCorrection()" class="member-name-link">getUseGammaCorrection()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.GraphicsSettings.html#getUseShadows()" class="member-name-link">getUseShadows()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/camera/Camera.html#getViewMatrix()" class="member-name-link">getViewMatrix()</a> - Method in class org.uav.scene.camera.<a href="org/uav/scene/camera/Camera.html" title="class in org.uav.scene.camera">Camera</a></dt>
 <dd>&nbsp;</dd>
@@ -754,10 +870,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/importer/GltfImporter.html#%3Cinit%3E(org.uav.scene.LoadingScreen,org.uav.config.Config)" class="member-name-link">GltfImporter(LoadingScreen, Config)</a> - Constructor for class org.uav.importer.<a href="org/uav/importer/GltfImporter.html" title="class in org.uav.importer">GltfImporter</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/Gui.html" class="type-name-link" title="class in org.uav.scene.gui">Gui</a> - Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/Gui.html#%3Cinit%3E(org.uav.model.SimulationState,org.uav.config.Config,org.uav.config.DroneParameters)" class="member-name-link">Gui(SimulationState, Config, DroneParameters)</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/Gui.html" title="class in org.uav.scene.gui">Gui</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiAnchorPoint.html" class="type-name-link" title="enum class in org.uav.scene.gui">GuiAnchorPoint</a> - Enum Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.html" class="type-name-link" title="class in org.uav.scene.gui">GuiElement</a> - Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
@@ -765,6 +877,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" class="type-name-link" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a> - Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#%3Cinit%3E()" class="member-name-link">GuiElementBuilder()</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/GuiEntity.html" class="type-name-link" title="class in org.uav.scene.gui">GuiEntity</a> - Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/GuiEntity.html#%3Cinit%3E(org.uav.model.SimulationState,org.uav.config.Config,org.uav.config.DroneParameters)" class="member-name-link">GuiEntity(SimulationState, Config, DroneParameters)</a> - Constructor for class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiEntity.html" title="class in org.uav.scene.gui">GuiEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiLayer.html" class="type-name-link" title="class in org.uav.scene.gui">GuiLayer</a> - Class in <a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a></dt>
 <dd>&nbsp;</dd>
@@ -800,6 +916,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.html" title="class in org.uav.config">Config</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.MiscSettings.html" title="class in org.uav.config">Config.MiscSettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.Ports.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.Ports.html" title="class in org.uav.config">Config.Ports</a></dt>
 <dd>&nbsp;</dd>
@@ -838,7 +956,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/InputHandler.html" class="type-name-link" title="class in org.uav.input">InputHandler</a> - Class in <a href="org/uav/input/package-summary.html">org.uav.input</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/input/InputHandler.html#%3Cinit%3E(org.uav.processor.SimulationStateProcessor,org.uav.model.SimulationState,org.uav.config.Config,org.uav.config.BindingConfig)" class="member-name-link">InputHandler(SimulationStateProcessor, SimulationState, Config, BindingConfig)</a> - Constructor for class org.uav.input.<a href="org/uav/input/InputHandler.html" title="class in org.uav.input">InputHandler</a></dt>
+<dt><a href="org/uav/input/InputHandler.html#%3Cinit%3E(org.uav.processor.SimulationStateProcessor,org.uav.model.SimulationState,org.uav.config.Config,org.uav.config.BindingConfig,org.uav.audio.MusicPlayer)" class="member-name-link">InputHandler(SimulationStateProcessor, SimulationState, Config, BindingConfig, MusicPlayer)</a> - Constructor for class org.uav.input.<a href="org/uav/input/InputHandler.html" title="class in org.uav.input">InputHandler</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/ModelVertex.html#insertIntoFloatBuffer(java.nio.FloatBuffer)" class="member-name-link">insertIntoFloatBuffer(FloatBuffer)</a> - Method in class org.uav.model.<a href="org/uav/model/ModelVertex.html" title="class in org.uav.model">ModelVertex</a></dt>
 <dd>&nbsp;</dd>
@@ -850,21 +968,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/ButtonBinding.html#inverse" class="member-name-link">inverse</a> - Variable in class org.uav.input.<a href="org/uav/input/ButtonBinding.html" title="class in org.uav.input">ButtonBinding</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/config/Config.ServerSettings.html#isDownloadMissingAssets()" class="member-name-link">isDownloadMissingAssets()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.ServerSettings.html" title="class in org.uav.config">Config.ServerSettings</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/config/Config.SceneSettings.html#isDrawInWorldDemandedPositionalCoords()" class="member-name-link">isDrawInWorldDemandedPositionalCoords()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.SceneSettings.html" title="class in org.uav.config">Config.SceneSettings</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/config/Config.BindingsConfig.html#isGenerateOnStartUp()" class="member-name-link">isGenerateOnStartUp()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.BindingsConfig.html" title="class in org.uav.config">Config.BindingsConfig</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#isMapOverlay()" class="member-name-link">isMapOverlay()</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/SimulationState.html#isSpotLightOn()" class="member-name-link">isSpotLightOn()</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Mesh.html#isTransparent()" class="member-name-link">isTransparent()</a> - Method in class org.uav.model.<a href="org/uav/model/Mesh.html" title="class in org.uav.model">Mesh</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Texture.html#isTransparent()" class="member-name-link">isTransparent()</a> - Method in class org.uav.model.<a href="org/uav/model/Texture.html" title="class in org.uav.model">Texture</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/config/Config.GraphicsSettings.html#isUseGammaCorrection()" class="member-name-link">isUseGammaCorrection()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/config/Config.GraphicsSettings.html#isUseShadows()" class="member-name-link">isUseShadows()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:J">J</h2>
@@ -903,13 +1013,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/FileMapper.html#load(java.lang.Class,java.nio.file.Path,com.fasterxml.jackson.databind.ObjectMapper)" class="member-name-link">load(Class&lt;T&gt;, Path, ObjectMapper)</a> - Static method in class org.uav.utils.<a href="org/uav/utils/FileMapper.html" title="class in org.uav.utils">FileMapper</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/Gui.html#loadImage(java.lang.String)" class="member-name-link">loadImage(String)</a> - Static method in class org.uav.scene.gui.<a href="org/uav/scene/gui/Gui.html" title="class in org.uav.scene.gui">Gui</a></dt>
+<dt><a href="org/uav/scene/gui/GuiEntity.html#loadImage(java.lang.String)" class="member-name-link">loadImage(String)</a> - Static method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiEntity.html" title="class in org.uav.scene.gui">GuiEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/LoadingScreen.html" class="type-name-link" title="class in org.uav.scene">LoadingScreen</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/LoadingScreen.html#%3Cinit%3E(long,org.uav.config.Config)" class="member-name-link">LoadingScreen(long, Config)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/LoadingScreen.html" title="class in org.uav.scene">LoadingScreen</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/importer/ModelImporter.html#loadModel(java.lang.String)" class="member-name-link">loadModel(String)</a> - Method in class org.uav.importer.<a href="org/uav/importer/ModelImporter.html" title="class in org.uav.importer">ModelImporter</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/importer/GltfImporter.html#loadModel(java.lang.String,java.lang.String)" class="member-name-link">loadModel(String, String)</a> - Method in class org.uav.importer.<a href="org/uav/importer/GltfImporter.html" title="class in org.uav.importer">GltfImporter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/importer/ModelImporter.html#loadModelMap(java.lang.String)" class="member-name-link">loadModelMap(String)</a> - Method in class org.uav.importer.<a href="org/uav/importer/ModelImporter.html" title="class in org.uav.importer">ModelImporter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/importer/VerticesLoader.html#loadToFloatBuffer(java.util.List)" class="member-name-link">loadToFloatBuffer(List&lt;? extends TVertex&gt;)</a> - Static method in class org.uav.importer.<a href="org/uav/importer/VerticesLoader.html" title="class in org.uav.importer">VerticesLoader</a></dt>
 <dd>&nbsp;</dd>
@@ -950,6 +1064,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Model.html#%3Cinit%3E(org.uav.model.ModelNode)" class="member-name-link">Model(ModelNode)</a> - Constructor for class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/importer/ModelImporter.html" class="type-name-link" title="class in org.uav.importer">ModelImporter</a> - Class in <a href="org/uav/importer/package-summary.html">org.uav.importer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/importer/ModelImporter.html#%3Cinit%3E(org.uav.importer.GltfImporter,java.lang.String)" class="member-name-link">ModelImporter(GltfImporter, String)</a> - Constructor for class org.uav.importer.<a href="org/uav/importer/ModelImporter.html" title="class in org.uav.importer">ModelImporter</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/ModelNode.html" class="type-name-link" title="class in org.uav.model">ModelNode</a> - Class in <a href="org/uav/model/package-summary.html">org.uav.model</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/ModelNode.html#%3Cinit%3E(java.lang.String,java.util.List,java.util.List,org.joml.Vector3f,org.joml.Quaternionf,org.joml.Vector3f,org.uav.animation.AnimationPlayer)" class="member-name-link">ModelNode(String, List&lt;Mesh&gt;, List&lt;ModelNode&gt;, Vector3f, Quaternionf, Vector3f, AnimationPlayer)</a> - Constructor for class org.uav.model.<a href="org/uav/model/ModelNode.html" title="class in org.uav.model">ModelNode</a></dt>
@@ -960,7 +1078,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/audio/MusicPlayer.html" class="type-name-link" title="class in org.uav.audio">MusicPlayer</a> - Class in <a href="org/uav/audio/package-summary.html">org.uav.audio</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/audio/MusicPlayer.html#%3Cinit%3E(java.lang.String)" class="member-name-link">MusicPlayer(String)</a> - Constructor for class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
+<dt><a href="org/uav/audio/MusicPlayer.html#%3Cinit%3E()" class="member-name-link">MusicPlayer()</a> - Constructor for class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html" class="type-name-link" title="enum class in org.uav.audio">MusicPlayerEvent</a> - Enum Class in <a href="org/uav/audio/package-summary.html">org.uav.audio</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:N">N</h2>
@@ -971,7 +1091,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/CameraMode.html#next()" class="member-name-link">next()</a> - Method in enum class org.uav.input.<a href="org/uav/input/CameraMode.html" title="enum class in org.uav.input">CameraMode</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html#NEXT" class="member-name-link">NEXT</a> - Enum constant in enum class org.uav.audio.<a href="org/uav/audio/MusicPlayerEvent.html" title="enum class in org.uav.audio">MusicPlayerEvent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingText.html#NEXT" class="member-name-link">NEXT</a> - Static variable in class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingText.html" title="class in org.uav.bindingsGeneration">BindingText</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/FpsCounter.html#nextFrame()" class="member-name-link">nextFrame()</a> - Method in class org.uav.<a href="org/uav/FpsCounter.html" title="class in org.uav">FpsCounter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayer.html#nextSong()" class="member-name-link">nextSong()</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.BindingsGenerationState.html#NoJoystick" class="member-name-link">NoJoystick</a> - Enum constant in enum class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.BindingsGenerationState.html" title="enum class in org.uav.bindingsGeneration">BindingsLoop.BindingsGenerationState</a></dt>
 <dd>&nbsp;</dd>
@@ -1002,7 +1128,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/OpenGlScene.html#%3Cinit%3E(org.uav.model.SimulationState,org.uav.config.Config,org.uav.scene.LoadingScreen,org.uav.config.DroneParameters)" class="member-name-link">OpenGlScene(SimulationState, Config, LoadingScreen, DroneParameters)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/OpenGlScene.html" title="class in org.uav.scene">OpenGlScene</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/Gui.html#openMap(boolean)" class="member-name-link">openMap(boolean)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/Gui.html" title="class in org.uav.scene.gui">Gui</a></dt>
+<dt><a href="org/uav/utils/OpenGLUtils.html" class="type-name-link" title="class in org.uav.utils">OpenGLUtils</a> - Class in <a href="org/uav/utils/package-summary.html">org.uav.utils</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/utils/OpenGLUtils.html#%3Cinit%3E()" class="member-name-link">OpenGLUtils()</a> - Constructor for class org.uav.utils.<a href="org/uav/utils/OpenGLUtils.html" title="class in org.uav.utils">OpenGLUtils</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/GuiEntity.html#openMap(boolean)" class="member-name-link">openMap(boolean)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiEntity.html" title="class in org.uav.scene.gui">GuiEntity</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/OrderedRenderQueue.html" class="type-name-link" title="class in org.uav.scene">OrderedRenderQueue</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/OrderedRenderQueue.html#%3Cinit%3E(org.joml.Vector3f)" class="member-name-link">OrderedRenderQueue(Vector3f)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/OrderedRenderQueue.html" title="class in org.uav.scene">OrderedRenderQueue</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/package-summary.html">org.uav</a> - package org.uav</dt>
 <dd>&nbsp;</dd>
@@ -1036,6 +1170,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/package-summary.html">org.uav.scene</a> - package org.uav.scene</dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/bullet/package-summary.html">org.uav.scene.bullet</a> - package org.uav.scene.bullet</dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/camera/package-summary.html">org.uav.scene.camera</a> - package org.uav.scene.camera</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/package-summary.html">org.uav.scene.gui</a> - package org.uav.scene.gui</dt>
@@ -1045,6 +1181,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/package-summary.html">org.uav.scene.gui.widget.artificialHorizon</a> - package org.uav.scene.gui.widget.artificialHorizon</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/layers/package-summary.html">org.uav.scene.gui.widget.artificialHorizon.layers</a> - package org.uav.scene.gui.widget.artificialHorizon.layers</dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/package-summary.html">org.uav.scene.gui.widget.debug</a> - package org.uav.scene.gui.widget.debug</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/package-summary.html">org.uav.scene.gui.widget.display</a> - package org.uav.scene.gui.widget.display</dt>
 <dd>&nbsp;</dd>
@@ -1063,6 +1201,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/serializer/package-summary.html">org.uav.serializer</a> - package org.uav.serializer</dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/utils/package-summary.html">org.uav.utils</a> - package org.uav.utils</dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/OutlineEntity.html" class="type-name-link" title="class in org.uav.scene">OutlineEntity</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/OutlineEntity.html#%3Cinit%3E(int,int)" class="member-name-link">OutlineEntity(int, int)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/OutlineEntity.html" title="class in org.uav.scene">OutlineEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/rope/Rope.html#ownerId" class="member-name-link">ownerId</a> - Variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
 <dd>&nbsp;</dd>
@@ -1091,7 +1233,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/controlMode/ControlModeReply.html#PITCH" class="member-name-link">PITCH</a> - Enum constant in enum class org.uav.model.controlMode.<a href="org/uav/model/controlMode/ControlModeReply.html" title="enum class in org.uav.model.controlMode">ControlModeReply</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/audio/MusicPlayer.html#play()" class="member-name-link">play()</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html#PLAY" class="member-name-link">PLAY</a> - Enum constant in enum class org.uav.audio.<a href="org/uav/audio/MusicPlayerEvent.html" title="enum class in org.uav.audio">MusicPlayerEvent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayer.html#playOrStop()" class="member-name-link">playOrStop()</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/status/DroneStatus.html#position" class="member-name-link">position</a> - Variable in class org.uav.model.status.<a href="org/uav/model/status/DroneStatus.html" title="class in org.uav.model.status">DroneStatus</a></dt>
 <dd>&nbsp;</dd>
@@ -1107,9 +1251,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.ProjectileDeserializer.html#%3Cinit%3E()" class="member-name-link">ProjectileDeserializer()</a> - Constructor for class org.uav.config.<a href="org/uav/config/DroneParameters.ProjectileDeserializer.html" title="class in org.uav.config">DroneParameters.ProjectileDeserializer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/ProjectileEntity.html" class="type-name-link" title="class in org.uav.scene">ProjectileEntity</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/ProjectileEntity.html#%3Cinit%3E(org.uav.model.SimulationState,java.util.Map)" class="member-name-link">ProjectileEntity(SimulationState, Map&lt;String, Model&gt;)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/ProjectileEntity.html" title="class in org.uav.scene">ProjectileEntity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/projectiles/ProjectileLayer.html" class="type-name-link" title="class in org.uav.scene.gui.widget.projectiles">ProjectileLayer</a> - Class in <a href="org/uav/scene/gui/widget/projectiles/package-summary.html">org.uav.scene.gui.widget.projectiles</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/projectiles/ProjectileLayer.html#%3Cinit%3E()" class="member-name-link">ProjectileLayer()</a> - Constructor for class org.uav.scene.gui.widget.projectiles.<a href="org/uav/scene/gui/widget/projectiles/ProjectileLayer.html" title="class in org.uav.scene.gui.widget.projectiles">ProjectileLayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/Notifications.html#projectileModelsNames" class="member-name-link">projectileModelsNames</a> - Variable in class org.uav.model.<a href="org/uav/model/Notifications.html" title="class in org.uav.model">Notifications</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/status/ProjectileStatus.html" class="type-name-link" title="class in org.uav.model.status">ProjectileStatus</a> - Class in <a href="org/uav/model/status/package-summary.html">org.uav.model.status</a></dt>
 <dd>&nbsp;</dd>
@@ -1189,11 +1339,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/BindingsScreen.html#render(java.util.List)" class="member-name-link">render(List&lt;String&gt;)</a> - Method in class org.uav.scene.<a href="org/uav/scene/BindingsScreen.html" title="class in org.uav.scene">BindingsScreen</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/RenderQueue.html#render(org.lwjgl.system.MemoryStack)" class="member-name-link">render(MemoryStack)</a> - Method in class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/RenderQueue.html" class="type-name-link" title="class in org.uav.scene">RenderQueue</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/RenderQueue.html#%3Cinit%3E(org.joml.Vector3f)" class="member-name-link">RenderQueue(Vector3f)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/RenderQueue.html" title="class in org.uav.scene">RenderQueue</a></dt>
+<dt><a href="org/uav/scene/OrderedRenderQueue.html#render(org.lwjgl.system.MemoryStack)" class="member-name-link">render(MemoryStack)</a> - Method in class org.uav.scene.<a href="org/uav/scene/OrderedRenderQueue.html" title="class in org.uav.scene">OrderedRenderQueue</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/processor/SimulationStateProcessor.html#requestNewDrone()" class="member-name-link">requestNewDrone()</a> - Method in class org.uav.processor.<a href="org/uav/processor/SimulationStateProcessor.html" title="class in org.uav.processor">SimulationStateProcessor</a></dt>
 <dd>&nbsp;</dd>
@@ -1217,11 +1363,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/rope/Rope.html#ROPE_COLOR_2" class="member-name-link">ROPE_COLOR_2</a> - Static variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeEntity.html" class="type-name-link" title="class in org.uav.model.rope">RopeEntity</a> - Class in <a href="org/uav/model/rope/package-summary.html">org.uav.model.rope</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/rope/RopeEntity.html#%3Cinit%3E(int,float,org.joml.Vector3f,org.joml.Vector3f,org.uav.scene.DirectionalLight,org.joml.Vector3f)" class="member-name-link">RopeEntity(int, float, Vector3f, Vector3f, DirectionalLight, Vector3f)</a> - Constructor for class org.uav.model.rope.<a href="org/uav/model/rope/RopeEntity.html" title="class in org.uav.model.rope">RopeEntity</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/rope/Rope.html#ropeLength" class="member-name-link">ropeLength</a> - Variable in class org.uav.model.rope.<a href="org/uav/model/rope/Rope.html" title="class in org.uav.model.rope">Rope</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/model/rope/RopeModel.html" class="type-name-link" title="class in org.uav.model.rope">RopeModel</a> - Class in <a href="org/uav/model/rope/package-summary.html">org.uav.model.rope</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="org/uav/model/rope/RopeModel.html#%3Cinit%3E(int,float,org.uav.scene.shader.Shader,org.joml.Vector3f,org.joml.Vector3f)" class="member-name-link">RopeModel(int, float, Shader, Vector3f, Vector3f)</a> - Constructor for class org.uav.model.rope.<a href="org/uav/model/rope/RopeModel.html" title="class in org.uav.model.rope">RopeModel</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Notifications.html#ropes" class="member-name-link">ropes</a> - Variable in class org.uav.model.<a href="org/uav/model/Notifications.html" title="class in org.uav.model">Notifications</a></dt>
 <dd>&nbsp;</dd>
@@ -1298,9 +1444,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#setCurrentlyControlledDrone(org.uav.model.Drone)" class="member-name-link">setCurrentlyControlledDrone(Drone)</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.html#setDirection(org.joml.Vector3f)" class="member-name-link">setDirection(Vector3f)</a> - Method in class org.uav.scene.<a href="org/uav/scene/SpotLight.html" title="class in org.uav.scene">SpotLight</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayer.html#setDirectory(java.lang.String)" class="member-name-link">setDirectory(String)</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#setDroneModelChecksum(java.lang.String)" class="member-name-link">setDroneModelChecksum(String)</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/shader/Shader.html#setFloat(java.lang.String,float)" class="member-name-link">setFloat(String, float)</a> - Method in class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/SimulationState.html#setFpsCounter(org.uav.FpsCounter)" class="member-name-link">setFpsCounter(FpsCounter)</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#setHidden(boolean)" class="member-name-link">setHidden(boolean)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
@@ -1322,13 +1474,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#setOverlayLevel(int)" class="member-name-link">setOverlayLevel(int)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/model/rope/RopeModel.html#setParameters(org.joml.Vector3f,org.joml.Vector3f,float)" class="member-name-link">setParameters(Vector3f, Vector3f, float)</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeModel.html" title="class in org.uav.model.rope">RopeModel</a></dt>
+<dt><a href="org/uav/model/rope/RopeEntity.html#setParameters(org.joml.Vector3f,org.joml.Vector3f,float)" class="member-name-link">setParameters(Vector3f, Vector3f, float)</a> - Method in class org.uav.model.rope.<a href="org/uav/model/rope/RopeEntity.html" title="class in org.uav.model.rope">RopeEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html#setPosition(float,float,float,float)" class="member-name-link">setPosition(float, float, float, float)</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiElement.GuiElementBuilder.html" title="class in org.uav.scene.gui">GuiElement.GuiElementBuilder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.Rotors.Rotor.html#setPosition(java.lang.String)" class="member-name-link">setPosition(String)</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.Rotors.Rotor.html" title="class in org.uav.config">DroneParameters.Rotors.Rotor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Model.html#setPosition(org.joml.Vector3f)" class="member-name-link">setPosition(Vector3f)</a> - Method in class org.uav.model.<a href="org/uav/model/Model.html" title="class in org.uav.model">Model</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.html#setPosition(org.joml.Vector3f)" class="member-name-link">setPosition(Vector3f)</a> - Method in class org.uav.scene.<a href="org/uav/scene/SpotLight.html" title="class in org.uav.scene">SpotLight</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/DroneParameters.Projectile.html#setReload(float)" class="member-name-link">setReload(float)</a> - Method in class org.uav.config.<a href="org/uav/config/DroneParameters.Projectile.html" title="class in org.uav.config">DroneParameters.Projectile</a></dt>
 <dd>&nbsp;</dd>
@@ -1346,11 +1500,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/SimulationState.html#setSkyColor(org.joml.Vector3f)" class="member-name-link">setSkyColor(Vector3f)</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/model/SimulationState.html#setSpotLightOn(boolean)" class="member-name-link">setSpotLightOn(boolean)</a> - Method in class org.uav.model.<a href="org/uav/model/SimulationState.html" title="class in org.uav.model">SimulationState</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.html#setSpotLightOn(boolean)" class="member-name-link">setSpotLightOn(boolean)</a> - Method in class org.uav.scene.<a href="org/uav/scene/SpotLight.html" title="class in org.uav.scene">SpotLight</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/shader/Shader.html#setVec3(java.lang.String,org.joml.Vector3f)" class="member-name-link">setVec3(String, Vector3f)</a> - Method in class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/shader/Shader.html#setVec4(java.lang.String,float,float,float,float)" class="member-name-link">setVec4(String, float, float, float, float)</a> - Method in class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
+<dt><a href="org/uav/scene/shader/Shader.html#setVec3Array(org.lwjgl.system.MemoryStack,java.lang.String,java.util.List)" class="member-name-link">setVec3Array(MemoryStack, String, List&lt;Vector3f&gt;)</a> - Method in class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/audio/MusicPlayer.html#setVolume(float)" class="member-name-link">setVolume(float)</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
+<dt><a href="org/uav/scene/shader/Shader.html#setVec4(java.lang.String,org.joml.Vector4f)" class="member-name-link">setVec4(String, Vector4f)</a> - Method in class org.uav.scene.shader.<a href="org/uav/scene/shader/Shader.html" title="class in org.uav.scene.shader">Shader</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/shader/Shader.html" class="type-name-link" title="class in org.uav.scene.shader">Shader</a> - Class in <a href="org/uav/scene/shader/package-summary.html">org.uav.scene.shader</a></dt>
 <dd>&nbsp;</dd>
@@ -1390,6 +1548,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/input/CameraMode.html#SoftFPV" class="member-name-link">SoftFPV</a> - Enum constant in enum class org.uav.input.<a href="org/uav/input/CameraMode.html" title="enum class in org.uav.input">CameraMode</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.html" class="type-name-link" title="class in org.uav.scene">SpotLight</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.html#%3Cinit%3E(boolean,org.joml.Vector3f,org.joml.Vector3f,float,float,org.joml.Vector3f,org.joml.Vector3f,org.joml.Vector3f,float,float,float)" class="member-name-link">SpotLight(boolean, Vector3f, Vector3f, float, float, Vector3f, Vector3f, Vector3f, float, float, float)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/SpotLight.html" title="class in org.uav.scene">SpotLight</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.SpotlightFactory.html" class="type-name-link" title="class in org.uav.scene">SpotLight.SpotlightFactory</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/SpotLight.SpotlightFactory.html#%3Cinit%3E()" class="member-name-link">SpotlightFactory()</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/SpotLight.SpotlightFactory.html" title="class in org.uav.scene">SpotLight.SpotlightFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/DroneStatusConsumer.html#start()" class="member-name-link">start()</a> - Method in class org.uav.queue.<a href="org/uav/queue/DroneStatusConsumer.html" title="class in org.uav.queue">DroneStatusConsumer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/ProjectileStatusesConsumer.html#start()" class="member-name-link">start()</a> - Method in class org.uav.queue.<a href="org/uav/queue/ProjectileStatusesConsumer.html" title="class in org.uav.queue">ProjectileStatusesConsumer</a></dt>
@@ -1400,15 +1566,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/BindingConfig.SteeringAxis.html#%3Cinit%3E(java.lang.Integer,java.lang.Boolean,java.lang.Float,java.lang.Float,java.lang.Float,java.lang.Float)" class="member-name-link">SteeringAxis(Integer, Boolean, Float, Float, Float, Float)</a> - Constructor for class org.uav.config.<a href="org/uav/config/BindingConfig.SteeringAxis.html" title="class in org.uav.config">BindingConfig.SteeringAxis</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/audio/MusicPlayer.html#stop()" class="member-name-link">stop()</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/DroneStatusConsumer.html#stop()" class="member-name-link">stop()</a> - Method in class org.uav.queue.<a href="org/uav/queue/DroneStatusConsumer.html" title="class in org.uav.queue">DroneStatusConsumer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/ProjectileStatusesConsumer.html#stop()" class="member-name-link">stop()</a> - Method in class org.uav.queue.<a href="org/uav/queue/ProjectileStatusesConsumer.html" title="class in org.uav.queue">ProjectileStatusesConsumer</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html#STOP" class="member-name-link">STOP</a> - Enum constant in enum class org.uav.audio.<a href="org/uav/audio/MusicPlayerEvent.html" title="enum class in org.uav.audio">MusicPlayerEvent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Projectile.html#storageCapacity" class="member-name-link">storageCapacity</a> - Variable in class org.uav.model.<a href="org/uav/model/Projectile.html" title="class in org.uav.model">Projectile</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/DroneMovement.html#straightMovement" class="member-name-link">straightMovement</a> - Enum constant in enum class org.uav.model.<a href="org/uav/model/DroneMovement.html" title="enum class in org.uav.model">DroneMovement</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayer.html#subscribe(java.util.function.Consumer)" class="member-name-link">subscribe(Consumer&lt;Pair&lt;MusicPlayerEvent, String&gt;&gt;)</a> - Method in class org.uav.audio.<a href="org/uav/audio/MusicPlayer.html" title="class in org.uav.audio">MusicPlayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/queue/HeartbeatProducer.html#sustainHeartBeat(org.uav.model.Drone)" class="member-name-link">sustainHeartBeat(Drone)</a> - Method in class org.uav.queue.<a href="org/uav/queue/HeartbeatProducer.html" title="class in org.uav.queue">HeartbeatProducer</a></dt>
 <dd>&nbsp;</dd>
@@ -1459,6 +1627,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.GraphicsSettings.html#toString()" class="member-name-link">toString()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.GraphicsSettings.html" title="class in org.uav.config">Config.GraphicsSettings</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/config/Config.MiscSettings.html#toString()" class="member-name-link">toString()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.MiscSettings.html" title="class in org.uav.config">Config.MiscSettings</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.Ports.html#toString()" class="member-name-link">toString()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.Ports.html" title="class in org.uav.config">Config.Ports</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/config/Config.SceneSettings.html#toString()" class="member-name-link">toString()</a> - Method in class org.uav.config.<a href="org/uav/config/Config.SceneSettings.html" title="class in org.uav.config">Config.SceneSettings</a></dt>
@@ -1494,9 +1664,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/model/Projectile.html#update()" class="member-name-link">update()</a> - Method in class org.uav.model.<a href="org/uav/model/Projectile.html" title="class in org.uav.model">Projectile</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="org/uav/scene/gui/Gui.html#update()" class="member-name-link">update()</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/Gui.html" title="class in org.uav.scene.gui">Gui</a></dt>
+<dt><a href="org/uav/scene/gui/GuiEntity.html#update()" class="member-name-link">update()</a> - Method in class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiEntity.html" title="class in org.uav.scene.gui">GuiEntity</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/ArtificialHorizonWidget.html#update()" class="member-name-link">update()</a> - Method in class org.uav.scene.gui.widget.artificialHorizon.<a href="org/uav/scene/gui/widget/artificialHorizon/ArtificialHorizonWidget.html" title="class in org.uav.scene.gui.widget.artificialHorizon">ArtificialHorizonWidget</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugWidget.html#update()" class="member-name-link">update()</a> - Method in class org.uav.scene.gui.widget.debug.<a href="org/uav/scene/gui/widget/debug/DebugWidget.html" title="class in org.uav.scene.gui.widget.debug">DebugWidget</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/map/MapWidget.html#update()" class="member-name-link">update()</a> - Method in class org.uav.scene.gui.widget.map.<a href="org/uav/scene/gui/widget/map/MapWidget.html" title="class in org.uav.scene.gui.widget.map">MapWidget</a></dt>
 <dd>&nbsp;</dd>
@@ -1513,6 +1685,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayLayer.html#update(java.util.List)" class="member-name-link">update(List&lt;String&gt;)</a> - Method in class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayLayer.html" title="class in org.uav.scene.gui.widget.display">DisplayLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/display/DisplayWidget.html#update(java.util.List)" class="member-name-link">update(List&lt;String&gt;)</a> - Method in class org.uav.scene.gui.widget.display.<a href="org/uav/scene/gui/widget/display/DisplayWidget.html" title="class in org.uav.scene.gui.widget.display">DisplayWidget</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/gui/widget/debug/DebugLayer.html#update(org.uav.FpsCounter)" class="member-name-link">update(FpsCounter)</a> - Method in class org.uav.scene.gui.widget.debug.<a href="org/uav/scene/gui/widget/debug/DebugLayer.html" title="class in org.uav.scene.gui.widget.debug">DebugLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonBackgroundLayer.html#update(org.uav.model.SimulationState)" class="member-name-link">update(SimulationState)</a> - Method in class org.uav.scene.gui.widget.artificialHorizon.layers.<a href="org/uav/scene/gui/widget/artificialHorizon/layers/ArtificialHorizonBackgroundLayer.html" title="class in org.uav.scene.gui.widget.artificialHorizon.layers">ArtificialHorizonBackgroundLayer</a></dt>
 <dd>&nbsp;</dd>
@@ -1541,6 +1715,12 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="org/uav/model/controlMode/ControlModeReply.html#V" class="member-name-link">V</a> - Enum constant in enum class org.uav.model.controlMode.<a href="org/uav/model/controlMode/ControlModeReply.html" title="enum class in org.uav.model.controlMode">ControlModeReply</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org/uav/utils/FileMapper.html#validateNullable(java.lang.Object)" class="member-name-link">validateNullable(Object)</a> - Static method in class org.uav.utils.<a href="org/uav/utils/FileMapper.html" title="class in org.uav.utils">FileMapper</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class org.uav.audio.<a href="org/uav/audio/MusicPlayerEvent.html" title="enum class in org.uav.audio">MusicPlayerEvent</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.ActionBindingState.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.ActionBindingState.html" title="enum class in org.uav.bindingsGeneration">BindingsLoop.ActionBindingState</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
@@ -1572,6 +1752,11 @@ loadScripts(document, 'script');</script>
 <dt><a href="org/uav/scene/gui/GuiAnchorPoint.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class org.uav.scene.gui.<a href="org/uav/scene/gui/GuiAnchorPoint.html" title="enum class in org.uav.scene.gui">GuiAnchorPoint</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
+<dt><a href="org/uav/audio/MusicPlayerEvent.html#values()" class="member-name-link">values()</a> - Static method in enum class org.uav.audio.<a href="org/uav/audio/MusicPlayerEvent.html" title="enum class in org.uav.audio">MusicPlayerEvent</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
 </dd>
 <dt><a href="org/uav/bindingsGeneration/BindingsLoop.ActionBindingState.html#values()" class="member-name-link">values()</a> - Static method in enum class org.uav.bindingsGeneration.<a href="org/uav/bindingsGeneration/BindingsLoop.ActionBindingState.html" title="enum class in org.uav.bindingsGeneration">BindingsLoop.ActionBindingState</a></dt>
 <dd>
@@ -1630,6 +1815,12 @@ the order they are declared.</div>
 <h2 class="title" id="I:X">X</h2>
 <dl class="index">
 <dt><a href="org/uav/model/controlMode/ControlModeReply.html#X" class="member-name-link">X</a> - Enum constant in enum class org.uav.model.controlMode.<a href="org/uav/model/controlMode/ControlModeReply.html" title="enum class in org.uav.model.controlMode">ControlModeReply</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/model/controlMode/ControlModeReply.html#xMarkDemands" class="member-name-link">xMarkDemands</a> - Static variable in enum class org.uav.model.controlMode.<a href="org/uav/model/controlMode/ControlModeReply.html" title="enum class in org.uav.model.controlMode">ControlModeReply</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/XMarkEntity.html" class="type-name-link" title="class in org.uav.scene">XMarkEntity</a> - Class in <a href="org/uav/scene/package-summary.html">org.uav.scene</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org/uav/scene/XMarkEntity.html#%3Cinit%3E(org.uav.model.Model)" class="member-name-link">XMarkEntity(Model)</a> - Constructor for class org.uav.scene.<a href="org/uav/scene/XMarkEntity.html" title="class in org.uav.scene">XMarkEntity</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:Y">Y</h2>
