@@ -4,7 +4,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.config.Config;
@@ -16,7 +15,6 @@ import org.uav.model.SimulationState;
 import org.uav.model.controlMode.ControlModeReply;
 import org.uav.model.rope.Rope;
 import org.uav.model.rope.RopeModel;
-import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
 import org.uav.scene.bullet.BulletTrail;
 import org.uav.scene.gui.Gui;
@@ -35,10 +33,10 @@ import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL30C.*;
 import static org.uav.utils.Convert.toQuaternion;
+import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 import static org.uav.utils.OpenGLUtils.getSunDirectionVector;
 
 public class OpenGlScene {
-    private final static String DEFAULT_DRONE_MODEL = "defaultDrone";
     private static final String DEFAULT_PROJECTILE_MODEL = "defaultProjectile";
     private final SimulationState simulationState;
     private final Config config;
@@ -46,28 +44,23 @@ public class OpenGlScene {
     private Shader guiShader;
     private Shader ropeShader;
     private Shader bulletTrailShader;
-    private Map<String, Model> droneModels;
     private Map<String, Model> projectileModels;
     private Model environmentModel;
     private Model xMarkModel;
     private RopeModel ropeModel;
     private HashMap<Integer, BulletTrail> bulletTrails;
     private Gui gui;
+    private final Outline outline;
 
     // Shading
     private int depthMapFBO;
     private int depthMap;
     private Shader shadingShader;
 
-    // Outline
-    private int droneMaskFBO;
-    private int droneMask;
-    private Shader flatShader;
-    private Shader outlineShader;
-
     private final DirectionalLight directionalLight;
     private final SpotLight spotLight;
     private final Fog fog;
+    private final DroneEntity droneEntity;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
@@ -79,34 +72,12 @@ public class OpenGlScene {
                 getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
                 new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f));
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
+        droneEntity = new DroneEntity(simulationState, modelImporter.loadModelMap("drones"));
 
         setUpShaders();
         setUpDrawables(droneParameters, modelImporter);
         setUpShadingFrameBuffer();
-        setUpOutlineFrameBuffer();
-    }
-
-    private void setUpOutlineFrameBuffer() {
-        droneMaskFBO = glGenFramebuffers();
-        droneMask = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, droneMask);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                config.getGraphicsSettings().getWindowWidth(),
-                config.getGraphicsSettings().getWindowHeight(),
-                0, GL_RGBA, GL_FLOAT, (ByteBuffer) null
-        );
-        // Check if it can be RED
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        float[] borderColor = { 0, 0, 0, 1.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-        glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, droneMask, 0);
-//        glDrawBuffer(GL_NONE);
-//        glReadBuffer(GL_NONE);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        outline = new Outline(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
     }
 
     private void setUpShadingFrameBuffer() {
@@ -172,25 +143,13 @@ public class OpenGlScene {
         bulletTrailShader.use();
         bulletTrailShader.setVec3("color", new Vector3f(1,1,1));
         bulletTrailShader.setFloat("startingOpacity", 1f);
-
-        var flatVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/flat/flatShader.vert"));
-        var flatFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/flat/flatShader.frag"));
-        flatShader = new Shader(flatVertexShaderSource, flatFragmentShaderSource);
-        flatShader.use();
-        flatShader.setVec4("color", new Vector4f(1,0,0, 1));
-
-        var outlineVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ghost/outlineShader.vert"));
-        var outlineFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ghost/outlineShader.frag"));
-        outlineShader = new Shader(outlineVertexShaderSource, outlineFragmentShaderSource);
-        outlineShader.use();
-        outlineShader.setVec4("color", new Vector4f(0, 1, 0, 0.3f));
     }
 
     private void setUpDrawables(DroneParameters droneParameters, ModelImporter modelImporter) throws IOException {
         environmentModel = modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString());
         environmentModel.setPosition(new Vector3f());
         environmentModel.setRotation(new Quaternionf());
-        droneModels = modelImporter.loadModelMap("drones");
+        //droneModels = modelImporter.loadModelMap("drones");
         projectileModels = modelImporter.loadModelMap("projectiles");
         xMarkModel = modelImporter.loadModel(Paths.get("core", "xMark").toString());
         ropeModel = new RopeModel(
@@ -207,6 +166,8 @@ public class OpenGlScene {
 
     public void render() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
+            float time = simulationState.getSimulationTimeS();
+
             // Shading pass
             if(config.getGraphicsSettings().getUseShadows()) {
                 glViewport(0, 0, config.getGraphicsSettings().getShadowsTextureResolution(), config.getGraphicsSettings().getShadowsTextureResolution());
@@ -219,16 +180,8 @@ public class OpenGlScene {
             }
 
             // Drone Mask
-            glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            prepareFlatShader(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
-            var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-            if(drone != null) {
-                drawOutline(stack, flatShader, simulationState.getSimulationTimeS());
-//                drawDrone(stack, flatShader, simulationState.getSimulationTimeS(), drone);
-            }
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+            outline.prepareFlatShader(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+            outline.generateDroneMask(droneEntity, stack, time);
 
             // Scene pass
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -242,19 +195,13 @@ public class OpenGlScene {
             );
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, depthMap);
-            renderScene(stack, objectShader);
+            renderScene(stack, objectShader, time);
         }
         // UI pass
         renderUI();
 
         glfwSwapBuffers(simulationState.getWindow());
         glfwPollEvents();
-    }
-
-    private void prepareFlatShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
-        flatShader.use();
-        flatShader.setMatrix4f(stack,"view", view);
-        flatShader.setMatrix4f(stack,"projection", projection);
     }
 
     private void prepareShadingShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
@@ -312,9 +259,7 @@ public class OpenGlScene {
         bulletTrailShader.use();
         bulletTrailShader.setMatrix4f(stack,"view", view);
         bulletTrailShader.setMatrix4f(stack,"projection", projection);
-        outlineShader.use();
-        outlineShader.setMatrix4f(stack,"view", view);
-        outlineShader.setMatrix4f(stack,"projection", projection);
+        outline.prepareOutlineShader(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
     }
 
     private void updateLights() {
@@ -348,10 +293,9 @@ public class OpenGlScene {
         return simulationState.getCamera().getCameraPos();
     }
 
-    private void renderScene(MemoryStack stack, Shader shader) {
+    private void renderScene(MemoryStack stack, Shader shader, float time) {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
-        float time = simulationState.getSimulationTimeS();
 
         glStencilMask(0x00);
 
@@ -364,13 +308,11 @@ public class OpenGlScene {
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, droneMask);
-        drawOutline(stack, outlineShader, time);
+        outline.draw(droneEntity, stack, time);
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
         glStencilFunc(GL_EQUAL, 0, 0xFF);
-        drawDrones(stack, shader, time);
+        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
         drawRopes();
@@ -386,15 +328,9 @@ public class OpenGlScene {
         addProjectilesToQueue(renderQueue, shader, time);
         addXMarkToQueue(renderQueue, shader, time);
         renderQueue.render(stack);
-        drawDrones(stack, shader, time);
+        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
         drawRopes();
         drawProjectileTrails(stack);
-    }
-
-    private void drawOutline(MemoryStack stack, Shader shader, float time) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(drone == null) return;
-        drawWithDepthFunc(() -> drawDrone(stack, shader, time, drone), GL_GREATER);
     }
 
     private void drawProjectileTrails(MemoryStack stack) {
@@ -428,20 +364,6 @@ public class OpenGlScene {
             ropeModel.setParameters(new Vector3f(owner.position).add(rope.ownerOffset), object.position, rope.ropeLength);
             ropeModel.draw();
         }
-    }
-
-    private void drawDrones(MemoryStack stack, Shader shader, float time) {
-        for(DroneStatus status: simulationState.getCurrPassDroneStatuses().map.values()) {
-            drawDrone(stack, shader, time, status);
-        }
-    }
-
-    private void drawDrone(MemoryStack stack, Shader shader, float time, DroneStatus status) {
-        String droneModelName = simulationState.getNotifications().droneModelsNames.getOrDefault(status.id, DEFAULT_DRONE_MODEL);
-        Model droneModel = droneModels.getOrDefault(droneModelName, droneModels.get(DEFAULT_DRONE_MODEL));
-        droneModel.draw(stack, shader, time);
-        droneModel.setPosition(status.position);
-        droneModel.setRotation(status.rotation);
     }
 
     private void addProjectilesToQueue(RenderQueue renderQueue, Shader shader, float time) {
@@ -480,12 +402,5 @@ public class OpenGlScene {
         gui.openMap(simulationState.isMapOverlay());
         gui.update();
         drawWithDepthFunc(() -> gui.draw(guiShader), GL_ALWAYS);
-    }
-
-    private void drawWithDepthFunc(Runnable drawingFunc, int depthMode) {
-        int previousDepthFunc = glGetInteger(GL_DEPTH_FUNC);
-        glDepthFunc(depthMode);
-        drawingFunc.run();
-        glDepthFunc(previousDepthFunc);
     }
 }
