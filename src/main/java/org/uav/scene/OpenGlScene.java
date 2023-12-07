@@ -29,13 +29,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.joml.Math.cos;
 import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL30C.*;
 import static org.uav.utils.Convert.toQuaternion;
+import static org.uav.utils.OpenGLUtils.getSunDirectionVector;
 
 public class OpenGlScene {
     private final static String DEFAULT_DRONE_MODEL = "defaultDrone";
@@ -67,6 +67,8 @@ public class OpenGlScene {
     private Shader outlineShader;
 
     private final Fog fog;
+    private final DirectionalLight directionalLight;
+    private final SpotLight spotLight;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
@@ -74,6 +76,10 @@ public class OpenGlScene {
 
         modelImporter = new GltfImporter(loadingScreen, config);
         fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
+        directionalLight = new DirectionalLight(
+                getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
+                new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f));
+        spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
 
         setUpShaders();
         setUpDrawables(droneParameters);
@@ -126,17 +132,6 @@ public class OpenGlScene {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    private void setUpLights(Shader shader) {
-        shader.use();
-        shader.setVec3("dirLight.direction",  new Vector3f(0f, 0f, 1f));
-        shader.setVec3("dirLight.ambient",  new Vector3f(0.5f, 0.5f, 0.5f));
-        shader.setVec3("dirLight.diffuse",  new Vector3f(0.5f, 0.5f, 0.5f));
-        shader.setVec3("dirLight.specular",  new Vector3f(0.5f, 0.5f, 0.5f));
-        shader.setBool("useDirectionalLight", true);
-
-        shader.setBool("spotLightOn",  false);
-    }
-
     private void setUpShaders() throws IOException {
         var phongVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/models/phongShader.vert"));
         var phongFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/models/phongShader.frag"));
@@ -147,7 +142,8 @@ public class OpenGlScene {
         objectShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
         objectShader.setInt("objectTexture", 0);
         objectShader.setInt("shadowMap", 1);
-        setUpLights(objectShader);
+        directionalLight.applyTo(objectShader);
+        spotLight.applyTo(objectShader);
         fog.applyTo(objectShader);
 
         var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
@@ -167,7 +163,7 @@ public class OpenGlScene {
         var ropeFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.frag"));
         ropeShader = new Shader(ropeVertexShaderSource, ropeGeometryShaderSource, ropeFragmentShaderSource);
         ropeShader.use();
-        setUpLights(ropeShader);
+        directionalLight.applyTo(ropeShader);
         ropeShader.setVec3("backgroundColor", simulationState.getSkyColor());
 
         var bulletTrailVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/bullets/bulletTrailShader.vert"));
@@ -347,19 +343,14 @@ public class OpenGlScene {
     private void updateLights() {
         var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(!simulationState.isSpotLightOn() || drone == null) {
-            objectShader.setBool("spotLightOn",  false);
-            return;
+            spotLight.setSpotLightOn(false);
+        } else {
+            spotLight.setSpotLightOn(true);
+            var spotlightPos = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F)).rotate(drone.rotation).add(drone.position);
+            spotLight.setPosition(spotlightPos);
+            spotLight.setDirection(new Vector3f(1, 0, 0).rotate(drone.rotation));
         }
-        objectShader.setBool("spotLightOn",  true);
-        var spotlightPos = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F)).rotate(drone.rotation).add(drone.position);
-        objectShader.setVec3("spotLight.position", spotlightPos);
-        objectShader.setVec3("spotLight.direction", new Vector3f(1,0,0).rotate(drone.rotation));
-        objectShader.setFloat("spotLight.cutOff",   cos(toRadians(40f)));
-        objectShader.setFloat("spotLight.outerCutOff",   cos(toRadians(45.5f)));
-        objectShader.setVec3("spotLight.ambient",  new Vector3f(1f, 1f, 1f));
-        objectShader.setFloat("spotLight.constant", 1.0f);
-        objectShader.setFloat("spotLight.linear", 0.027f);
-        objectShader.setFloat("spotLight.quadratic", 0.0028f);
+        spotLight.applyTo(objectShader);
     }
 
     private Matrix4f getSceneShaderProjectionMatrix() {
