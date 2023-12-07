@@ -1,5 +1,6 @@
 package org.uav.scene.gui;
 
+import org.uav.UavVisualization;
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.model.SimulationState;
@@ -17,8 +18,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Objects;
 
-public class Gui {
+import static org.lwjgl.opengl.GL11C.GL_ALWAYS;
+import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
+
+public class GuiEntity {
+    private Shader guiShader;
     private final ControlPanelWidget controlPanel;
     private final RadarWidget radar;
     private final ArtificialHorizonWidget artificialHorizon;
@@ -27,7 +33,8 @@ public class Gui {
     private final ProjectileWidget projectiles;
     private final DebugWidget debug;
 
-    public Gui(SimulationState simulationState, Config config, DroneParameters droneParameters) {
+    public GuiEntity(SimulationState simulationState, Config config, DroneParameters droneParameters) throws IOException {
+        setUpShader(config.getGraphicsSettings().getUseGammaCorrection(), config.getGraphicsSettings().getGammaCorrection());
         var assetsDirectory = Paths.get(simulationState.getAssetsDirectory() , "core", "GUI");
         var background = loadImage(Paths.get(assetsDirectory.toString(), "background.png").toString());
 
@@ -66,6 +73,15 @@ public class Gui {
         debug = new DebugWidget(background, simulationState, config);
     }
 
+    private void setUpShader(boolean useGammaCorrection, float gammaCorrection) throws IOException {
+        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
+        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
+        guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
+        guiShader.use();
+        guiShader.setBool("useGammaCorrection", useGammaCorrection);
+        guiShader.setFloat("gammaCorrection", gammaCorrection);
+    }
+
     public static BufferedImage loadImage(String path) {
         try {
             return  ImageIO.read(new File(path));
@@ -75,14 +91,20 @@ public class Gui {
         }
     }
 
-    public void draw(Shader shader) {
-        controlPanel.draw(shader);
-        artificialHorizon.draw(shader);
-        radar.draw(shader);
-        rotorDisplay.draw(shader);
-        map.draw(shader);
-        projectiles.draw(shader);
-        debug.draw(shader);
+    public void draw(boolean isMapOverlay) {
+        openMap(isMapOverlay);
+        update();
+        drawWithDepthFunc(this::draw, GL_ALWAYS);
+    }
+
+    private void draw() {
+        controlPanel.draw(guiShader);
+        artificialHorizon.draw(guiShader);
+        radar.draw(guiShader);
+        rotorDisplay.draw(guiShader);
+        map.draw(guiShader);
+        projectiles.draw(guiShader);
+        debug.draw(guiShader);
     }
 
     public void update() {

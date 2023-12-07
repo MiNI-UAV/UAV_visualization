@@ -1,14 +1,20 @@
 package org.uav.model.rope;
 
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.lwjgl.system.MemoryStack;
+import org.uav.UavVisualization;
 import org.uav.importer.VerticesLoader;
 import org.uav.model.status.DroneStatus;
 import org.uav.model.status.ProjectileStatus;
+import org.uav.scene.DirectionalLight;
 import org.uav.scene.shader.Shader;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -20,9 +26,9 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class RopeEntity {
+    private Shader ropeShader;
     private final int segmentCount;
     private int VAO;
-    private final Shader ropeShader;
     private Vector3f pointA;
     private Vector3f pointB;
     private final Vector3f color1;
@@ -34,8 +40,7 @@ public class RopeEntity {
     private float yOffset;
     private boolean useLinear;
 
-    public RopeEntity(int segmentCount, float ropeThickness, Shader ropeShader, Vector3f color1, Vector3f color2) {
-        this.ropeShader = ropeShader;
+    public RopeEntity(int segmentCount, float ropeThickness, Vector3f color1, Vector3f color2, DirectionalLight directionalLight, Vector3f skyColor) throws IOException {
         this.segmentCount = segmentCount;
         this.ropeLength = 0;
         this.ropeThickness = ropeThickness;
@@ -48,6 +53,37 @@ public class RopeEntity {
         yOffset = 0;
         useLinear = false;
         setupPoints();
+        SetUpShader(directionalLight, skyColor);
+    }
+
+    private void setupPoints() {
+        List<RopeVertex> vertices = IntStream.range(0, segmentCount).mapToObj(i -> new RopeVertex(
+                (float) i/(segmentCount-1),
+                i==segmentCount-1? -1: (float) (i + 1) / (segmentCount-1)
+        )).toList();
+
+        VAO = glGenVertexArrays();
+        int VBO = glGenBuffers();
+        glBindVertexArray(VAO);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, VerticesLoader.loadToFloatBuffer(vertices), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 1, GL_FLOAT, true, RopeVertex.NUMBER_OF_FLOATS * 4, 0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 1, GL_FLOAT, true, RopeVertex.NUMBER_OF_FLOATS * 4, 4);
+        glEnableVertexAttribArray(1);
+
+        glBindVertexArray(0);
+    }
+
+    private void SetUpShader(DirectionalLight directionalLight, Vector3f skyColor) throws IOException {
+        var ropeVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.vert"));
+        var ropeGeometryShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.geom"));
+        var ropeFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.frag"));
+        ropeShader = new Shader(ropeVertexShaderSource, ropeGeometryShaderSource, ropeFragmentShaderSource);
+        ropeShader.use();
+        directionalLight.applyTo(ropeShader);
+        ropeShader.setVec3("backgroundColor", skyColor);
     }
 
     public void setParameters(Vector3f pointA, Vector3f pointB, float ropeLength) {
@@ -57,7 +93,19 @@ public class RopeEntity {
         recalculateCatenary();
     }
 
-    public void draw(List<Rope> ropes, Map<Integer, DroneStatus> drones, Map<Integer, ProjectileStatus> projectiles) {
+    public void draw(MemoryStack stack,
+                     Vector3f viewPos,
+                     Matrix4f view,
+                     Matrix4f projection,
+                     List<Rope> ropes,
+                     Map<Integer, DroneStatus> drones,
+                     Map<Integer, ProjectileStatus> projectiles
+    ) {
+        ropeShader.use();
+        ropeShader.setVec3("viewPos", viewPos);
+        ropeShader.setMatrix4f(stack,"view", view);
+        ropeShader.setMatrix4f(stack,"projection", projection);
+
         for (Rope rope: ropes) {
             if(drones.containsKey(rope.ownerId) && projectiles.containsKey(rope.objectId)) {
                 var owner = drones.get(rope.ownerId);
@@ -129,25 +177,5 @@ public class RopeEntity {
             x = x - h;
         }
         return x;
-    }
-
-    private void setupPoints() {
-        List<RopeVertex> vertices = IntStream.range(0, segmentCount).mapToObj(i -> new RopeVertex(
-                (float) i/(segmentCount-1),
-                i==segmentCount-1? -1: (float) (i + 1) / (segmentCount-1)
-        )).toList();
-
-        VAO = glGenVertexArrays();
-        int VBO = glGenBuffers();
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, VerticesLoader.loadToFloatBuffer(vertices), GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 1, GL_FLOAT, true, RopeVertex.NUMBER_OF_FLOATS * 4, 0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 1, GL_FLOAT, true, RopeVertex.NUMBER_OF_FLOATS * 4, 4);
-        glEnableVertexAttribArray(1);
-
-        glBindVertexArray(0);
     }
 }

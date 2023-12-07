@@ -12,15 +12,13 @@ import org.uav.importer.ModelImporter;
 import org.uav.model.SimulationState;
 import org.uav.model.rope.Rope;
 import org.uav.model.rope.RopeEntity;
-import org.uav.model.status.ProjectileStatus;
-import org.uav.scene.bullet.BulletTrail;
-import org.uav.scene.gui.Gui;
+import org.uav.scene.bullet.BulletTrailEntity;
+import org.uav.scene.gui.GuiEntity;
 import org.uav.scene.shader.Shader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Objects;
 
 import static org.joml.Math.toRadians;
@@ -28,20 +26,12 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL30C.*;
-import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 import static org.uav.utils.OpenGLUtils.getSunDirectionVector;
 
 public class OpenGlScene {
     private final SimulationState simulationState;
     private final Config config;
     private Shader objectShader;
-    private Shader guiShader;
-    private Shader ropeShader;
-    private Shader bulletTrailShader;
-    private RopeEntity ropeEntity;
-    private HashMap<Integer, BulletTrail> bulletTrails;
-    private Gui gui;
-    private final Outline outline;
 
     // Shading
     private int depthMapFBO;
@@ -55,6 +45,10 @@ public class OpenGlScene {
     private final EnvironmentEntity environmentEntity;
     private final ProjectileEntity projectileEntity;
     private final XMarkEntity xMarkEntity;
+    private final BulletTrailEntity bulletTrailEntity;
+    private final RopeEntity ropeEntity;
+    private final GuiEntity guiEntity;
+    private final OutlineEntity outlineEntity;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
@@ -71,12 +65,14 @@ public class OpenGlScene {
         environmentEntity = new EnvironmentEntity(modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString()));
         projectileEntity = new ProjectileEntity(simulationState, modelImporter.loadModelMap("projectiles"));
         xMarkEntity = new XMarkEntity(modelImporter.loadModel(Paths.get("core", "xMark").toString()));
-        ropeEntity = new RopeEntity(Rope.SEGMENT_COUNT, Rope.THICKNESS, ropeShader, Rope.ROPE_COLOR_1, Rope.ROPE_COLOR_2);
-        
+        ropeEntity = new RopeEntity(Rope.SEGMENT_COUNT, Rope.THICKNESS, Rope.ROPE_COLOR_1, Rope.ROPE_COLOR_2, directionalLight, simulationState.getSkyColor());
+        bulletTrailEntity = new BulletTrailEntity();
+
+        guiEntity = new GuiEntity(simulationState, config, droneParameters);
+        outlineEntity = new OutlineEntity(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
+
         setUpShaders();
-        setUpDrawables(droneParameters);
         setUpShadingFrameBuffer();
-        outline = new Outline(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
     }
 
     private void setUpShadingFrameBuffer() {
@@ -115,39 +111,10 @@ public class OpenGlScene {
         spotLight.applyTo(objectShader);
         fog.applyTo(objectShader);
 
-        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
-        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
-        guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
-        guiShader.use();
-        guiShader.setBool("useGammaCorrection", config.getGraphicsSettings().getUseGammaCorrection());
-        guiShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
-
         var shadingVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadowShader.vert"));
         var shadingFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/shading/shadowShader.frag"));
         shadingShader = new Shader(shadingVertexShaderSource, shadingFragmentShaderSource);
         shadingShader.use();
-
-        var ropeVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.vert"));
-        var ropeGeometryShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.geom"));
-        var ropeFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/rope/ropeShader.frag"));
-        ropeShader = new Shader(ropeVertexShaderSource, ropeGeometryShaderSource, ropeFragmentShaderSource);
-        ropeShader.use();
-        directionalLight.applyTo(ropeShader);
-        ropeShader.setVec3("backgroundColor", simulationState.getSkyColor());
-
-        var bulletTrailVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/bullets/bulletTrailShader.vert"));
-        var bulletTrailGeometryShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/bullets/bulletTrailShader.geom"));
-        var bulletTrailFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/bullets/bulletTrailShader.frag"));
-        bulletTrailShader = new Shader(bulletTrailVertexShaderSource, bulletTrailGeometryShaderSource, bulletTrailFragmentShaderSource);
-        bulletTrailShader.use();
-        bulletTrailShader.setVec3("color", new Vector3f(1,1,1));
-        bulletTrailShader.setFloat("startingOpacity", 1f);
-    }
-
-    private void setUpDrawables(DroneParameters droneParameters) {
-
-        gui = new Gui(simulationState, config, droneParameters);
-        bulletTrails = new HashMap<>();
     }
 
     public void render() {
@@ -166,28 +133,79 @@ public class OpenGlScene {
             }
 
             // Drone Mask
-            outline.prepareFlatShader(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
-            outline.generateDroneMask(droneEntity, stack, time);
+            outlineEntity.generateDroneMask(droneEntity, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
 
             // Scene pass
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            prepareSceneShader(
-                    stack,
-                    getSceneShaderViewPos(),
-                    getSceneShaderViewMatrix(),
-                    getSceneShaderProjectionMatrix(),
-                    getShadowShaderViewMatrix(),
-                    getShadowShaderProjectionMatrix()
-            );
+            objectShader.use();
+            objectShader.setVec3("viewPos", getSceneShaderViewPos());
+            objectShader.setMatrix4f(stack,"view", getSceneShaderViewMatrix());
+            objectShader.setMatrix4f(stack,"projection", getSceneShaderProjectionMatrix());
+            objectShader.setMatrix4f(stack,"directionalLightView", getShadowShaderViewMatrix());
+            objectShader.setMatrix4f(stack,"directionalLightProjection", getShadowShaderProjectionMatrix());
+            updateLights();
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, depthMap);
             renderScene(stack, objectShader, time);
         }
         // UI pass
-        renderUI();
+        guiEntity.draw(simulationState.isMapOverlay());
 
         glfwSwapBuffers(simulationState.getWindow());
         glfwPollEvents();
+    }
+
+    private void renderScene(MemoryStack stack, Shader shader, float time) {
+        var skyColor = simulationState.getSkyColor();
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
+
+        glStencilMask(0x00);
+
+        environmentEntity.draw(simulationState, stack, shader, time);
+        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
+        if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
+
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        outlineEntity.draw(droneEntity, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+        glStencilFunc(GL_EQUAL, 0, 0xFF);
+        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
+        ropeEntity.draw(
+                stack,
+                getSceneShaderViewPos(),
+                getSceneShaderViewMatrix(),
+                getSceneShaderProjectionMatrix(),
+                simulationState.getNotifications().ropes,
+                simulationState.getCurrPassDroneStatuses().map,
+                simulationState.getCurrPassProjectileStatuses().map);
+        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), droneEntity);
+    }
+
+    private void renderSceneShadows(MemoryStack stack, Shader shader) {
+        var skyColor = simulationState.getSkyColor();
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
+        float time = simulationState.getSimulationTimeS();
+        environmentEntity.draw(simulationState, stack, shader, time);
+        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
+        if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
+        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
+
+        ropeEntity.draw(
+                stack,
+                getSceneShaderViewPos(),
+                getSceneShaderViewMatrix(),
+                getSceneShaderProjectionMatrix(),
+                simulationState.getNotifications().ropes,
+                simulationState.getCurrPassDroneStatuses().map,
+                simulationState.getCurrPassProjectileStatuses().map);
+        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), droneEntity);
     }
 
     private void prepareShadingShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
@@ -223,31 +241,6 @@ public class OpenGlScene {
         );
     }
 
-    private void prepareSceneShader(
-            MemoryStack stack,
-            Vector3f viewPos,
-            Matrix4f view,
-            Matrix4f projection,
-            Matrix4f directionalLightView,
-            Matrix4f directionalLightProjection
-    ) {
-        objectShader.use();
-        objectShader.setVec3("viewPos", viewPos);
-        objectShader.setMatrix4f(stack,"view", view);
-        objectShader.setMatrix4f(stack,"projection", projection);
-        objectShader.setMatrix4f(stack,"directionalLightView", directionalLightView);
-        objectShader.setMatrix4f(stack,"directionalLightProjection", directionalLightProjection);
-        updateLights();
-        ropeShader.use();
-        ropeShader.setVec3("viewPos", viewPos);
-        ropeShader.setMatrix4f(stack,"view", view);
-        ropeShader.setMatrix4f(stack,"projection", projection);
-        bulletTrailShader.use();
-        bulletTrailShader.setMatrix4f(stack,"view", view);
-        bulletTrailShader.setMatrix4f(stack,"projection", projection);
-        outline.prepareOutlineShader(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
-    }
-
     private void updateLights() {
         var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
         if(!simulationState.isSpotLightOn() || drone == null) {
@@ -277,68 +270,5 @@ public class OpenGlScene {
 
     private Vector3f getSceneShaderViewPos() {
         return simulationState.getCamera().getCameraPos();
-    }
-
-    private void renderScene(MemoryStack stack, Shader shader, float time) {
-        var skyColor = simulationState.getSkyColor();
-        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
-
-        glStencilMask(0x00);
-
-        environmentEntity.draw(simulationState, stack, shader, time);
-        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
-        if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
-            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
-
-        glStencilMask(0xFF);
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        outline.draw(droneEntity, stack, time);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-        glStencilFunc(GL_EQUAL, 0, 0xFF);
-        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
-        glStencilFunc(GL_ALWAYS, 1, 0xFF);
-
-        ropeEntity.draw(simulationState.getNotifications().ropes, simulationState.getCurrPassDroneStatuses().map, simulationState.getCurrPassProjectileStatuses().map);
-        drawProjectileTrails(stack);
-    }
-
-    private void renderSceneShadows(MemoryStack stack, Shader shader) {
-        var skyColor = simulationState.getSkyColor();
-        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
-        float time = simulationState.getSimulationTimeS();
-        environmentEntity.draw(simulationState, stack, shader, time);
-        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
-        if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
-            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
-        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
-        ropeEntity.draw(simulationState.getNotifications().ropes, simulationState.getCurrPassDroneStatuses().map, simulationState.getCurrPassProjectileStatuses().map);
-        drawProjectileTrails(stack);
-    }
-
-    private void drawProjectileTrails(MemoryStack stack) {
-        HashMap<Integer, BulletTrail> newBulletTrails = new HashMap<>();
-        for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
-            BulletTrail bt;
-            if(bulletTrails.containsKey(status.id)) {
-                bt = bulletTrails.get(status.id);
-            } else {
-                bt = new BulletTrail(bulletTrailShader);
-                var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-                if(drone != null)
-                    bt.addPoint(drone.position);
-            }
-            bt.addPoint(status.position);
-            newBulletTrails.put(status.id, bt);
-            bt.draw(stack);
-        }
-        bulletTrails = newBulletTrails;
-    }
-
-    private void renderUI() {
-        gui.openMap(simulationState.isMapOverlay());
-        gui.update();
-        drawWithDepthFunc(() -> gui.draw(guiShader), GL_ALWAYS);
     }
 }

@@ -15,14 +15,14 @@ import static org.lwjgl.opengl.GL13C.GL_CLAMP_TO_BORDER;
 import static org.lwjgl.opengl.GL30C.*;
 import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 
-public class Outline {
+public class OutlineEntity {
 
     private final int droneMaskFBO;
     private final int droneMask;
     private final Shader flatShader;
     private final Shader outlineShader;
 
-    public Outline(int screenWidth, int screenHeight) throws IOException {
+    public OutlineEntity(int screenWidth, int screenHeight) throws IOException {
         // Drone mask framebuffer initialization
         droneMaskFBO = glGenFramebuffers();
         droneMask = glGenTextures();
@@ -54,7 +54,11 @@ public class Outline {
         outlineShader.setVec4("color", new Vector4f(0, 1, 0, 0.3f));
     }
 
-    public void generateDroneMask(DroneEntity droneEntity, MemoryStack stack, float time) {
+    public void generateDroneMask(DroneEntity droneEntity, MemoryStack stack, float time, Matrix4f view, Matrix4f projection) {
+        flatShader.use();
+        flatShader.setMatrix4f(stack,"view", view);
+        flatShader.setMatrix4f(stack,"projection", projection);
+
         glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         drawOutline(droneEntity, flatShader, stack, time);
@@ -71,19 +75,11 @@ public class Outline {
         );
     }
 
-    public void draw(DroneEntity droneEntity, MemoryStack stack, float time) {
-        drawOutline(droneEntity, outlineShader, stack, time);
-    }
-
-    public void prepareFlatShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
-        flatShader.use();
-        flatShader.setMatrix4f(stack,"view", view);
-        flatShader.setMatrix4f(stack,"projection", projection);
-    }
-
-    public void prepareOutlineShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
+    public void draw(DroneEntity droneEntity, MemoryStack stack, float time, Matrix4f view, Matrix4f projection) {
         outlineShader.use();
         outlineShader.setMatrix4f(stack,"view", view);
         outlineShader.setMatrix4f(stack,"projection", projection);
+
+        drawOutline(droneEntity, outlineShader, stack, time);
     }
 }
