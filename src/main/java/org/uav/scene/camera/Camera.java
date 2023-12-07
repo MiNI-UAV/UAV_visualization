@@ -69,7 +69,7 @@ public class Camera {
             dronePosition = new Vector3f();
             droneRotation = new Quaternionf();
         }
-        float currTime = (float) glfwGetTime();
+        float currTime = simulationState.getSimulationTimeS();
         deltaTime = currTime - lastTime;
         lastTime = currTime;
         switch(simulationState.getCurrentCameraMode()) {
