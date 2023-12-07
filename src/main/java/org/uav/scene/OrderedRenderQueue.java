@@ -12,12 +12,12 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class RenderQueue {
+public class OrderedRenderQueue {
 
     private final Queue<Triplet<Mesh, Matrix4f, Shader>> transparentMeshes;
     private final Queue<Triplet<Mesh, Matrix4f, Shader>> standardMeshes;
 
-    public RenderQueue(Vector3f cameraPosition) {
+    public OrderedRenderQueue(Vector3f cameraPosition) {
         Comparator<Triplet<Mesh, Matrix4f, Shader>> comparator =
                 (Triplet<Mesh, Matrix4f, Shader> p1, Triplet<Mesh, Matrix4f, Shader> p2) -> {
             Vector3f distance1 = p1.getValue1().getTranslation(new Vector3f()).sub(cameraPosition);

@@ -2,7 +2,6 @@ package org.uav.scene;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
@@ -10,9 +9,7 @@ import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.importer.GltfImporter;
 import org.uav.importer.ModelImporter;
-import org.uav.model.Model;
 import org.uav.model.SimulationState;
-import org.uav.model.controlMode.ControlModeReply;
 import org.uav.model.rope.Rope;
 import org.uav.model.rope.RopeModel;
 import org.uav.model.status.ProjectileStatus;
@@ -24,7 +21,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.joml.Math.toRadians;
@@ -32,7 +28,6 @@ import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL30C.*;
-import static org.uav.utils.Convert.toQuaternion;
 import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 import static org.uav.utils.OpenGLUtils.getSunDirectionVector;
 
@@ -44,9 +39,6 @@ public class OpenGlScene {
     private Shader guiShader;
     private Shader ropeShader;
     private Shader bulletTrailShader;
-    private Map<String, Model> projectileModels;
-    private Model environmentModel;
-    private Model xMarkModel;
     private RopeModel ropeModel;
     private HashMap<Integer, BulletTrail> bulletTrails;
     private Gui gui;
@@ -61,6 +53,9 @@ public class OpenGlScene {
     private final SpotLight spotLight;
     private final Fog fog;
     private final DroneEntity droneEntity;
+    private final EnvironmentEntity environmentEntity;
+    private final ProjectileEntity projectileEntity;
+    private final XMarkEntity xMarkEntity;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
@@ -73,9 +68,12 @@ public class OpenGlScene {
                 new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f));
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
         droneEntity = new DroneEntity(simulationState, modelImporter.loadModelMap("drones"));
+        environmentEntity = new EnvironmentEntity(modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString()));
+        projectileEntity = new ProjectileEntity(simulationState, modelImporter.loadModelMap("projectiles"));
+        xMarkEntity = new XMarkEntity(modelImporter.loadModel(Paths.get("core", "xMark").toString()));
 
         setUpShaders();
-        setUpDrawables(droneParameters, modelImporter);
+        setUpDrawables(droneParameters);
         setUpShadingFrameBuffer();
         outline = new Outline(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
     }
@@ -145,13 +143,7 @@ public class OpenGlScene {
         bulletTrailShader.setFloat("startingOpacity", 1f);
     }
 
-    private void setUpDrawables(DroneParameters droneParameters, ModelImporter modelImporter) throws IOException {
-        environmentModel = modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString());
-        environmentModel.setPosition(new Vector3f());
-        environmentModel.setRotation(new Quaternionf());
-        //droneModels = modelImporter.loadModelMap("drones");
-        projectileModels = modelImporter.loadModelMap("projectiles");
-        xMarkModel = modelImporter.loadModel(Paths.get("core", "xMark").toString());
+    private void setUpDrawables(DroneParameters droneParameters) {
         ropeModel = new RopeModel(
                 Rope.SEGMENT_COUNT,
                 Rope.THICKNESS,
@@ -299,11 +291,10 @@ public class OpenGlScene {
 
         glStencilMask(0x00);
 
-        var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
-        environmentModel.addToQueue(renderQueue, shader, time);
-        addProjectilesToQueue(renderQueue, shader, time);
-        addXMarkToQueue(renderQueue, shader, time);
-        renderQueue.render(stack);
+        environmentEntity.draw(simulationState, stack, shader, time);
+        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
+        if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
 
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -323,11 +314,10 @@ public class OpenGlScene {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         float time = simulationState.getSimulationTimeS();
-        var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
-        environmentModel.addToQueue(renderQueue, shader, time);
-        addProjectilesToQueue(renderQueue, shader, time);
-        addXMarkToQueue(renderQueue, shader, time);
-        renderQueue.render(stack);
+        environmentEntity.draw(simulationState, stack, shader, time);
+        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
+        if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
         droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
         drawRopes();
         drawProjectileTrails(stack);
@@ -363,38 +353,6 @@ public class OpenGlScene {
             var object = simulationState.getCurrPassProjectileStatuses().map.get(rope.objectId);
             ropeModel.setParameters(new Vector3f(owner.position).add(rope.ownerOffset), object.position, rope.ropeLength);
             ropeModel.draw();
-        }
-    }
-
-    private void addProjectilesToQueue(RenderQueue renderQueue, Shader shader, float time) {
-        for(ProjectileStatus status: simulationState.getCurrPassProjectileStatuses().map.values()) {
-            if(!simulationState.getNotifications().projectileModelsNames.containsKey(status.id)) continue;
-            String projectileModelName = simulationState.getNotifications().projectileModelsNames.get(status.id);
-            Model projectileModel = projectileModels.getOrDefault(projectileModelName, projectileModels.get(DEFAULT_PROJECTILE_MODEL));
-            projectileModel.addToQueue(renderQueue, shader, time);
-            projectileModel.setPosition(status.position);
-            Vector3f rot = new Vector3f(1f, 0, 0).cross(status.velocity);
-            float w = status.velocity.length() + new Vector3f(1f,0,0).dot(status.velocity);
-            projectileModel.setRotation(new Quaternionf(rot.x, rot.y, rot.z, w).normalize());
-        }
-    }
-
-    private void addXMarkToQueue(RenderQueue renderQueue, Shader shader, float time) {
-        if(
-            config.getSceneSettings().getDrawInWorldDemandedPositionalCoords() &&
-            simulationState.getCurrentControlModeDemanded() != null &&
-            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.X) &&
-            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Y) &&
-            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Z) &&
-            simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.YAW)
-        ){
-            float demandedX = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.X);
-            float demandedY = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Y);
-            float demandedZ = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Z);
-            float demandedYaw = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
-            xMarkModel.setPosition(new Vector3f(demandedX, demandedY, demandedZ));
-            xMarkModel.setRotation(toQuaternion(new Vector3f(0, 0, demandedYaw)));
-            xMarkModel.addToQueue(renderQueue, shader, time);
         }
     }
 

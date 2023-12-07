@@ -1,5 +1,7 @@
 package org.uav.model.controlMode;
 
+import java.util.List;
+
 public enum ControlModeReply {
     X,
     Y,
@@ -12,5 +14,7 @@ public enum ControlModeReply {
     W,
     P,
     Q,
-    R
+    R;
+
+    public static final List<ControlModeReply> xMarkDemands = List.of(X, Y, Z, YAW);
 }

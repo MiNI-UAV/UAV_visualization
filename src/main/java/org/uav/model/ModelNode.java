@@ -5,7 +5,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.animation.AnimationPlayer;
-import org.uav.scene.RenderQueue;
+import org.uav.scene.OrderedRenderQueue;
 import org.uav.scene.shader.Shader;
 
 import java.util.List;
@@ -44,10 +44,10 @@ public class ModelNode {
         children.forEach(n -> n.draw(stack, shader, globalTransformation, currentTime));
     }
 
-    public void addToQueue(RenderQueue renderQueue, Matrix4f parentTransform, Shader shader, float currentTime) {
+    public void addToQueue(OrderedRenderQueue orderedRenderQueue, Matrix4f parentTransform, Shader shader, float currentTime) {
         Matrix4f globalTransformation = getGlobalTransformation(parentTransform, currentTime);
-        meshes.forEach(m -> renderQueue.addMesh(m, globalTransformation, shader));
-        children.forEach(n -> n.addToQueue(renderQueue, globalTransformation, shader, currentTime));
+        meshes.forEach(m -> orderedRenderQueue.addMesh(m, globalTransformation, shader));
+        children.forEach(n -> n.addToQueue(orderedRenderQueue, globalTransformation, shader, currentTime));
     }
 
     private Matrix4f getGlobalTransformation(Matrix4f parentTransform, float currentTime) {
