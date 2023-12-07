@@ -2,25 +2,25 @@
 steering:
 - axis: 1
   inverse: true
-  deadzone: 0.050000012
+  deadzone: 0.1
   min: -1.0
   max: 1.0
   trim: 0.002609253
 - axis: 3
   inverse: false
-  deadzone: 0.050000012
+  deadzone: 0.1
   min: -1.0
   max: 1.0
   trim: 0.07573056
 - axis: 4
   inverse: true
-  deadzone: 0.050000012
+  deadzone: 0.1
   min: -1.0
   max: 1.0
   trim: 0.07994199
 - axis: 0
   inverse: false
-  deadzone: 0.050000012
+  deadzone: 0.1
   min: -1.0
   max: 1.0
   trim: 0.06178379

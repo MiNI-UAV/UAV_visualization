@@ -60,6 +60,12 @@ public class OpenGlScene {
     private int depthMap;
     private Shader shadingShader;
 
+    // Outline
+    private int droneMaskFBO;
+    private int droneMask;
+    private Shader flatShader;
+    private Shader outlineShader;
+
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
@@ -68,7 +74,31 @@ public class OpenGlScene {
 
         setUpShaders();
         setUpDrawables(droneParameters);
-        setUpShading();
+        setUpShadingFrameBuffer();
+        setUpOutlineFrameBuffer();
+    }
+
+    private void setUpOutlineFrameBuffer() {
+        droneMaskFBO = glGenFramebuffers();
+        droneMask = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, droneMask);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                config.getGraphicsSettings().getWindowWidth(),
+                config.getGraphicsSettings().getWindowHeight(),
+                0, GL_RGBA, GL_FLOAT, (ByteBuffer) null
+        );
+        // Check if it can be RED
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        float[] borderColor = { 0, 0, 0, 1.0f };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+        glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, droneMask, 0);
+//        glDrawBuffer(GL_NONE);
+//        glReadBuffer(GL_NONE);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     private void setUpShadingFrameBuffer() {
@@ -144,6 +174,18 @@ public class OpenGlScene {
         bulletTrailShader.use();
         bulletTrailShader.setVec3("color", new Vector3f(1,1,1));
         bulletTrailShader.setFloat("startingOpacity", 1f);
+
+        var flatVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/flat/flatShader.vert"));
+        var flatFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/flat/flatShader.frag"));
+        flatShader = new Shader(flatVertexShaderSource, flatFragmentShaderSource);
+        flatShader.use();
+        flatShader.setVec4("color", new Vector4f(1,0,0, 1));
+
+        var outlineVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ghost/outlineShader.vert"));
+        var outlineFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ghost/outlineShader.frag"));
+        outlineShader = new Shader(outlineVertexShaderSource, outlineFragmentShaderSource);
+        outlineShader.use();
+        outlineShader.setVec4("color", new Vector4f(0, 1, 0, 0.3f));
     }
 
     private void setUpDrawables(DroneParameters droneParameters) throws IOException {
@@ -200,14 +242,25 @@ public class OpenGlScene {
                 glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
                 glClear(GL_DEPTH_BUFFER_BIT);
                 prepareShadingShader(stack, getShadowShaderViewMatrix(), getShadowShaderProjectionMatrix());
-                renderScene(stack, shadingShader);
+                renderSceneShadows(stack, shadingShader);
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 glViewport(0, 0, config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
             }
 
+            // Drone Mask
+            glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+            prepareFlatShader(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+            var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
+            if(drone != null) {
+                drawOutline(stack, flatShader, simulationState.getSimulationTimeS());
+//                drawDrone(stack, flatShader, simulationState.getSimulationTimeS(), drone);
+            }
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
             // Scene pass
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
             prepareSceneShader(
                     stack,
                     getSceneShaderViewPos(),
@@ -225,6 +278,12 @@ public class OpenGlScene {
 
         glfwSwapBuffers(simulationState.getWindow());
         glfwPollEvents();
+    }
+
+    private void prepareFlatShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
+        flatShader.use();
+        flatShader.setMatrix4f(stack,"view", view);
+        flatShader.setMatrix4f(stack,"projection", projection);
     }
 
     private void prepareShadingShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
@@ -282,6 +341,9 @@ public class OpenGlScene {
         bulletTrailShader.use();
         bulletTrailShader.setMatrix4f(stack,"view", view);
         bulletTrailShader.setMatrix4f(stack,"projection", projection);
+        outlineShader.use();
+        outlineShader.setMatrix4f(stack,"view", view);
+        outlineShader.setMatrix4f(stack,"projection", projection);
     }
 
     private void updateLights() {
@@ -325,17 +387,48 @@ public class OpenGlScene {
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         float time = simulationState.getSimulationTimeS();
 
+        glStencilMask(0x00);
+
         var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
         environmentModel.addToQueue(renderQueue, shader, time);
         addProjectilesToQueue(renderQueue, shader, time);
         addXMarkToQueue(renderQueue, shader, time);
         renderQueue.render(stack);
 
+        glStencilMask(0xFF);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, droneMask);
+        drawOutline(stack, outlineShader, time);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
+        glStencilFunc(GL_EQUAL, 0, 0xFF);
+        drawDrones(stack, shader, time);
+        glStencilFunc(GL_ALWAYS, 1, 0xFF);
+
+        drawRopes();
+        drawProjectileTrails(stack);
+    }
+
+    private void renderSceneShadows(MemoryStack stack, Shader shader) {
+        var skyColor = simulationState.getSkyColor();
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
+        float time = simulationState.getSimulationTimeS();
+        var renderQueue = new RenderQueue(simulationState.getCamera().getCameraPos());
+        environmentModel.addToQueue(renderQueue, shader, time);
+        addProjectilesToQueue(renderQueue, shader, time);
+        addXMarkToQueue(renderQueue, shader, time);
+        renderQueue.render(stack);
         drawDrones(stack, shader, time);
         drawRopes();
         drawProjectileTrails(stack);
+    }
 
+    private void drawOutline(MemoryStack stack, Shader shader, float time) {
+        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
+        if(drone == null) return;
+        drawWithDepthFunc(() -> drawDrone(stack, shader, time, drone), GL_GREATER);
     }
 
     private void drawProjectileTrails(MemoryStack stack) {
