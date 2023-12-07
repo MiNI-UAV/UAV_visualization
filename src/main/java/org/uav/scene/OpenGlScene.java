@@ -11,7 +11,7 @@ import org.uav.importer.GltfImporter;
 import org.uav.importer.ModelImporter;
 import org.uav.model.SimulationState;
 import org.uav.model.rope.Rope;
-import org.uav.model.rope.RopeModel;
+import org.uav.model.rope.RopeEntity;
 import org.uav.model.status.ProjectileStatus;
 import org.uav.scene.bullet.BulletTrail;
 import org.uav.scene.gui.Gui;
@@ -32,14 +32,13 @@ import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 import static org.uav.utils.OpenGLUtils.getSunDirectionVector;
 
 public class OpenGlScene {
-    private static final String DEFAULT_PROJECTILE_MODEL = "defaultProjectile";
     private final SimulationState simulationState;
     private final Config config;
     private Shader objectShader;
     private Shader guiShader;
     private Shader ropeShader;
     private Shader bulletTrailShader;
-    private RopeModel ropeModel;
+    private RopeEntity ropeEntity;
     private HashMap<Integer, BulletTrail> bulletTrails;
     private Gui gui;
     private final Outline outline;
@@ -61,17 +60,19 @@ public class OpenGlScene {
         this.config = config;
         this.simulationState = simulationState;
 
-        var modelImporter = new ModelImporter(new GltfImporter(loadingScreen, config), simulationState.getAssetsDirectory());
         fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
         directionalLight = new DirectionalLight(
                 getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
                 new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f));
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
+
+        var modelImporter = new ModelImporter(new GltfImporter(loadingScreen, config), simulationState.getAssetsDirectory());
         droneEntity = new DroneEntity(simulationState, modelImporter.loadModelMap("drones"));
         environmentEntity = new EnvironmentEntity(modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString()));
         projectileEntity = new ProjectileEntity(simulationState, modelImporter.loadModelMap("projectiles"));
         xMarkEntity = new XMarkEntity(modelImporter.loadModel(Paths.get("core", "xMark").toString()));
-
+        ropeEntity = new RopeEntity(Rope.SEGMENT_COUNT, Rope.THICKNESS, ropeShader, Rope.ROPE_COLOR_1, Rope.ROPE_COLOR_2);
+        
         setUpShaders();
         setUpDrawables(droneParameters);
         setUpShadingFrameBuffer();
@@ -144,13 +145,6 @@ public class OpenGlScene {
     }
 
     private void setUpDrawables(DroneParameters droneParameters) {
-        ropeModel = new RopeModel(
-                Rope.SEGMENT_COUNT,
-                Rope.THICKNESS,
-                ropeShader,
-                Rope.ROPE_COLOR_1,
-                Rope.ROPE_COLOR_2
-        );
 
         gui = new Gui(simulationState, config, droneParameters);
         bulletTrails = new HashMap<>();
@@ -306,7 +300,7 @@ public class OpenGlScene {
         droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
-        drawRopes();
+        ropeEntity.draw(simulationState.getNotifications().ropes, simulationState.getCurrPassDroneStatuses().map, simulationState.getCurrPassProjectileStatuses().map);
         drawProjectileTrails(stack);
     }
 
@@ -319,7 +313,7 @@ public class OpenGlScene {
         if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
             xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
         droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
-        drawRopes();
+        ropeEntity.draw(simulationState.getNotifications().ropes, simulationState.getCurrPassDroneStatuses().map, simulationState.getCurrPassProjectileStatuses().map);
         drawProjectileTrails(stack);
     }
 
@@ -340,20 +334,6 @@ public class OpenGlScene {
             bt.draw(stack);
         }
         bulletTrails = newBulletTrails;
-    }
-
-    private void drawRopes() {
-        for (Rope rope: simulationState.getNotifications().ropes) {
-            if(
-                !simulationState.getCurrPassDroneStatuses().map.containsKey(rope.ownerId) ||
-                !simulationState.getCurrPassProjectileStatuses().map.containsKey(rope.objectId)
-            )
-                continue;
-            var owner = simulationState.getCurrPassDroneStatuses().map.get(rope.ownerId);
-            var object = simulationState.getCurrPassProjectileStatuses().map.get(rope.objectId);
-            ropeModel.setParameters(new Vector3f(owner.position).add(rope.ownerOffset), object.position, rope.ropeLength);
-            ropeModel.draw();
-        }
     }
 
     private void renderUI() {

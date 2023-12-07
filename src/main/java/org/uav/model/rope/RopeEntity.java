@@ -3,9 +3,12 @@ package org.uav.model.rope;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.uav.importer.VerticesLoader;
+import org.uav.model.status.DroneStatus;
+import org.uav.model.status.ProjectileStatus;
 import org.uav.scene.shader.Shader;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -16,7 +19,7 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class RopeModel {
+public class RopeEntity {
     private final int segmentCount;
     private int VAO;
     private final Shader ropeShader;
@@ -31,7 +34,7 @@ public class RopeModel {
     private float yOffset;
     private boolean useLinear;
 
-    public RopeModel(int segmentCount, float ropeThickness, Shader ropeShader, Vector3f color1, Vector3f color2) {
+    public RopeEntity(int segmentCount, float ropeThickness, Shader ropeShader, Vector3f color1, Vector3f color2) {
         this.ropeShader = ropeShader;
         this.segmentCount = segmentCount;
         this.ropeLength = 0;
@@ -54,7 +57,18 @@ public class RopeModel {
         recalculateCatenary();
     }
 
-    public void draw() {
+    public void draw(List<Rope> ropes, Map<Integer, DroneStatus> drones, Map<Integer, ProjectileStatus> projectiles) {
+        for (Rope rope: ropes) {
+            if(drones.containsKey(rope.ownerId) && projectiles.containsKey(rope.objectId)) {
+                var owner = drones.get(rope.ownerId);
+                var object = projectiles.get(rope.objectId);
+                setParameters(new Vector3f(owner.position).add(rope.ownerOffset), object.position, rope.ropeLength);
+                draw();
+            }
+        }
+    }
+
+    private void draw() {
         ropeShader.use();
         ropeShader.setVec3("pointA", pointA);
         ropeShader.setVec3("pointB", pointB);
