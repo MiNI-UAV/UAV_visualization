@@ -1,5 +1,6 @@
 <params>
 	<name>test_configuration</name>
+   <type>spitfire_mini</type>
 	<rotors no='4'>
       <rotor>
          <forceCoff>0.000071</forceCoff>

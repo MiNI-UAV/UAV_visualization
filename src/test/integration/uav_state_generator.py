@@ -70,7 +70,7 @@ class UAVStateGenerator:
 
         om1, om2, om3, om4 = self.val, self.val, self.val, self.val
 
-        state_string = f"{self.id},{self.time:.2f},{x},{y},{z},{q0},{qx},{qy},{qz},{vx},{vy},{vz},{fi},{theta},{psi},{om1},{om2},{om3},{om4}"
+        state_string = f"{self.id},{self.time:.2f},{x},{y},{z},{q0},{qx},{qy},{qz},{vx},{vy},{vz},{fi},{theta},{psi},{om1},{om2},{om3},{om4};{self.id+1},{self.time:.2f},{-x},{-y},{-z},{q0},{qx},{qy},{qz},{vx},{vy},{vz},{fi},{theta},{psi},{om1},{om2},{om3},{om4}"
 
         self.time += 0.01
 

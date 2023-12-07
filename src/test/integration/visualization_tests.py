@@ -19,7 +19,7 @@ def perform_visualization_tests(java_home, visualization_dir, visualization_bina
         server_respond_to_heartbeat(drone_utils_socket)
         server_respond_to_joystick(drone_steering_socket)
         server_send_drone_status(drone_status_socket, state_generator.getState())
-        sleep(0.01)
+        sleep(0.005)
 
 
 def set_up_sockets(visualization_address):
