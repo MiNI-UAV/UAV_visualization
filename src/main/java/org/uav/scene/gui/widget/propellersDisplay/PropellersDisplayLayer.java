@@ -51,7 +51,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
 
     private void initRadius() {
         int leftBound = 0;
-        int rightBound = Math.min(noMarginCanvasSize.x, noMarginCanvasSize.y) + 1;
+        int rightBound = (Math.min(noMarginCanvasSize.x, noMarginCanvasSize.y) + 1) / 2;
         int radius = (rightBound + leftBound) / 2;
 
         while(leftBound < rightBound && leftBound != radius) {
@@ -80,15 +80,18 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         float yMin = rotors.stream().min((Vector3f v1, Vector3f v2) -> Float.compare(v1.y,v2.y)).orElseThrow(noRotors).y;
         float xDist = 2 * Math.max(Math.abs(xMax), Math.abs(xMin));
         float yDist = 2 * Math.max(Math.abs(yMax), Math.abs(yMin));
-        Vector2f scale = new Vector2f(noPanelCanvasSize.x / xDist, noPanelCanvasSize.y / yDist);
+        if(xDist == 0 && yDist == 0) return rotors.stream().map(v -> new Vector2i(0)).toList();
+        float xScale = xDist == 0? noPanelCanvasSize.y / yDist: noPanelCanvasSize.x / xDist;
+        float yScale = yDist == 0? noPanelCanvasSize.x / xDist: noPanelCanvasSize.y / yDist;
+        Vector2f scale = new Vector2f(xScale, yScale);
         float fitScale = Math.min(scale.x, scale.y);
         return rotors.stream().map(v -> new Vector2i((int) (v.x * fitScale), (int) (v.y * fitScale))).toList();
     }
 
     private boolean checkIfRotorsFit(List<Vector2i> scaledRotors, int radius) {
         for(int i=0; i<scaledRotors.size() - 1; i++) {
+            Vector2i a = scaledRotors.get(i);
             for(int j=i+1; j<scaledRotors.size(); j++) {
-                Vector2i a = scaledRotors.get(i);
                 Vector2i b = scaledRotors.get(j);
                 int panelWidth = Math.max(2 * radius, minimalTextWidth) + 2 * propellerPanelPadding.x;
                 int panelHeight = 2 * radius + textHeight + 2 * propellerPanelPadding.y;
