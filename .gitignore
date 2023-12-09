@@ -51,3 +51,5 @@ bin/
 # Python integration tests
 src/test/integration/.idea/
 src/test/integration/__pycache__/
+
+music/

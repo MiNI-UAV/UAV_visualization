@@ -154,8 +154,9 @@
          0,  0,  0,  0
       </Cab>
    </aero>
-   <PID>
+   <controllers>
       <X>
+         <type>PID</type>
          <P>0.8</P>
          <I>0.01</I>
          <D>0.0</D>
@@ -163,6 +164,7 @@
          <max>30</max>
       </X>
       <Y>
+         <type>PID</type>
          <P>0.8</P>
          <I>0.01</I>
          <D>0.0</D>
@@ -170,6 +172,7 @@
          <max>30</max>
       </Y>
       <Z>
+         <type>PID</type>
          <P>2.122</P>
          <I>0.035</I>
          <D>-0.387</D>
@@ -177,6 +180,7 @@
          <max>2</max>
       </Z>
       <U>
+         <type>PID</type>
          <P>-0.05</P>
          <I>-0.001</I>
          <D>0.0</D>
@@ -184,6 +188,7 @@
          <max>0.3</max>
       </U>
       <V>
+         <type>PID</type>
          <P>0.05</P>
          <I>0.001</I>
          <D>0.0</D>
@@ -191,6 +196,7 @@
          <max>0.3</max>
       </V>
       <W>
+         <type>PID</type>
          <P>-3556.149</P>
          <I>-538.572</I>
          <D>-112.917</D>
@@ -198,6 +204,7 @@
          <max>500</max>
       </W>
       <Fi>
+         <type>PID</type>
          <P>9.584</P>
          <I>0.798</I>
          <D>0.192</D>
@@ -205,6 +212,7 @@
          <max>100</max>
       </Fi>
       <Theta>
+         <type>PID</type>
          <P>5.191</P>
          <I>0.228</I>
          <D>0.127</D>
@@ -212,6 +220,7 @@
          <max>100</max>
       </Theta>
       <Psi>
+         <type>PID</type>
          <P>7.288</P>
          <I>0.230</I>
          <D>-0.151</D>
@@ -219,6 +228,7 @@
          <max>500</max>
       </Psi>
       <Roll>
+         <type>PID</type>
          <P>-6.249</P>
          <I>-0.904</I>
          <D>-0.219</D>
@@ -226,6 +236,7 @@
          <max>250</max>
       </Roll>
       <Pitch>
+         <type>PID</type>
          <P>6.304</P>
          <I>1.174</I>
          <D>0.433</D>
@@ -233,13 +244,14 @@
          <max>250</max>
       </Pitch>
       <Yaw>
+         <type>PID</type>
          <P>112.662</P>
          <I>22.778</I>
          <D>3.419</D>
          <min>-250</min>
          <max>250</max>
       </Yaw>
-   </PID>
+   </controllers>
    <mixers>
       <rotorMixer>
          1,  1,  1,  1,

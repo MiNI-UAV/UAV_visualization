@@ -74,8 +74,9 @@
       </Cab>
       <stallLimit>0.35</stallLimit>
    </aero>
-   <PID>
+   <controllers>
       <U>
+         <type>PID</type>
          <P>0.8</P>
          <I>0.05</I>
          <D>0.0</D>
@@ -83,6 +84,7 @@
          <max>10.0</max>
       </U>
       <Fi>
+         <type>PID</type>
          <P>2.5</P>
          <I>0.3</I>
          <D>0.0</D>
@@ -90,6 +92,7 @@
          <max>5</max>
       </Fi>
       <Theta>
+         <type>PID</type>
          <P>2.5</P>
          <I>0.3</I>
          <D>0.0</D>
@@ -97,6 +100,7 @@
          <max>5</max>
       </Theta>
       <Psi>
+         <type>PID</type>
          <P>2.5</P>
          <I>0.3</I>
          <D>0.0</D>
@@ -104,6 +108,7 @@
          <max>5</max>
       </Psi>
       <Roll>
+         <type>PID</type>
          <P>2.5</P>
          <I>0.3</I>
          <D>0.0</D>
@@ -111,6 +116,7 @@
          <max>1</max>
       </Roll>
       <Pitch>
+         <type>PID</type>
          <P>2.5</P>
          <I>0.3</I>
          <D>0.0</D>
@@ -118,13 +124,14 @@
          <max>1</max>
       </Pitch>
       <Yaw>
+         <type>PID</type>
          <P>1.2</P>
          <I>0.0</I>
          <D>0.0</D>
          <min>-1</min>
          <max>1</max>
       </Yaw>
-   </PID>
+   </controllers>
    <mixers>
       <rotorMixer>
          1,  0,  0,  0,
