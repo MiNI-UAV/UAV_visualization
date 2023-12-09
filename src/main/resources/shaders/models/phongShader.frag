@@ -6,6 +6,7 @@ in vec3 normal;
 in vec3 fragPos;
 in vec4 fragPosDirLightSpace;
 
+uniform bool useTexture;
 uniform sampler2D objectTexture;
 uniform sampler2D shadowMap;
 uniform vec3 viewPos;
@@ -15,6 +16,7 @@ uniform bool useGammaCorrection;
 
 // Material
 struct Material {
+    vec4 baseColor;
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -65,7 +67,7 @@ float getFogFactor(Fog fog, float fogCoordinate);
 
 void main()
 {
-    vec4 objectColor = texture(objectTexture, texCoord);
+    vec4 objectColor = (useTexture == true) ? texture(objectTexture, texCoord) : material.baseColor;
     vec3 viewDir = normalize(viewPos - fragPos);
     vec3 normNormal = normalize(normal);
     vec3 result = backgroundColor;

@@ -7,6 +7,7 @@ import org.javatuples.Pair;
 import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.uav.animation.Animation;
 import org.uav.animation.AnimationPlayer;
 import org.uav.config.Config;
@@ -191,31 +192,35 @@ public class GltfImporter {
             for (MeshPrimitiveModel meshPrimitiveModel : meshModel.getMeshPrimitiveModels())
             {
                 List<ModelVertex> vertices = new ArrayList<>();
-                List<Vector3f> pos = getPosition(meshPrimitiveModel);
-                List<Vector3f> nor = getNormals(meshPrimitiveModel);
-                List<Vector2f> texc = getTextureCoords(meshPrimitiveModel);
-                for(int i=0; i< pos.size(); i++)
-                    vertices.add(new ModelVertex(pos.get(i), nor.get(i), texc.get(i)));
+                List<Vector3f> positions = getPosition(meshPrimitiveModel);
+                List<Vector3f> normals = getNormals(meshPrimitiveModel);
+                List<Vector2f> textureCoords = getTextureCoords(meshPrimitiveModel);
+                for(int i=0; i< positions.size(); i++) {
+                    Vector3f pos = positions.get(i);
+                    Vector3f nor = i < normals.size() ? normals.get(i) : new Vector3f();
+                    Vector2f texc = i < textureCoords.size() ? textureCoords.get(i) : new Vector2f();
+                    vertices.add(new ModelVertex(pos, nor, texc));
+                }
 
                 List<Integer> ind = getIndices(meshPrimitiveModel);
 
                 MaterialModel materialModel = meshPrimitiveModel.getMaterialModel();
 
+                boolean containsColor = materialModel.getValues().containsKey("baseColorFactor");
+                Vector4f baseColor = containsColor ? new Vector4f((float[])materialModel.getValues().get("baseColorFactor")) : new Vector4f();
                 Material material = new Material(
+                        baseColor,
                         new Vector3f(0.5f,0.5f,0.5f),
-                        0.1f,//(float) materialModel.getValues().get("roughnessFactor"),
-                        0.5f//(float) materialModel.getValues().get("metallicFactor")
+                        1.0f,//(float) materialModel.getValues().get("roughnessFactor"),
+                        0f//(float) materialModel.getValues().get("metallicFactor")
                         );
 
-
-                /*if(!materialModel.getValues().containsKey("baseColorTexture")) {
-                    meshes.add(new Mesh(vertices, ind, List.of(), material));
-                    continue;
-                }*/
                 if(materialModel.getValues().containsKey("baseColorTexture")) {
                     TextureModel textureModel = textureModels.get((Integer) materialModel.getValues().get("baseColorTexture")); // TODO Crash null when no texture on model
                     Texture texture = loadTexture(textureModel);
                     meshes.add(new Mesh(vertices, ind, List.of(texture), texture.isTransparent(), material));
+                } else if(materialModel.getValues().containsKey("baseColorFactor")) {
+                    meshes.add(new Mesh(vertices, ind, List.of(), false, material));
                 } else {
                     Texture texture = loadTexture("missing", Paths.get(System.getProperty("user.dir"),"assets", "missing.jpg"));
                     meshes.add(new Mesh(vertices, ind, List.of(texture), false, material));

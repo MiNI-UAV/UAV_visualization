@@ -36,7 +36,8 @@ public class Mesh {
         int diffuseNr = 1;
         int specularNr = 1;
         shader.use();
-        for (int i = 0; i < 1/*textures.size()*/; i++) { // TODO Remove. We don't need multiple texture samplers for models for now.
+        shader.setBool("useTexture", false);
+        for (int i = 0; i < textures.size(); i++) { // TODO Remove. We don't need multiple texture samplers for models for now.
             glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
             // retrieve texture number (the N in diffuse_textureN)
             String number = "";
@@ -47,21 +48,21 @@ public class Mesh {
                 number = String.valueOf(specularNr++);
             shader.setInt("material." + name + number, i);
             glBindTexture(GL_TEXTURE_2D, textures.get(i).getId());
-            shader.setInt("useTexture", 1);
+            shader.setBool("useTexture", true);
         }
 
         // TODO TEXCOORD_1 2 3 4 ...
         // draw mesh
         shader.setMatrix4f(stack,"model", modelMatrix);
+        shader.setVec4("material.baseColor", material.getBaseColor());
         shader.setVec3("material.ambient", material.getDiffuse());
         shader.setVec3("material.diffuse", material.getDiffuse());
         shader.setVec3("material.specular", material.getDiffuse());
         shader.setFloat("material.shininess", 16.0f);
-        shader.setFloat("material.roughness", material.roughness);
-        shader.setFloat("material.metallic", material.metallic);
+        shader.setFloat("material.roughness", material.getRoughness());
+        shader.setFloat("material.metallic", material.getMetallic());
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        shader.setInt("useTexture", 0);
         glBindVertexArray(0);
     }
 
