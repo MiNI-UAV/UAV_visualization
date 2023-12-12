@@ -26,9 +26,9 @@ public class DroneEntity {
     public void draw(MemoryStack stack, Shader shader, float time, DroneStatus status) {
         String droneModelName = simulationState.getNotifications().droneModelsNames.getOrDefault(status.id, DEFAULT_DRONE_MODEL);
         Model droneModel = droneModels.getOrDefault(droneModelName, droneModels.get(DEFAULT_DRONE_MODEL));
-        droneModel.draw(stack, shader, time);
         droneModel.setPosition(status.position);
         droneModel.setRotation(status.rotation);
+        droneModel.draw(stack, shader, time);
     }
 
     public Optional<DroneStatus> getPlayerDrone() {
