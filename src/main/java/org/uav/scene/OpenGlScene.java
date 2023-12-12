@@ -57,7 +57,7 @@ public class OpenGlScene {
         fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
         directionalLight = new DirectionalLight(
                 getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
-                new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.5f, 0.5f, 0.5f));
+                new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.6f, 0.6f, 0.6f), new Vector3f(0.6f, 0.6f, 0.6f));
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
 
         var modelImporter = new ModelImporter(new GltfImporter(loadingScreen, config), simulationState.getAssetsDirectory());

@@ -39,6 +39,7 @@ actions:
   respawn:
   - button: 1
     inverse: false
+  - key: 88
   nextAmmo:
   - button: 0
     inverse: false

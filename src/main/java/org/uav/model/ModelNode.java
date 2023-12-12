@@ -15,7 +15,6 @@ public class ModelNode {
     private final String name;
     private final List<Mesh> meshes;
     private final List<ModelNode> children;
-
     private final Vector3f localTranslation;
     private final Quaternionf localRotation;
     private final Vector3f localScale;
