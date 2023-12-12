@@ -1,28 +1,36 @@
+import importlib
 import os.path
 import subprocess
 from shutil import copy2
 from time import sleep
 import zmq
 
-import uav_state_generator
+import uav_state_generator_coordinates
 
 
-def perform_visualization_tests(java_home, visualization_dir, visualization_binary, assets_checksum):
+def perform_visualization_tests(java_home, visualization_dir, visualization_binary, assets_checksum, state_generator):
     visualization_address = "127.0.0.1"
-    drone_requester_socket, drone_status_socket, drone_steering_socket, drone_utils_socket = set_up_sockets(
-        visualization_address)
+    drone_requester_socket, drone_status_socket, drone_steering_socket, drone_utils_socket, notification_socket = set_up_sockets(visualization_address)
 
     set_up_visualization(java_home, visualization_dir, visualization_binary, drone_requester_socket, assets_checksum)
 
-    state_generator = uav_state_generator.UAVStateGenerator()
+    uav_state_generator_module = importlib.import_module(state_generator)
+    state_generator = uav_state_generator_module.UAVStateGenerator()
+    time = 0
     while True:
         server_respond_to_heartbeat(drone_utils_socket)
         server_respond_to_joystick(drone_steering_socket)
-        server_send_drone_status(drone_status_socket, state_generator.getState())
+        server_send_drone_status(drone_status_socket, state_generator.getState(time))
+        server_send_notifications(notification_socket)
+        time += 0.005
         sleep(0.005)
 
-
 def set_up_sockets(visualization_address):
+    context = zmq.Context()
+    notification_port = 8000
+    notification_socket = context.socket(zmq.PUB)
+    notification_socket.bind(f"tcp://{visualization_address}:{notification_port}")
+
     context = zmq.Context()
     drone_requester_port = 9000
     drone_requester_socket = context.socket(zmq.REP)
@@ -40,7 +48,7 @@ def set_up_sockets(visualization_address):
     drone_utils_socket = context.socket(zmq.PAIR)
     drone_utils_socket.bind(f"tcp://{visualization_address}:{drone_utils_port}")
 
-    return drone_requester_socket, drone_status_socket, drone_steering_socket, drone_utils_socket
+    return drone_requester_socket, drone_status_socket, drone_steering_socket, drone_utils_socket, notification_socket
 
 
 def set_up_visualization(java_home, visualization_path, visualization_binary, drone_requester_socket, assets_checksum):
@@ -152,3 +160,9 @@ def server_respond_to_joystick(socket):
     server_joystick_response = "NONE"
     socket.send(server_joystick_response.encode("UTF-8"))
     print(f"[Mock Server] Sent: {server_joystick_response}")
+
+
+def server_send_notifications(socket):
+    message = "t:1,quadcopter;2,spitfire_mini"
+    socket.send(message.encode("UTF-8"))
+    print(f"[Mock Server] Sent: {message}")
