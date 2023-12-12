@@ -48,7 +48,7 @@ public class NotificationsConsumer extends Thread {
     private void parseMessage(String message) {
         switch(message.charAt(0)) {
             case 't' -> notifications.droneModelsNames = parseModelMapMessage(message);
-            case 'o' -> notifications.projectileModelsNames = parseModelMapMessage2(message);
+            case 'o' -> notifications.projectileModelsNames = parseModelMapMessage(message);
             case 'l' -> notifications.ropes = parseRopeMessage(message);
             default -> {}
         }
@@ -72,18 +72,6 @@ public class NotificationsConsumer extends Thread {
     }
 
     private Map<Integer, String> parseModelMapMessage(String message) {
-        message = message.substring(2);
-        if(message.isEmpty()) return new HashMap<>();
-        return Arrays.stream(message.split(";")).map((String input) -> {
-            Scanner scanner = new Scanner(input);
-            scanner.useDelimiter(",");
-            int droneId = Integer.parseInt(scanner.next());
-            String droneModelName = scanner.next();
-            return new Pair<>(droneId, droneModelName);
-        }).collect(Collectors.toMap(Pair::getValue0, Pair::getValue1));
-    }
-
-    private Map<Integer, String> parseModelMapMessage2(String message) {
         message = message.substring(2);
         if(message.isEmpty()) return new HashMap<>();
         return Arrays.stream(message.split(";")).map((String input) -> {
