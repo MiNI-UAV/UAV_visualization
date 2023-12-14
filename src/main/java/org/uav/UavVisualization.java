@@ -4,9 +4,13 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.uav.assets.AssetDownloader;
+import org.uav.audio.AudioManager;
 import org.uav.audio.MusicPlayer;
 import org.uav.bindingsGeneration.BindingsLoop;
 import org.uav.config.*;
@@ -20,11 +24,13 @@ import org.uav.utils.FileMapper;
 import org.zeromq.ZContext;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Paths;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.openal.ALC10.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL15.GL_ELEMENT_ARRAY_BUFFER;
@@ -36,6 +42,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class UavVisualization {
 
     private long window;
+    private long device;
+    private long context;
     private OpenGlScene openGlScene;
     private SimulationState simulationState;
     private SimulationStateProcessor simulationStateProcessor;
@@ -46,6 +54,7 @@ public class UavVisualization {
     private BindingConfig bindingConfig;
     private AvailableControlModes availableControlModes;
     private MusicPlayer musicPlayer;
+    private AudioManager audioManager;
 
 
     public void run() throws IOException {
@@ -67,43 +76,58 @@ public class UavVisualization {
         simulationStateProcessor.updateSimulationState();
         simulationState.getCamera().updateCamera();
         simulationState.getFpsCounter().nextFrame();
+        audioManager.update(simulationState);
+        musicPlayer.update();
     }
 
     private void init() throws IOException {
+        // Main config
         config = FileMapper.load(Config.class, Paths.get(System.getProperty("user.dir"), "config.yaml"), new YAMLMapper());
         FileMapper.validateNullable(config);
+        // OpenGL, OpenAL
         initializeOpenGlEnvironment();
+        initializeOpenAlEnvironment();
+        // Controller Bindings Generator
         if(config.getBindingsConfig().getGenerateOnStartUp()) {
             new BindingsLoop(window, config).loop();
         }
+        // Other configs
         droneParameters = FileMapper.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneConfig()), new XmlMapper());
         bindingConfig = FileMapper.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig().getSource()), new YAMLMapper());
+        // Loading screen
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
-        heartbeatProducer = new HeartbeatProducer(config);
-        simulationState = new SimulationState(window, config, droneParameters);
-        musicPlayer = new MusicPlayer();
+        // Music
+        musicPlayer = new MusicPlayer(config.getAudioSettings().getMusicVolume());
         if(config.getMiscSettings().getEnableMusic()) musicPlayer.setDirectory(Paths.get(System.getProperty("user.dir"), config.getMiscSettings().getMusicDirectory()).toString());
         if(config.getMiscSettings().getMusicOnStartup()) musicPlayer.playOrStop();
+        // Connection
+        simulationState = new SimulationState(window, config, droneParameters);
         var context = new ZContext();
+        // Assets
         loadingScreen.render("Checking assets...");
         var assetDownloader = new AssetDownloader(context, config);
         assetDownloader.checkAndUpdateAssets(config, simulationState, loadingScreen);
+
+        heartbeatProducer = new HeartbeatProducer(config);
         availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
         simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes);
+        audioManager = new AudioManager(simulationState, droneParameters, config);
+        audioManager.play();
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
         simulationStateProcessor.openCommunication();
         simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneConfig());
+        // Request drone for the player.
         loadingScreen.render("Spawning drone...");
         simulationStateProcessor.requestNewDrone();
-
     }
 
     private void close() {
         simulationStateProcessor.close();
         musicPlayer.close();
         closeOpenGlEnvironment();
+        closeOpenAlEnvironment();
     }
 
     private void initializeOpenGlEnvironment() {
@@ -191,6 +215,20 @@ public class UavVisualization {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
+    private void initializeOpenAlEnvironment() {
+        device = alcOpenDevice((ByteBuffer) null);
+        if (device == NULL) {
+            throw new IllegalStateException("Failed to open the default OpenAL device.");
+        }
+        ALCCapabilities deviceCaps = ALC.createCapabilities(device);
+        context = alcCreateContext(device, (IntBuffer) null);
+        if (context == NULL) {
+            throw new IllegalStateException("Failed to create OpenAL context.");
+        }
+        alcMakeContextCurrent(context);
+        AL.createCapabilities(deviceCaps);
+    }
+
     private void closeOpenGlEnvironment() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window);
@@ -199,6 +237,11 @@ public class UavVisualization {
         // Terminate GLFW and free the error callback
         glfwTerminate();
         glfwSetErrorCallback(null).free();
+    }
+
+    private void closeOpenAlEnvironment() {
+        alcDestroyContext(context);
+        alcCloseDevice(device);
     }
 
     public static void main(String[] args) throws IOException {

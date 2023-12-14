@@ -29,7 +29,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL21.GL_SRGB;
 import static org.lwjgl.opengl.GL21.GL_SRGB_ALPHA;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
-import static org.uav.utils.ImageUtils.extractImageData;
+import static org.uav.utils.IOUtils.extractImageData;
 
 public class GltfImporter {
 

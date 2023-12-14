@@ -16,6 +16,7 @@ public class Config {
     BindingsConfig bindingsConfig;
     ServerSettings serverSettings;
     DroneSettings droneSettings;
+    AudioSettings audioSettings;
     SceneSettings sceneSettings;
     GraphicsSettings graphicsSettings;
     MiscSettings miscSettings;
@@ -49,6 +50,14 @@ public class Config {
         String droneConfig;
         CameraMode defaultCamera;
         List<String> modes;
+    }
+
+    @Value
+    @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class AudioSettings {
+        Float soundVolume;
+        Float musicVolume;
     }
 
     @Value

@@ -1,6 +1,6 @@
 <params>
    <name>rocket1</name>
-   <type>spitfire_mini</type>
+   <type>rocket</type>
    <initial>
       <mode>RAUTOLAUNCH</mode>
       <position>0.0, 0.0, 0.0</position>

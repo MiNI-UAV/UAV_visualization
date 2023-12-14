@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
-import static org.uav.utils.ImageUtils.extractImageData;
+import static org.uav.utils.IOUtils.extractImageData;
 
 public class GuiLayer {
     private Texture texture;
