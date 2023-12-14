@@ -36,7 +36,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         textHeight = 20;
         minimalTextWidth = 0;
         rotors = droneParameters.getRotors() == null? new ArrayList<>():
-                droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getPosition).toList();
+                droneParameters.getRotors().getRotor().stream().map(r -> new Vector3f(r.getPosition().x, r.getPosition().y, r.getPosition().z)).toList();
         rotationDirection =  droneParameters.getRotors() == null? new ArrayList<>():
                 droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getDirection).toList();
         maxRPMs = droneParameters.getRotors() == null? new ArrayList<>():
@@ -69,7 +69,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         propellerRadius = radius;
     }
 
-    private List<Vector2i> getScaledRotorsForRadius(int radius) { // TODO Here very strange things happen
+    private List<Vector2i> getScaledRotorsForRadius(int radius) {
         Vector2i noPanelCanvasSize = new Vector2i(
                 noMarginCanvasSize.x - Math.max(2 * radius, minimalTextWidth) - 2 * propellerPanelPadding.x,
                 noMarginCanvasSize.y - Math.max(2 * radius, minimalTextWidth) - 2 * propellerPanelPadding.y - textHeight
@@ -120,9 +120,9 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(drone == null) return;
-        propellerRPMs = drone.propellersRadps.stream().map(radps -> radps / (2*(float)Math.PI) * 60).toList();
+        simulationState.getPlayerDrone().ifPresent(drone ->
+                propellerRPMs = drone.propellersRadps.stream().map(radps -> radps / (2 * (float) Math.PI) * 60).toList()
+        );
     }
 
     @Override
@@ -132,19 +132,19 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
             var rotor = scaledPropellers.get(i);
             g.setColor(new Color(0, 0, 0, 0.4f));
             g.fillOval(
-                    rotor.x - propellerRadius + canvasSize.x / 2,
                     rotor.y - propellerRadius + canvasSize.y / 2 - textHeight / 2,
+                    -rotor.x - propellerRadius + canvasSize.x / 2,
                     2 * propellerRadius,
                     2 * propellerRadius
             );
             g.setColor(Color.WHITE);
-            g.fillOval(rotor.x - 3 + canvasSize.x / 2, rotor.y - 3 + canvasSize.y / 2 - textHeight / 2, 6, 6);
+            g.fillOval(rotor.y - 3 + canvasSize.y / 2 - textHeight / 2, -rotor.x - 3 + canvasSize.x / 2, 6, 6);
 
             int rpms = propellerRPMs.get(i).intValue();
             float ratio = (float) rpms / maxRPMs.get(i);
             g.fillArc(
-                    rotor.x - propellerRadius + canvasSize.x / 2,
                     rotor.y - propellerRadius + canvasSize.y / 2 - textHeight / 2,
+                    -rotor.x - propellerRadius + canvasSize.x / 2,
                     2 * propellerRadius,
                     2 * propellerRadius,
                     90,
@@ -155,8 +155,9 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
             g.setFont(new Font("SansSerif", Font.PLAIN, textHeight));
             g.drawString(
                     rpmsString,
-                    canvasSize.x / 2 + rotor.x - g.getFontMetrics().stringWidth(rpmsString) / 2,
-                    canvasSize.y / 2 + rotor.y + propellerRadius + textHeight / 2);
+                    canvasSize.y / 2 + rotor.y- g.getFontMetrics().stringWidth(rpmsString) / 2,
+                    canvasSize.x / 2 - rotor.x + propellerRadius + textHeight
+            );
         }
     }
 }
