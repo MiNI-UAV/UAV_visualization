@@ -1,11 +1,14 @@
 package org.uav.scene.camera;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.uav.config.Config;
 import org.uav.model.SimulationState;
+import org.uav.utils.Convert;
 
 import static java.lang.Math.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -15,38 +18,38 @@ public class Camera {
     private final Vector3f cameraFPP;
     private final Vector3f cameraTPP;
     private final SimulationState simulationState;
-    private Vector3f cameraPos = new Vector3f();
-    private Vector3f cameraUp = CAMERA_UP;
-    private Vector3f cameraFront = new Vector3f();
-    private final float fov;
+    @Getter @Setter
+    private Vector3f cameraPos;
+    @Setter @Getter
+    private Vector3f cameraUp;
+    @Setter @Getter
+    private Vector3f cameraFront;
+    @Getter @Setter
+    private Vector3f cameraVel;
+    @Getter @Setter
+    private float fov;
 
     // Free Camera Movement
-    private float yaw = (float) atan2(cameraFront.y, cameraFront.x), pitch = 0;
-    private static final float movementSpeed = 2.5f;
-    static float deltaTime = 0.0f;
-    static float lastTime = 0.0f;
+    private float yaw;
+    private float pitch;
+    private final float movementSpeed;
+    private float deltaTime;
+    private float lastTime;
 
     public Camera(SimulationState simulationState, Config config) {
         this.simulationState = simulationState;
         fov = config.getGraphicsSettings().getFov();
         cameraFPP = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F));
         cameraTPP = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraTPP(), 0.0F));
-    }
-
-    public Vector3f getCameraPos() {
-        return cameraPos;
-    }
-
-    public void setCameraPos(Vector3f cameraPos) {
-        this.cameraPos = cameraPos;
-    }
-
-    public void setCameraFront(Vector3f cameraFront) {
-        this.cameraFront = cameraFront;
-    }
-
-    public void setCameraUp(Vector3f cameraUp) {
-        this.cameraUp = cameraUp;
+        cameraPos = new Vector3f();
+        cameraUp = CAMERA_UP;
+        cameraFront = new Vector3f();
+        cameraVel = new Vector3f();
+        yaw = (float) atan2(cameraFront.y, cameraFront.x);
+        pitch = 0;
+        movementSpeed = 2.5f;
+        deltaTime = 0f;
+        lastTime = 0f;
     }
 
     public Matrix4f getViewMatrix() {
@@ -54,21 +57,11 @@ public class Camera {
                 .lookAt(cameraPos, new Vector3f(cameraPos).add(cameraFront), cameraUp);
     }
 
-    public float getFov() {
-        return fov;
-    }
-
     public void updateCamera() {
-        Vector3f dronePosition;
-        Quaternionf droneRotation;
-        if(simulationState.getCurrPassDroneStatuses().map.containsKey(simulationState.getCurrentlyControlledDrone().getId())) {
-            dronePosition = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId()).position;
-            droneRotation = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId()).rotation;
-        }
-        else {
-            dronePosition = new Vector3f();
-            droneRotation = new Quaternionf();
-        }
+        var drone = simulationState.getPlayerDrone();
+        var dronePosition = drone.isPresent() ? drone.get().position : new Vector3f();
+        var droneRotation = drone.isPresent() ? drone.get().rotation : new Quaternionf();
+        var droneVelocity = drone.isPresent() ? drone.get().linearVelocity : new Vector3f();
         float currTime = simulationState.getSimulationTimeS();
         deltaTime = currTime - lastTime;
         lastTime = currTime;
@@ -77,6 +70,7 @@ public class Camera {
                 var cameraOffset = new Vector3f(cameraTPP);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
+                setCameraVel(new Vector3f(droneVelocity));
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 setCameraUp(CAMERA_UP);
             }
@@ -89,16 +83,18 @@ public class Camera {
                 var cameraOffset = new Vector3f(cameraTPP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
+                setCameraVel(new Vector3f(droneVelocity));
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 setCameraUp(new Vector3f(CAMERA_UP).rotate(rot));
             }
             case HorizontalCamera -> {
-                var rot = new Quaternionf(droneRotation);
+                var rot = Convert.toEuler(droneRotation);
                 rot.x = 0;
                 rot.y = 0;
-                var cameraOffset = new Vector3f(cameraTPP).rotate(rot);
+                var cameraOffset = new Vector3f(cameraTPP).rotate(Convert.toQuaternion(rot));
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
+                setCameraVel(new Vector3f(droneVelocity));
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 setCameraUp(CAMERA_UP);
             }
@@ -106,38 +102,57 @@ public class Camera {
                 updateFreeCamera(simulationState.getWindow(), deltaTime);
                 setCameraFront(new Vector3f(dronePosition).sub(cameraPos).normalize());
                 setCameraUp(CAMERA_UP);
+                setCameraVel(new Vector3f());
             }
-            //TODO: SoftFPV is not implemented yet, now its copy of hardFPV
-            case HardFPV, SoftFPV  -> {
+            case SoftFPV -> {
+                var rot = Convert.toEuler(droneRotation);
+                rot.x = 0;
+                rot.y = 0;
+                var cameraOffset = new Vector3f(cameraFPP).rotate(Convert.toQuaternion(rot));
+                var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
+                setCameraPos(cameraPos);
+                setCameraVel(new Vector3f(droneVelocity));
+                setCameraFront(cameraOffset.normalize());
+                setCameraUp(CAMERA_UP);
+            }
+            case HardFPV -> {
                 var rot = new Quaternionf(droneRotation);
                 var cameraOffset = new Vector3f(cameraFPP).rotate(rot);
                 var cameraPos = new Vector3f(dronePosition).add(cameraOffset);
                 setCameraPos(cameraPos);
+                setCameraVel(new Vector3f(droneVelocity));
                 setCameraFront(cameraOffset.normalize());
                 setCameraUp(new Vector3f(CAMERA_UP).rotate(rot));
             }
         }
+
     }
 
     public void updateFreeCamera(long window, float deltaTime) {
         float cameraSpeed = movementSpeed * deltaTime; // adjust accordingly
+        float multiplier = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? 2 : 1;
+
+        var deltaMovement = new Vector3f();
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            cameraPos.add(new Vector3f(cameraFront).mul(cameraSpeed));
+            deltaMovement = new Vector3f(cameraFront).mul(cameraSpeed).mul(multiplier);
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            cameraPos.sub(new Vector3f(cameraFront).mul(cameraSpeed));
+            deltaMovement = new Vector3f(cameraFront).mul(cameraSpeed).mul(multiplier).negate();
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            cameraPos.sub(new Vector3f(cameraFront).cross(cameraUp).normalize().mul(cameraSpeed));
+            deltaMovement = new Vector3f(cameraFront).cross(cameraUp).normalize().mul(cameraSpeed).mul(multiplier).negate();
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            cameraPos.add(new Vector3f(cameraFront).cross(cameraUp).normalize().mul(cameraSpeed));
+            deltaMovement = new Vector3f(cameraFront).cross(cameraUp).normalize().mul(cameraSpeed).mul(multiplier);
+
+        cameraPos.add(deltaMovement);
+        setCameraVel(new Vector3f(deltaMovement));
 
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-            pitch += 0.015;
+            pitch += 0.03f * multiplier;
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-            pitch -= 0.015;
+            pitch -= 0.03f * multiplier;
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-            yaw -= 0.015;
+            yaw -= 0.03f * multiplier;
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-            yaw += 0.015;
+            yaw += 0.03f * multiplier;
 
         if (pitch > PI/2)
             pitch = (float)PI/2 -0.01f;

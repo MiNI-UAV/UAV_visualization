@@ -7,12 +7,14 @@ import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.input.CameraMode;
 import org.uav.model.controlMode.ControlModeDemanded;
+import org.uav.model.status.DroneStatus;
 import org.uav.model.status.DroneStatuses;
 import org.uav.model.status.ProjectileStatuses;
 import org.uav.scene.camera.Camera;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Data
@@ -73,5 +75,11 @@ public class SimulationState {
                  droneParameters.getCargo().stream().map(e -> new Projectile(e, this)).toList();
         fpsCounter = new FpsCounter();
         spotLightOn = false;
+    }
+
+
+    public Optional<DroneStatus> getPlayerDrone() {
+        var drone = getCurrPassDroneStatuses().map.get(getCurrentlyControlledDrone().getId());
+        return Optional.ofNullable(drone);
     }
 }

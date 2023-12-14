@@ -133,7 +133,7 @@ public class OpenGlScene {
             }
 
             // Drone Mask
-            outlineEntity.generateDroneMask(droneEntity, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+            outlineEntity.generateDroneMask(droneEntity, simulationState, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
 
             // Scene pass
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -169,7 +169,7 @@ public class OpenGlScene {
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        outlineEntity.draw(droneEntity, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+        outlineEntity.draw(droneEntity, simulationState, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
         glStencilFunc(GL_EQUAL, 0, 0xFF);
@@ -184,7 +184,7 @@ public class OpenGlScene {
                 simulationState.getNotifications().ropes,
                 simulationState.getCurrPassDroneStatuses().map,
                 simulationState.getCurrPassProjectileStatuses().map);
-        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), droneEntity);
+        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
     }
 
     private void renderSceneShadows(MemoryStack stack, Shader shader) {
@@ -205,7 +205,7 @@ public class OpenGlScene {
                 simulationState.getNotifications().ropes,
                 simulationState.getCurrPassDroneStatuses().map,
                 simulationState.getCurrPassProjectileStatuses().map);
-        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), droneEntity);
+        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
     }
 
     private void prepareShadingShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {

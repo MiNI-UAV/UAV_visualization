@@ -9,7 +9,6 @@ import org.uav.scene.shader.Shader;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 
 @AllArgsConstructor
 public class DroneEntity {
@@ -29,10 +28,5 @@ public class DroneEntity {
         droneModel.setPosition(status.position);
         droneModel.setRotation(status.rotation);
         droneModel.draw(stack, shader, time);
-    }
-
-    public Optional<DroneStatus> getPlayerDrone() {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        return Optional.ofNullable(drone);
     }
 }

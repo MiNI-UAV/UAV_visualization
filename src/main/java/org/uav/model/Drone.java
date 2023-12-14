@@ -10,7 +10,6 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
@@ -72,7 +71,9 @@ public class Drone {
     private ControlModeDemanded parseControlModeMessage(String mode, String message) {
         Scanner scanner = new Scanner(message);
         scanner.useDelimiter(",");
-        List<ControlModeReply> replyList = availableControlModes.getModes().get(mode).getReply();
+        if(!availableControlModes.getModes().containsKey(mode))
+            return new ControlModeDemanded(mode, new HashMap<>());
+        var replyList = availableControlModes.getModes().get(mode).getReply();
         if(replyList == null)
             return new ControlModeDemanded(mode, new HashMap<>());
         Map<ControlModeReply, Float> demanded = replyList.stream()
