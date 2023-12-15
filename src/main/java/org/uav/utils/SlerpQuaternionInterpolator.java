@@ -4,7 +4,7 @@ import org.joml.Quaternionf;
 
 // https://github.com/javagl/JglTF/blob/master/jgltf-model/src/main/java/de/javagl/jgltf/model/animation/SlerpQuaternionInterpolator.java
 public class SlerpQuaternionInterpolator {
-    public static Quaternionf interpolate( float alpha, Quaternionf a, Quaternionf b, float bound1, float bound2)
+    public static Quaternionf interpolate( float alpha, float bound1, float bound2, Quaternionf a, Quaternionf b)
     {
         // Adapted from javax.vecmath.Quat4f
         float ratio = (alpha - bound1) / (bound2 - bound1);

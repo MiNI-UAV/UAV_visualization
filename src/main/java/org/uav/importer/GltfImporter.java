@@ -59,17 +59,21 @@ public class GltfImporter {
         rotationAnimationSamplers = new HashMap<>();
         scaleAnimationSamplers = new HashMap<>();
         if(!model.getAnimationModels().isEmpty()) {
-            if(model.getAnimationModels().size() != 1) throw new IOException(UNSUPPORTED_ANIMATION_MODEL);
-            AnimationModel animationModel = model.getAnimationModels().get(0);
-            animationModel.getChannels().forEach(channel -> {
-                switch(channel.getPath()) {
-                    case "translation" -> translationAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
-                    case "rotation" -> rotationAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
-                    case "scale" -> scaleAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
-                    case "weights" -> {}
-                    default -> throw new RuntimeException(UNSUPPORTED_ANIMATION_MODEL);
-                }
-            });
+            model.getAnimationModels().forEach(animationModel ->
+                animationModel.getChannels().forEach(channel -> {
+                    switch (channel.getPath()) {
+                        case "translation" ->
+                                translationAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
+                        case "rotation" ->
+                                rotationAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
+                        case "scale" ->
+                                scaleAnimationSamplers.put(channel.getNodeModel().getName(), channel.getSampler());
+                        case "weights" -> {
+                        }
+                        default -> throw new RuntimeException(UNSUPPORTED_ANIMATION_MODEL);
+                    }
+                })
+            );
         }
 
         List<ModelNode> children = new ArrayList<>();

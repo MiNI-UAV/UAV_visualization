@@ -50,10 +50,11 @@ public class ModelNode {
     }
 
     private Matrix4f getGlobalTransformation(Matrix4f parentTransform, float currentTime) {
+        animationPlayer.updateLocalTime(currentTime, 0.1f);
         Matrix4f localTransformation = new Matrix4f()
-                .translate(animationPlayer.getTranslationOrDefault(localTranslation, currentTime))
-                .rotate(animationPlayer.getRotationOrDefault(localRotation, currentTime))
-                .scale(animationPlayer.getScaleOrDefault(localScale, currentTime));
+                .translate(animationPlayer.getTranslationOrDefault(localTranslation))
+                .rotate(animationPlayer.getRotationOrDefault(localRotation))
+                .scale(animationPlayer.getScaleOrDefault(localScale));
         return new Matrix4f(parentTransform).mul(localTransformation);
     }
 }

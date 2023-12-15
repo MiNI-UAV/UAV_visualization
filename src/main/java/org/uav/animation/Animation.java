@@ -3,6 +3,7 @@ package org.uav.animation;
 import org.javatuples.Pair;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
+import org.uav.utils.PentaFunction;
 import org.uav.utils.SlerpQuaternionInterpolator;
 
 import java.util.Collections;
@@ -16,6 +17,8 @@ public class Animation {
     private final List<Pair<Float, Vector3f>> scaleAnimation;
     private float startTime;
     private boolean looping;
+    private float localTime;
+    private float lastGlobalTime;
 
     public Animation(
             List<Pair<Float, Vector3f>> translationAnimation,
@@ -26,81 +29,53 @@ public class Animation {
         this.rotationAnimation = rotationAnimation;
         this.scaleAnimation = scaleAnimation;
         startTime = 0;
+        localTime = 0;
+        lastGlobalTime = 0;
         looping = false;
     }
 
-    public Vector3f getTranslationFrame(float globalTime) {
-        if(translationAnimation.isEmpty()) return null;
-
-        float time = globalTime - startTime;
-        if(time < translationAnimation.get(0).getValue0()) {
-            if(looping)
-            {
-                float timeDiff = translationAnimation.get(translationAnimation.size()-1).getValue0() - translationAnimation.get(0).getValue0();
-                while(time < translationAnimation.get(0).getValue0()) time += timeDiff;
-            } else return translationAnimation.get(0).getValue1(); // If out of bounds, get boundaries.
-        } else if(time > translationAnimation.get(translationAnimation.size()-1).getValue0()) {
-            if(looping) {
-                float timeDiff = translationAnimation.get(translationAnimation.size()-1).getValue0() - translationAnimation.get(0).getValue0();
-                while(time > translationAnimation.get(translationAnimation.size()-1).getValue0()) time -= timeDiff;
-            } else return translationAnimation.get(translationAnimation.size()-1).getValue1(); // As above
-        }
-
-        int currentFrame = findFrame(time, translationAnimation);
-        if(currentFrame >= 0) return translationAnimation.get(currentFrame).getValue1(); // Found the exact frame
-        currentFrame = Math.abs(currentFrame + 1);
-        var p1 = translationAnimation.get(currentFrame - 1);
-        var p2 = translationAnimation.get(currentFrame);
-        return calcLinearInterpolation(time, p1.getValue0(), p2.getValue0(), p1.getValue1(), p2.getValue1());
+    public void updateLocalTime(float globalTime, float timeMultiplier) {
+        float globalTimeDiff = globalTime - lastGlobalTime;
+        lastGlobalTime = globalTime;
+        localTime += globalTimeDiff * timeMultiplier;
     }
 
-    public Quaternionf getRotationFrame(float globalTime) {
-        if(rotationAnimation.isEmpty()) return null;
-
-        float time = globalTime - startTime;
-        if(time < rotationAnimation.get(0).getValue0()) {
-            if(looping)
-            {
-                float timeDiff = rotationAnimation.get(rotationAnimation.size()-1).getValue0() - rotationAnimation.get(0).getValue0();
-                while(time < rotationAnimation.get(0).getValue0()) time += timeDiff;
-            } else return rotationAnimation.get(0).getValue1(); // If out of bounds, get boundaries.
-        } else if(time > rotationAnimation.get(rotationAnimation.size()-1).getValue0()) {
-            if(looping) {
-                float timeDiff = rotationAnimation.get(rotationAnimation.size()-1).getValue0() - rotationAnimation.get(0).getValue0();
-                while(time > rotationAnimation.get(rotationAnimation.size()-1).getValue0()) time -= timeDiff;
-            } else return rotationAnimation.get(rotationAnimation.size()-1).getValue1(); // As above
-        }
-
-        int currentFrame = findFrame(time, rotationAnimation);
-        if(currentFrame >= 0) return rotationAnimation.get(currentFrame).getValue1(); // Found the exact frame
-        currentFrame = Math.abs(currentFrame + 1);
-        var p1 = rotationAnimation.get(currentFrame - 1);
-        var p2 = rotationAnimation.get(currentFrame);
-        return SlerpQuaternionInterpolator.interpolate(time, p1.getValue1(), p2.getValue1(), p1.getValue0(), p2.getValue0());
+    public Vector3f getTranslationFrame() {
+        return getFrame(translationAnimation, this::calcLinearInterpolation);
     }
 
-    public Vector3f getScaleFrame(float globalTime) {
-        if(scaleAnimation.isEmpty()) return null;
+    public Quaternionf getRotationFrame() {
+        return getFrame(rotationAnimation, SlerpQuaternionInterpolator::interpolate);
+    }
 
-        float time = globalTime - startTime;
-        if(time < scaleAnimation.get(0).getValue0()) {
+    public Vector3f getScaleFrame() {
+        return getFrame(scaleAnimation, this::calcLinearInterpolation);
+    }
+
+    public <T> T getFrame(List<Pair<Float, T>> animation, PentaFunction<Float, Float, Float, T, T, T> interpolator) {
+        if(animation.isEmpty()) return null;
+
+        float time = localTime - startTime;
+        if(time < animation.get(0).getValue0()) {
             if(looping)
             {
-                float timeDiff = scaleAnimation.get(scaleAnimation.size()-1).getValue0() - scaleAnimation.get(0).getValue0();
-                while(time < scaleAnimation.get(0).getValue0()) time += timeDiff;
-            } else return scaleAnimation.get(0).getValue1(); // If out of bounds, get boundaries.
-        } else if(time > scaleAnimation.get(scaleAnimation.size()-1).getValue0()) {
+                float timeDiff = animation.get(animation.size()-1).getValue0() - animation.get(0).getValue0();
+                while(localTime - startTime < animation.get(0).getValue0()) startTime -= timeDiff;
+            } else return animation.get(0).getValue1(); // If out of bounds, get boundaries.
+        } else if(time > animation.get(animation.size()-1).getValue0()) {
             if(looping) {
-                float timeDiff = scaleAnimation.get(scaleAnimation.size()-1).getValue0() - scaleAnimation.get(0).getValue0();
-                while(time > scaleAnimation.get(scaleAnimation.size()-1).getValue0()) time -= timeDiff;
-            } else return scaleAnimation.get(scaleAnimation.size()-1).getValue1(); // As above
+                float timeDiff = animation.get(animation.size()-1).getValue0() - animation.get(0).getValue0();
+                while(localTime - startTime > animation.get(animation.size()-1).getValue0()) startTime += timeDiff;
+            } else return animation.get(animation.size()-1).getValue1(); // As above
+            time = localTime - startTime;
         }
-        int currentFrame = findFrame(time, scaleAnimation);
-        if(currentFrame >= 0) return scaleAnimation.get(currentFrame).getValue1(); // Found the exact frame
+
+        int currentFrame = findFrame(time, animation);
+        if(currentFrame >= 0) return animation.get(currentFrame).getValue1(); // Found the exact frame
         currentFrame = Math.abs(currentFrame + 1);
-        var p1 = scaleAnimation.get(currentFrame - 1);
-        var p2 = scaleAnimation.get(currentFrame);
-        return calcLinearInterpolation(time, p1.getValue0(), p2.getValue0(), p1.getValue1(), p2.getValue1());
+        var p1 = animation.get(currentFrame - 1);
+        var p2 = animation.get(currentFrame);
+        return interpolator.apply(time, p1.getValue0(), p2.getValue0(), p1.getValue1(), p2.getValue1());
     }
 
     private Vector3f calcLinearInterpolation(float point, float lowerBound, float upperBound, Vector3f lowerValue, Vector3f upperValue) {
