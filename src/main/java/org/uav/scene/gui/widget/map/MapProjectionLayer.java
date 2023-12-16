@@ -42,12 +42,13 @@ public class MapProjectionLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(drone == null) return;
-        var rotation = Convert.toEuler(drone.rotation);
+        var drone = simulationState.getPlayerDrone();
+        if(drone.isEmpty()) return;
+        var droneStatus = drone.get().droneStatus;
+        var rotation = Convert.toEuler(droneStatus.rotation);
         rotZ = rotation.z;
-        dronePosition = new Vector2f(-drone.position.y, drone.position.x).mul(mapScale);
-        droneVelocity = new Vector2f(drone.linearVelocity.y, -drone.linearVelocity.x).mul(velocityScale);
+        dronePosition = new Vector2f(-droneStatus.position.y, droneStatus.position.x).mul(mapScale);
+        droneVelocity = new Vector2f(droneStatus.linearVelocity.y, -droneStatus.linearVelocity.x).mul(velocityScale);
         mapZoom = simulationState.getMapZoom();
         updateDemanded(simulationState);
     }

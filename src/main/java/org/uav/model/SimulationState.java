@@ -1,20 +1,20 @@
 package org.uav.model;
 
 import lombok.Data;
+import lombok.Getter;
 import org.joml.Vector3f;
 import org.uav.FpsCounter;
 import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.input.CameraMode;
 import org.uav.model.controlMode.ControlModeDemanded;
-import org.uav.model.status.DroneStatus;
+import org.uav.model.status.DroneState;
 import org.uav.model.status.DroneStatuses;
+import org.uav.model.status.JoystickStatus;
 import org.uav.model.status.ProjectileStatuses;
 import org.uav.scene.camera.Camera;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Data
@@ -23,17 +23,20 @@ public class SimulationState {
     String serverMap;
     String droneModelChecksum;
     final long window;
+    @Getter
+    float lastSimulationTimeS;
     float simulationTimeS;
     FpsCounter fpsCounter;
     final Camera camera;
 
+    JoystickStatus joystickStatus;
     final DroneStatuses droneStatuses;
     final ReentrantLock droneStatusesMutex;
     final ProjectileStatuses projectileStatuses;
     final ReentrantLock projectileStatusesMutex;
     final Notifications notifications;
 
-    final DroneStatuses currPassDroneStatuses;
+    final Map<Integer, DroneState> dronesInAir;
     final ProjectileStatuses currPassProjectileStatuses;
 
     CameraMode currentCameraMode;
@@ -53,6 +56,8 @@ public class SimulationState {
 
     public SimulationState(long window, Config config, DroneParameters droneParameters) {
         this.window = window;
+        lastSimulationTimeS = 0;
+        simulationTimeS = 0;
         droneStatuses = new DroneStatuses();
         droneStatusesMutex = new ReentrantLock();
         projectileStatuses = new ProjectileStatuses();
@@ -61,7 +66,7 @@ public class SimulationState {
         currentCameraMode = config.getDroneSettings().getDefaultCamera();
         currentControlModeDemanded = null;
         currentlyControlledDrone = null;
-        currPassDroneStatuses = new DroneStatuses(droneStatuses.map);
+        dronesInAir = new HashMap<>();
         currPassProjectileStatuses = new ProjectileStatuses(projectileStatuses.map);
         camera = new Camera(this, config);
         mapOverlay = false;
@@ -77,9 +82,13 @@ public class SimulationState {
         spotLightOn = false;
     }
 
+    public void setSimulationTimeS(float simulationTimeS) {
+        lastSimulationTimeS = simulationTimeS;
+        this.simulationTimeS = simulationTimeS;
+    }
 
-    public Optional<DroneStatus> getPlayerDrone() {
-        var drone = getCurrPassDroneStatuses().map.get(getCurrentlyControlledDrone().getId());
+    public Optional<DroneState> getPlayerDrone() {
+        var drone = dronesInAir.get(getCurrentlyControlledDrone().getId());
         return Optional.ofNullable(drone);
     }
 }

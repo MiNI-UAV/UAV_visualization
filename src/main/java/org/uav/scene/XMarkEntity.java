@@ -14,7 +14,7 @@ import static org.uav.utils.Convert.toQuaternion;
 public class XMarkEntity {
     private final Model xMarkModel;
 
-    public void draw(ControlModeDemanded currentControlModeDemanded, MemoryStack stack, Shader shader, float time) {
+    public void draw(ControlModeDemanded currentControlModeDemanded, MemoryStack stack, Shader shader) {
         if(currentControlModeDemanded == null) return;
         var demanded = currentControlModeDemanded.demanded;
         if(ControlModeReply.xMarkDemands.stream().allMatch(demanded::containsKey)) {
@@ -24,7 +24,7 @@ public class XMarkEntity {
             float demandedYaw = demanded.get(ControlModeReply.YAW);
             xMarkModel.setPosition(new Vector3f(demandedX, demandedY, demandedZ));
             xMarkModel.setRotation(toQuaternion(new Vector3f(0, 0, demandedYaw)));
-            xMarkModel.draw(stack, shader, time);
+            xMarkModel.draw(stack, shader);
         }
     }
 }

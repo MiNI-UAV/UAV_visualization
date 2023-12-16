@@ -42,7 +42,7 @@ public class BulletTrailEntity {
                 bt = bulletTrails.get(status.id);
             } else {
                 bt = new BulletTrail(bulletTrailShader);
-                simulationState.getPlayerDrone().ifPresent(drone-> bt.addPoint(drone.position));
+                simulationState.getPlayerDrone().ifPresent(drone-> bt.addPoint(drone.droneStatus.position));
             }
             bt.addPoint(status.position);
             newBulletTrails.put(status.id, bt);

@@ -9,6 +9,8 @@ import org.uav.config.Config;
 import org.uav.config.DroneParameters;
 import org.uav.importer.GltfImporter;
 import org.uav.importer.ModelImporter;
+import org.uav.messages.MessageBoard;
+import org.uav.model.PointLight;
 import org.uav.model.SimulationState;
 import org.uav.model.rope.Rope;
 import org.uav.model.rope.RopeEntity;
@@ -39,6 +41,7 @@ public class OpenGlScene {
     private Shader shadingShader;
 
     private final DirectionalLight directionalLight;
+    private final PointLight pointLight;
     private final SpotLight spotLight;
     private final Fog fog;
     private final DroneEntity droneEntity;
@@ -50,25 +53,26 @@ public class OpenGlScene {
     private final GuiEntity guiEntity;
     private final OutlineEntity outlineEntity;
 
-    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters) throws IOException {
+    public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters, MessageBoard messageBoard) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
 
         fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
         directionalLight = new DirectionalLight(
                 getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
-                new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.6f, 0.6f, 0.6f), new Vector3f(0.6f, 0.6f, 0.6f));
+                new Vector3f(0.2f), new Vector3f(0.8f), new Vector3f(0.6f));
+        pointLight = PointLight.PointLightFactory.createDronePointLight();
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
 
         var modelImporter = new ModelImporter(new GltfImporter(loadingScreen, config), simulationState.getAssetsDirectory());
-        droneEntity = new DroneEntity(simulationState, modelImporter.loadModelMap("drones"));
+        droneEntity = new DroneEntity(modelImporter.loadModelMap("drones"));
         environmentEntity = new EnvironmentEntity(modelImporter.loadModel(Paths.get("maps", simulationState.getServerMap()).toString()));
         projectileEntity = new ProjectileEntity(simulationState, modelImporter.loadModelMap("projectiles"));
         xMarkEntity = new XMarkEntity(modelImporter.loadModel(Paths.get("core", "xMark").toString()));
         ropeEntity = new RopeEntity(Rope.SEGMENT_COUNT, Rope.THICKNESS, Rope.ROPE_COLOR_1, Rope.ROPE_COLOR_2, directionalLight, simulationState.getSkyColor());
         bulletTrailEntity = new BulletTrailEntity();
 
-        guiEntity = new GuiEntity(simulationState, config, droneParameters);
+        guiEntity = new GuiEntity(simulationState, config, droneParameters, messageBoard);
         outlineEntity = new OutlineEntity(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
 
         setUpShaders();
@@ -119,7 +123,7 @@ public class OpenGlScene {
 
     public void render() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            float time = simulationState.getSimulationTimeS();
+            float deltaTimeS = simulationState.getSimulationTimeS() - simulationState.getLastSimulationTimeS();
 
             // Shading pass
             if(config.getGraphicsSettings().getUseShadows()) {
@@ -133,7 +137,7 @@ public class OpenGlScene {
             }
 
             // Drone Mask
-            outlineEntity.generateDroneMask(droneEntity, simulationState, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+            outlineEntity.generateDroneMask(droneEntity, simulationState, stack, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
 
             // Scene pass
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -146,7 +150,7 @@ public class OpenGlScene {
             updateLights();
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, depthMap);
-            renderScene(stack, objectShader, time);
+            renderScene(stack, objectShader, deltaTimeS);
         }
         // UI pass
         guiEntity.draw(simulationState.isMapOverlay());
@@ -155,25 +159,25 @@ public class OpenGlScene {
         glfwPollEvents();
     }
 
-    private void renderScene(MemoryStack stack, Shader shader, float time) {
+    private void renderScene(MemoryStack stack, Shader shader, float deltaTimeS) {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
 
         glStencilMask(0x00);
 
-        environmentEntity.draw(simulationState, stack, shader, time);
-        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
+        environmentEntity.draw(simulationState, stack, shader);
+        projectileEntity.draw(stack, shader, simulationState.getCurrPassProjectileStatuses().map.values());
         if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
-            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader);
 
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        outlineEntity.draw(droneEntity, simulationState, stack, time, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+        outlineEntity.draw(droneEntity, simulationState, stack, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
         glStencilFunc(GL_EQUAL, 0, 0xFF);
-        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
+        droneEntity.draw(stack, shader, deltaTimeS, simulationState.getDronesInAir().values(), simulationState.getJoystickStatus());
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
         ropeEntity.draw(
@@ -182,7 +186,7 @@ public class OpenGlScene {
                 getSceneShaderViewMatrix(),
                 getSceneShaderProjectionMatrix(),
                 simulationState.getNotifications().ropes,
-                simulationState.getCurrPassDroneStatuses().map,
+                simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
         bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
     }
@@ -191,11 +195,11 @@ public class OpenGlScene {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         float time = simulationState.getSimulationTimeS();
-        environmentEntity.draw(simulationState, stack, shader, time);
-        projectileEntity.draw(stack, shader, time, simulationState.getCurrPassProjectileStatuses().map.values());
+        environmentEntity.draw(simulationState, stack, shader);
+        projectileEntity.draw(stack, shader, simulationState.getCurrPassProjectileStatuses().map.values());
         if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
-            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader, time);
-        droneEntity.draw(stack, shader, time, simulationState.getCurrPassDroneStatuses().map.values());
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader);
+        droneEntity.draw(stack, shader, time, simulationState.getDronesInAir().values(), simulationState.getJoystickStatus());
 
         ropeEntity.draw(
                 stack,
@@ -203,7 +207,7 @@ public class OpenGlScene {
                 getSceneShaderViewMatrix(),
                 getSceneShaderProjectionMatrix(),
                 simulationState.getNotifications().ropes,
-                simulationState.getCurrPassDroneStatuses().map,
+                simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
         bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
     }
@@ -228,30 +232,35 @@ public class OpenGlScene {
     }
 
     private Matrix4f getShadowShaderViewMatrix() {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
+        var drone = simulationState.getDronesInAir().get(simulationState.getCurrentlyControlledDrone().getId());
         if(drone == null) return new Matrix4f();
         return new Matrix4f().lookAt(
-                new Vector3f(drone.position).add( // TODO lookAt function breaks down when looking stright down
+                new Vector3f(drone.droneStatus.position).add( // TODO lookAt function breaks down when looking stright down
                         new Vector3f(0, 0, -config.getGraphicsSettings().getShadowsRenderingDistance()*0.5f)
                                 .rotateY((90 - config.getSceneSettings().getSunAngleYearCycle()) / 180 * (float) Math.PI)
                                 .rotateX(-config.getSceneSettings().getSunAngleDayCycle() / 180 * (float) Math.PI)
                 ),
-                new Vector3f(drone.position),
+                new Vector3f(drone.droneStatus.position),
                 new Vector3f(0, 0, -1f)
         );
     }
 
     private void updateLights() {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(!simulationState.isSpotLightOn() || drone == null) {
+        var drone = simulationState.getPlayerDrone();
+
+        if(!simulationState.isSpotLightOn() || drone.isEmpty()) {
             spotLight.setSpotLightOn(false);
         } else {
+            var droneStatus = drone.get().droneStatus;
             spotLight.setSpotLightOn(true);
-            var spotlightPos = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F)).rotate(drone.rotation).add(drone.position);
+            var spotlightPos = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getCameraFPP(), 0.0F)).rotate(droneStatus.rotation).add(droneStatus.position);
             spotLight.setPosition(spotlightPos);
-            spotLight.setDirection(new Vector3f(1, 0, 0).rotate(drone.rotation));
+            spotLight.setDirection(new Vector3f(1, 0, 0).rotate(droneStatus.rotation));
         }
         spotLight.applyTo(objectShader);
+
+        pointLight.setPosition(simulationState.getCamera().getCameraPos());
+        pointLight.applyTo(objectShader);
     }
 
     private Matrix4f getSceneShaderProjectionMatrix() {

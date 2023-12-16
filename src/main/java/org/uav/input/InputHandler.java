@@ -51,8 +51,6 @@ public class InputHandler {
     }
 
     private void initBindings(BindingConfig bindingConfig) throws IOException {
-        // TODO better map overlay handling
-        // TODO fix propeller display
         // Steering
         steeringAxisBindings.addAll(bindingConfig.getSteering());
         // Actions
@@ -124,14 +122,10 @@ public class InputHandler {
 
     private void handleButtons(int joystick) {
         ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
-//        var size = byteBuffer.remaining();
         byte[] arr = new byte[byteBuffer.remaining()];
         byteBuffer.get(arr);
 
         buttonBindings.forEach(binding -> binding.execute(arr[binding.button]));
-//        for(int i=0; i<size; i++)
-//            System.out.print(i + ": " + arr[i] +" | ");
-//        System.out.println();
     }
 
     private void handleAxes(int joystick) {
@@ -141,22 +135,10 @@ public class InputHandler {
 
         axisBindings.forEach(binding -> binding.execute(arr[binding.axis]));
 
-//        debugPrintOutAxes(joystick);
         JoystickStatus joystickStatus = new JoystickStatus();
         steeringAxisBindings.forEach(binding -> joystickStatus.axes.add(convertToRawData(arr[binding.getAxis()], binding)));
+        simulationState.setJoystickStatus(joystickStatus);
         joystickProducer.send(simulationState.getCurrentlyControlledDrone(), joystickStatus);
-    }
-
-    private void debugPrintOutAxes(int joystick) {
-        int count = 0;
-        FloatBuffer floatBuffer = glfwGetJoystickAxes(joystick);
-        System.out.print("Axes:");
-        while (floatBuffer != null && floatBuffer.hasRemaining()) {
-            float axes = floatBuffer.get();
-            System.out.print(count + "," + axes + " ");
-            count++;
-        }
-        System.out.println();
     }
 
     private void changeControlMode(String controlMode) {

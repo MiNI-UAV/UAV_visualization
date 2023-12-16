@@ -71,7 +71,7 @@ public class OutlineEntity {
         glBindTexture(GL_TEXTURE_2D, droneMask);
         simulationState.getPlayerDrone().ifPresent(
                 drone -> drawWithDepthFunc(
-                        () -> droneEntity.draw(stack, shader, time, drone), GL_GREATER
+                        () -> droneEntity.draw(stack, shader, time, drone, simulationState.getJoystickStatus()), GL_GREATER
                 )
         );
     }

@@ -15,6 +15,7 @@ import org.uav.audio.MusicPlayer;
 import org.uav.bindingsGeneration.BindingsLoop;
 import org.uav.config.*;
 import org.uav.input.InputHandler;
+import org.uav.messages.MessageBoard;
 import org.uav.model.SimulationState;
 import org.uav.processor.SimulationStateProcessor;
 import org.uav.queue.HeartbeatProducer;
@@ -55,6 +56,7 @@ public class UavVisualization {
     private AvailableControlModes availableControlModes;
     private MusicPlayer musicPlayer;
     private AudioManager audioManager;
+    private MessageBoard messageBoard;
 
 
     public void run() throws IOException {
@@ -78,6 +80,7 @@ public class UavVisualization {
         simulationState.getFpsCounter().nextFrame();
         audioManager.update(simulationState);
         musicPlayer.update();
+        messageBoard.deprecateMessages();
     }
 
     private void init() throws IOException {
@@ -97,8 +100,11 @@ public class UavVisualization {
         // Loading screen
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
+        // Message Board
+        messageBoard = new MessageBoard();
         // Music
         musicPlayer = new MusicPlayer(config.getAudioSettings().getMusicVolume());
+        musicPlayer.subscribe(messageBoard.produceSubscriber());
         if(config.getMiscSettings().getEnableMusic()) musicPlayer.setDirectory(Paths.get(System.getProperty("user.dir"), config.getMiscSettings().getMusicDirectory()).toString());
         if(config.getMiscSettings().getMusicOnStartup()) musicPlayer.playOrStop();
         // Connection
@@ -111,11 +117,11 @@ public class UavVisualization {
 
         heartbeatProducer = new HeartbeatProducer(config);
         availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
-        simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes);
+        simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes, messageBoard);
         audioManager = new AudioManager(simulationState, droneParameters, config);
         audioManager.play();
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);
-        openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters);
+        openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters, messageBoard);
         simulationStateProcessor.openCommunication();
         simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneConfig());
         // Request drone for the player.

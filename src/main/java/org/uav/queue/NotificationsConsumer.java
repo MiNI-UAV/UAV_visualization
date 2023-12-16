@@ -3,6 +3,8 @@ package org.uav.queue;
 import org.javatuples.Pair;
 import org.joml.Vector3f;
 import org.uav.config.Config;
+import org.uav.messages.Message;
+import org.uav.messages.Publisher;
 import org.uav.model.Notifications;
 import org.uav.model.SimulationState;
 import org.uav.model.rope.Rope;
@@ -11,16 +13,23 @@ import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 
+import java.awt.*;
+import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.uav.utils.ZmqUtils.checkErrno;
 
-public class NotificationsConsumer extends Thread {
+public class NotificationsConsumer extends Thread implements Publisher {
+    private final SimulationState simulationState;
     private final Notifications notifications;
     private final ZMQ.Socket socket;
+    private final List<Consumer<Message>> subscribers;
 
     public NotificationsConsumer(ZContext context, Config config, SimulationState simulationState) {
+        this.simulationState = simulationState;
+        subscribers = new ArrayList<>();
         notifications = simulationState.getNotifications();
         String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getNotifications();
         socket = context.createSocket(SocketType.SUB);
@@ -50,8 +59,36 @@ public class NotificationsConsumer extends Thread {
             case 't' -> notifications.droneModelsNames = parseModelMapMessage(message);
             case 'o' -> notifications.projectileModelsNames = parseModelMapMessage(message);
             case 'l' -> notifications.ropes = parseRopeMessage(message);
+            case 'p' -> notifySubscriberOfServerNotification(message);
             default -> {}
         }
+    }
+
+    private void notifySubscriberOfServerNotification(String message) {
+        var drone = simulationState.getPlayerDrone();
+        if(drone.isEmpty()) return;
+        Message notification = parseServerNotification(message, drone.get().droneStatus.id);
+        if(notification != null)
+            notifySubscriber(notification);
+    }
+
+    private Message parseServerNotification(String message, int drone) {
+        message = message.substring(2);
+        if(message.isEmpty()) return null;
+        Scanner scanner = new Scanner(message.split(";")[0]);
+        scanner.useDelimiter(",");
+        int target = Integer.parseInt(scanner.next());
+        if(target >= 0 && target != drone) return null;
+        String category = scanner.next();
+        String colorString = scanner.next();
+        Color color = new Color(
+                Integer.valueOf( colorString.substring(0, 2), 16),
+                Integer.valueOf( colorString.substring( 2, 4 ), 16 ),
+                Integer.valueOf( colorString.substring( 4, 6 ), 16 )
+        );
+        float showTime = Float.parseFloat(scanner.next()) / 1000;
+        String content = scanner.next();
+        return new Message(content, category, showTime, color, true);
     }
 
     private List<Rope> parseRopeMessage(String message) {
@@ -81,5 +118,10 @@ public class NotificationsConsumer extends Thread {
             String droneModelName = scanner.next();
             return new Pair<>(droneId, droneModelName);
         }).collect(Collectors.toMap(Pair::getValue0, Pair::getValue1));
+    }
+
+    @Override
+    public List<Consumer<Message>> getSubscribers() {
+        return subscribers;
     }
 }

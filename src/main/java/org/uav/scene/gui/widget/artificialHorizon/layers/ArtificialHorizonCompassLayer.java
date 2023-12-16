@@ -34,9 +34,9 @@ public class ArtificialHorizonCompassLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(drone == null) return;
-        var rotation = Convert.toEuler(drone.rotation);
+        var drone = simulationState.getPlayerDrone();
+        if(drone.isEmpty()) return;
+        var rotation = Convert.toEuler(drone.get().droneStatus.rotation);
         compassOffset = (int) ((rotation.z+Math.PI)/(2*Math.PI) * 1440);
 
         updateDemanded(simulationState);

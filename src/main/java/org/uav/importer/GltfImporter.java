@@ -41,6 +41,7 @@ public class GltfImporter {
     private Map<String, AnimationModel.Sampler> translationAnimationSamplers;
     private Map<String, AnimationModel.Sampler> rotationAnimationSamplers;
     private Map<String, AnimationModel.Sampler> scaleAnimationSamplers;
+    private ArrayList<Model.AnimationInfo> animationInfos;
 
     public GltfImporter(LoadingScreen loadingScreen, Config config){
         loadedTextures = new HashMap<>();
@@ -55,6 +56,7 @@ public class GltfImporter {
 
         SceneModel sceneModel = model.getSceneModels().get(0);
 
+        animationInfos = new ArrayList<>();
         translationAnimationSamplers = new HashMap<>();
         rotationAnimationSamplers = new HashMap<>();
         scaleAnimationSamplers = new HashMap<>();
@@ -90,7 +92,8 @@ public class GltfImporter {
                         new Vector3f(),
                         new Quaternionf(0,0,0,1),
                         new Vector3f(1f),
-                        new AnimationPlayer())
+                        new AnimationPlayer()),
+                animationInfos
         );
     }
 
@@ -99,12 +102,17 @@ public class GltfImporter {
         var translationAnimation = getAnimation(nodeModel, translationAnimationSamplers);
         var rotationAnimation = getRotationAnimation(nodeModel, rotationAnimationSamplers);
         var scaleAnimation = getAnimation(nodeModel, scaleAnimationSamplers);
+        addAnimationInfo(nodeModel.getName(), "Hover", translationAnimation, "translation");
+        addAnimationInfo(nodeModel.getName(), "Hover", rotationAnimation, "rotation");
+        addAnimationInfo(nodeModel.getName(), "Hover", scaleAnimation, "scale");
         var animationPlayer = new AnimationPlayer();
-        animationPlayer.put(
-                "Hover",
-                new Animation(translationAnimation, rotationAnimation, scaleAnimation)
-                );
-        animationPlayer.start("Hover", 0, true);
+        if(!translationAnimation.isEmpty() || !rotationAnimation.isEmpty() || !scaleAnimation.isEmpty()) {
+            animationPlayer.put(
+                    "Hover",
+                    new Animation(translationAnimation, rotationAnimation, scaleAnimation)
+            );
+            animationPlayer.start("Hover", 0, true);
+        }
 
         List<Mesh> meshes = processMeshModels(nodeModel.getMeshModels());
 
@@ -147,6 +155,15 @@ public class GltfImporter {
                 localRotation,
                 localScale,
                 animationPlayer
+        );
+    }
+
+    private <T> void addAnimationInfo(String modelName, String animationName, List<Pair<Float, T>> animation, String type) {
+        if(animation.isEmpty()) return;
+        animationInfos.add(
+                new Model.AnimationInfo(
+                        animationName, type, modelName, animation.get(animation.size()-1).getValue0() - animation.get(0).getValue0(), 0
+                )
         );
     }
 

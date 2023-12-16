@@ -35,6 +35,21 @@ struct DirLight {
 };
 uniform DirLight dirLight;
 
+
+// Point Light
+struct PointLight {
+    vec3 position;
+
+    float constant;
+    float linear;
+    float quadratic;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+uniform PointLight cameraPointLight;
+
 // Spot Light
 struct SpotLight {
     vec3 position;
@@ -61,6 +76,7 @@ struct Fog {
 uniform Fog fog;
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor);
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal);
 float getFogFactor(Fog fog, float fogCoordinate);
@@ -74,6 +90,7 @@ void main()
 
     result = calcDirLight(dirLight, normNormal, viewDir, objectColor);
     result += (spotLightOn == true)? calcSpotLight(spotLight, normNormal, fragPos, viewDir): vec3(0);
+    result += calcPointLight(cameraPointLight, normNormal, fragPos, viewDir);
     result *= objectColor.xyz;
     result = mix(result, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
 
@@ -133,6 +150,28 @@ float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
     }
     shadow /= 9.0;
     return shadow;
+}
+
+vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+    vec3 lightDir = normalize(light.position - fragPos);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    // attenuation
+    float distance    = length(light.position - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance +
+    light.quadratic * (distance * distance));
+    // combine results
+    vec3 ambient  = light.ambient  * material.ambient;
+    vec3 diffuse  = light.diffuse  * diff * material.diffuse;
+    vec3 specular = light.specular * spec * material.specular;
+    ambient  *= attenuation;
+    diffuse  *= attenuation;
+    specular *= attenuation;
+    return (ambient + diffuse + specular);
 }
 
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)

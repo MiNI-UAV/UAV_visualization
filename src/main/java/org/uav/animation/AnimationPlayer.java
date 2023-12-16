@@ -27,21 +27,13 @@ public class AnimationPlayer {
         activeAnimations.add(name);
     }
 
-    public void updateLocalTime(float globalTime, float timeMultiplier) {
-        activeAnimations.forEach(activeAnimation -> {
-            Animation animation = animations.getOrDefault(activeAnimation, null);
-            if(animation == null) return;
-            animation.updateLocalTime(globalTime, timeMultiplier);
-        });
-    }
-
-    public Vector3f getTranslationOrDefault(Vector3f defaultTranslation) { // TODO Zwinąć
-        if(activeAnimations.isEmpty()) return defaultTranslation;
+    public Vector3f getTranslationOrDefault(Vector3f defaultTranslation, Float progress) { // TODO Zwinąć
+        if(activeAnimations.isEmpty() || progress == null) return defaultTranslation;
         var translation = new Vector3f();
         activeAnimations.forEach(activeAnimation -> {
             Animation animation = animations.getOrDefault(activeAnimation, null);
             if(animation == null) return;
-            var frame = animation.getTranslationFrame();
+            var frame = animation.getTranslationFrame(progress);
             if(frame == null) return;
             translation.add(frame);
         });
@@ -49,13 +41,13 @@ public class AnimationPlayer {
         return translation;
     }
 
-    public Quaternionf getRotationOrDefault(Quaternionf defaultRotation) {
-        if(activeAnimations.isEmpty()) return defaultRotation;
+    public Quaternionf getRotationOrDefault(Quaternionf defaultRotation, Float progress) {
+        if(activeAnimations.isEmpty() || progress == null) return defaultRotation;
         var rotation = new Quaternionf();
         activeAnimations.forEach(activeAnimation -> {
             Animation animation = animations.getOrDefault(activeAnimation, null);
             if(animation == null) return;
-            var frame = animation.getRotationFrame();
+            var frame = animation.getRotationFrame(progress);
             if(frame == null) return;
             rotation.mul(frame);
         });
@@ -63,13 +55,13 @@ public class AnimationPlayer {
         return rotation;
     }
 
-    public Vector3f getScaleOrDefault(Vector3f defaultScale) {
-        if(activeAnimations.isEmpty()) return defaultScale;
+    public Vector3f getScaleOrDefault(Vector3f defaultScale, Float progress) {
+        if(activeAnimations.isEmpty() || progress == null) return defaultScale;
         var scale = new Vector3f(1);
         activeAnimations.forEach(activeAnimation -> {
             Animation animation = animations.getOrDefault(activeAnimation, null);
             if(animation == null) return;
-            var frame = animation.getScaleFrame();
+            var frame = animation.getScaleFrame(progress);
             if(frame == null) return;
             scale.mul(frame);
         });

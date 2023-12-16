@@ -12,9 +12,9 @@ public class EnvironmentEntity {
         this.environmentModel = environmentModel;
     }
 
-    public void draw(SimulationState simulationState, MemoryStack stack, Shader shader, float time) {
+    public void draw(SimulationState simulationState, MemoryStack stack, Shader shader) {
         var renderQueue = new OrderedRenderQueue(simulationState.getCamera().getCameraPos());
-        environmentModel.addToQueue(renderQueue, shader, time);
+        environmentModel.addToQueue(renderQueue, shader);
         renderQueue.render(stack);
     }
 }

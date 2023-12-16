@@ -79,6 +79,7 @@ public class Config {
         Integer windowHeight;
         FullScreenMode fullScreenMode;
         Integer monitor;
+        Boolean enableGui;
         Float guiScale;
         Float fov;
         Boolean useGammaCorrection;

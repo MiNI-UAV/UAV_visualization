@@ -49,15 +49,15 @@ public class ArtificialHorizonMetersLayer implements DrawableGuiLayer {
     }
 
     public void update(SimulationState simulationState) {
-        var drone = simulationState.getCurrPassDroneStatuses().map.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(drone == null) return;
-
-        position = new Vector2f(drone.position.x, drone.position.y);
-        climbRate = drone.linearVelocity.z * Z_AXIS_INVERSION;
-        height = drone.position.z * Z_AXIS_INVERSION;
+        var drone = simulationState.getPlayerDrone();
+        if(drone.isEmpty()) return;
+        var droneStatus = drone.get().droneStatus;
+        position = new Vector2f(droneStatus.position.x, droneStatus.position.y);
+        climbRate = droneStatus.linearVelocity.z * Z_AXIS_INVERSION;
+        height = droneStatus.position.z * Z_AXIS_INVERSION;
         controlModeDemanded = simulationState.getCurrentControlModeDemanded();
 
-        updateDemanded(simulationState, drone);
+        updateDemanded(simulationState, droneStatus);
     }
 
     private void updateDemanded(SimulationState simulationState, DroneStatus drone) {

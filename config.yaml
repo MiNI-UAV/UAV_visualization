@@ -1,22 +1,25 @@
 bindingsConfig:
   generateOnStartUp: false
-  source: bindings/bindings_xbox_2.yaml
+  source: bindings/bindings_xbox_1.yaml
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
-  downloadMissingAssets: true
-  # assetsToUse: 4beda679 # Comment out if above is true.
+  downloadMissingAssets: false
+  assetsToUse: fda1faff # Comment out if above is true.
   heartBeatIntervalMs: 500
   serverTimoutMs: 10000
 droneSettings:
   droneName: Maurice
-  droneConfig: plane.xml
+  droneConfig: quadcopter.xml
   defaultCamera: HorizontalCamera
   modes:
-   - FMANUAL
-   - FANGLE
-   - FACRO
-  # - FMANUAL
+    - QPOS
+    - QANGLE
+    - QACRO
+    - NONE
+#   - FMANUAL
+#   - FANGLE
+#   - FACRO
   # - RMANUAL
 audioSettings:
   soundVolume: 0.5
@@ -26,14 +29,15 @@ sceneSettings:
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
   sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
   fogDensity: 0.001
-  cameraFPP: [1, 0, 0.1]
-  cameraTPP: [-3.0, 0, -1.5]
+  cameraFPP: [1, 0, 0]
+  cameraTPP: [-.95, 0, -.375]
 graphicsSettings:
   windowWidth: 1920
   windowHeight: 1080
   fullScreenMode: FullScreen
   monitor: 0
   guiScale: .7
+  enableGui: true
   fov: 100 # 0 < fov < 180
   useGammaCorrection: true
   gammaCorrection: 2.2

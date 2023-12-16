@@ -1,22 +1,25 @@
 package org.uav.audio;
 
-import org.javatuples.Pair;
+import org.uav.messages.Message;
+import org.uav.messages.Publisher;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public class MusicPlayer {
+public class MusicPlayer implements Publisher {
 
+    public static final String MESSAGE_CATEGORY_MUSIC = "Music";
     private File[] musicFiles;
     private AudioRenderer audioRenderer;
     private final float userVolume;
     private boolean isRunning = false;
     private int lastSong = -1;
-    private final List<Consumer<Pair<MusicPlayerEvent,String>>> subscribers;
+    private final List<Consumer<Message>> subscribers;
     private final Random random;
 
     public MusicPlayer(float userVolume) {
@@ -31,14 +34,14 @@ public class MusicPlayer {
         File musicFolder = new File(path);
 
         if (!musicFolder.isDirectory()) {
-            System.err.println("Invalid music folder.");
+            notifySubscriber(new Message("Invalid music folder.", MESSAGE_CATEGORY_MUSIC, 100));
             return -1;
         }
 
         musicFiles = musicFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".ogg"));
 
         if (musicFiles == null || musicFiles.length == 0) {
-            System.err.println("No OGG files found in the folder.");
+            notifySubscriber(new Message("No OGG files found in the music folder.", MESSAGE_CATEGORY_MUSIC, 100));
             return 0;
         }
 
@@ -76,13 +79,6 @@ public class MusicPlayer {
         audioRenderer.close();
     }
 
-    private void notifySubscriber(MusicPlayerEvent event, String content)
-    {
-        for (Consumer<Pair<MusicPlayerEvent,String>> subscriber : subscribers) {
-            subscriber.accept(new Pair<>(event,content));
-        }
-    }
-
     public String playOrStop()
     {
         String returnValue = "";
@@ -90,13 +86,18 @@ public class MusicPlayer {
 
         if (isRunning) {
             stop();
-            notifySubscriber(MusicPlayerEvent.STOP, "");
+            notifySubscriber(new Message("Music turned OFF", MESSAGE_CATEGORY_MUSIC, 4));
         } else {
             returnValue = play();
-            notifySubscriber(MusicPlayerEvent.PLAY, returnValue);
+            notifySubscriber(new Message("Music turned ON", MESSAGE_CATEGORY_MUSIC, 4));
+            notifyOfPlaying(returnValue);
         }
         isRunning = !isRunning;
         return returnValue;
+    }
+
+    private void notifyOfPlaying(String returnValue) {
+        notifySubscriber(new Message(MessageFormat.format("Playing now: {0}", returnValue), MESSAGE_CATEGORY_MUSIC, 6));
     }
 
     public String nextSong()
@@ -105,15 +106,16 @@ public class MusicPlayer {
         if(!checkDirectory() || !isRunning) return returnValue;
         stop();
         returnValue = play();
-        notifySubscriber(MusicPlayerEvent.NEXT, returnValue);
+        notifyOfPlaying(returnValue);
         return returnValue;
     }
 
-    public  void subscribe(Consumer<Pair<MusicPlayerEvent,String>> subscriber) {
-        subscribers.add(subscriber);
+    public void close() {
+        if(audioRenderer != null) audioRenderer.close();
     }
 
-    public void close() {
-        audioRenderer.close();
+    @Override
+    public List<Consumer<Message>> getSubscribers() {
+        return subscribers;
     }
 }

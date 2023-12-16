@@ -59,9 +59,9 @@ public class Camera {
 
     public void updateCamera() {
         var drone = simulationState.getPlayerDrone();
-        var dronePosition = drone.isPresent() ? drone.get().position : new Vector3f();
-        var droneRotation = drone.isPresent() ? drone.get().rotation : new Quaternionf();
-        var droneVelocity = drone.isPresent() ? drone.get().linearVelocity : new Vector3f();
+        var dronePosition = drone.isPresent() ? drone.get().droneStatus.position : new Vector3f();
+        var droneRotation = drone.isPresent() ? drone.get().droneStatus.rotation : new Quaternionf();
+        var droneVelocity = drone.isPresent() ? drone.get().droneStatus.linearVelocity : new Vector3f();
         float currTime = simulationState.getSimulationTimeS();
         deltaTime = currTime - lastTime;
         lastTime = currTime;

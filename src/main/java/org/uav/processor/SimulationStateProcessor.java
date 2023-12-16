@@ -3,9 +3,11 @@ package org.uav.processor;
 import org.lwjgl.glfw.GLFW;
 import org.uav.config.AvailableControlModes;
 import org.uav.config.Config;
+import org.uav.messages.MessageBoard;
 import org.uav.model.Drone;
 import org.uav.model.Projectile;
 import org.uav.model.SimulationState;
+import org.uav.model.status.DroneState;
 import org.uav.queue.DroneRequester;
 import org.uav.queue.DroneStatusConsumer;
 import org.uav.queue.NotificationsConsumer;
@@ -25,13 +27,14 @@ public class SimulationStateProcessor implements AutoCloseable {
     private final NotificationsConsumer notificationsConsumer;
 
 
-    public SimulationStateProcessor(ZContext context, SimulationState simulationState, Config config, AvailableControlModes availableControlModes) {
+    public SimulationStateProcessor(ZContext context, SimulationState simulationState, Config config, AvailableControlModes availableControlModes, MessageBoard messageBoard) {
         this.simulationState = simulationState;
         this.config = config;
         droneRequester = new DroneRequester(context, simulationState, config, availableControlModes);
         droneStatusConsumer = new DroneStatusConsumer(context, simulationState, config);
         projectileStatusesConsumer = new ProjectileStatusesConsumer(context, simulationState, config);
         notificationsConsumer = new NotificationsConsumer(context, config, simulationState);
+        notificationsConsumer.subscribe(messageBoard.produceSubscriber());
     }
 
     public void openCommunication() {
@@ -47,8 +50,16 @@ public class SimulationStateProcessor implements AutoCloseable {
 
     public void updateSimulationState() {
         simulationState.getDroneStatusesMutex().lock();
-        simulationState.getCurrPassDroneStatuses().map = simulationState.getDroneStatuses().map;
+        var droneModels = simulationState.getNotifications().droneModelsNames;
+        var previousDrones = simulationState.getDronesInAir().keySet().stream().toList();
+        for(int key : previousDrones)
+            if (!simulationState.getDroneStatuses().map.containsKey(key)) simulationState.getDronesInAir().remove(key);
+        for(var status : simulationState.getDroneStatuses().map.values()) {
+            simulationState.getDronesInAir().computeIfPresent(status.id, (id, droneState) -> droneState.update(status, droneModels));
+            simulationState.getDronesInAir().putIfAbsent(status.id, new DroneState(status));
+        }
         simulationState.getDroneStatusesMutex().unlock();
+
         simulationState.getProjectileStatusesMutex().lock();
         simulationState.getCurrPassProjectileStatuses().map = simulationState.getProjectileStatuses().map;
         simulationState.getProjectileStatusesMutex().unlock();

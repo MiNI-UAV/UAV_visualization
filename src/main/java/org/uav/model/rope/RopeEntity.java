@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.importer.VerticesLoader;
-import org.uav.model.status.DroneStatus;
+import org.uav.model.status.DroneState;
 import org.uav.model.status.ProjectileStatus;
 import org.uav.scene.DirectionalLight;
 import org.uav.scene.shader.Shader;
@@ -98,7 +98,7 @@ public class RopeEntity {
                      Matrix4f view,
                      Matrix4f projection,
                      List<Rope> ropes,
-                     Map<Integer, DroneStatus> drones,
+                     Map<Integer, DroneState> drones,
                      Map<Integer, ProjectileStatus> projectiles
     ) {
         ropeShader.use();
@@ -110,7 +110,7 @@ public class RopeEntity {
             if(drones.containsKey(rope.ownerId) && projectiles.containsKey(rope.objectId)) {
                 var owner = drones.get(rope.ownerId);
                 var object = projectiles.get(rope.objectId);
-                setParameters(new Vector3f(owner.position).add(rope.ownerOffset), object.position, rope.ropeLength);
+                setParameters(new Vector3f(owner.droneStatus.position).add(rope.ownerOffset), object.position, rope.ropeLength);
                 draw();
             }
         }

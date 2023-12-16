@@ -41,15 +41,16 @@ public class AudioManager {
     public void update(SimulationState simulationState) {
         var drone = simulationState.getPlayerDrone();
         if(drone.isPresent()) {
-            var oms = drone.get().propellersRadps;
+            var droneStatus = drone.get().droneStatus;
+            var oms = droneStatus.propellersRadps;
             for(int i=0; i<propellerSounds.size() && i<oms.size(); i++) {
                 var propellerSound = propellerSounds.get(i);
                 var om = oms.get(i);
-                var propellerOffset = new Vector3f(propellerOffsets.get(i)).mul(new Matrix3f().rotate(drone.get().rotation));
+                var propellerOffset = new Vector3f(propellerOffsets.get(i)).mul(new Matrix3f().rotate(droneStatus.rotation));
                 propellerSound.setGain(om*0.001f * soundVolumeMultiplier);
                 propellerSound.setPitch(0.5f + om*0.001f);
-                propellerSound.setPosition(new Vector3f(drone.get().position).add(propellerOffset));
-                propellerSound.setVelocity(drone.get().linearVelocity);
+                propellerSound.setPosition(new Vector3f(droneStatus.position).add(propellerOffset));
+                propellerSound.setVelocity(droneStatus.linearVelocity);
             }
             // Od 0 do 1000
 

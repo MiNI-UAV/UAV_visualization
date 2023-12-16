@@ -80,12 +80,12 @@ public class RadarWidget implements GuiWidget {
         radarPoints.forEach(point -> point.traceStrength--);
         radarPoints.removeIf(point -> point.traceStrength <= 0);
 
-        var drones = simulationState.getCurrPassDroneStatuses().map;
-        var radarDrone = drones.get(simulationState.getCurrentlyControlledDrone().getId());
-        if(radarDrone == null) return;
+        var drones = simulationState.getDronesInAir();
+        var radarDrone = simulationState.getPlayerDrone();
+        if(radarDrone.isEmpty()) return;
         List<RadarPoint> newPoints = drones.values().stream()
-                .filter(drone -> drone != radarDrone)
-                .map(drone -> getRelativePoints(drone, radarDrone))
+                .filter(drone -> drone != radarDrone.get())
+                .map(drone -> getRelativePoints(drone.droneStatus, radarDrone.get().droneStatus))
                 .filter(this::isInsideSector)
                 .map(coordinates -> new RadarPoint(coordinates, startingTraceStrength))
                 .toList();

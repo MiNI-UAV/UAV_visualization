@@ -121,7 +121,7 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
 
     public void update(SimulationState simulationState) {
         simulationState.getPlayerDrone().ifPresent(drone ->
-                propellerRPMs = drone.propellersRadps.stream().map(radps -> radps / (2 * (float) Math.PI) * 60).toList()
+                propellerRPMs = drone.droneStatus.propellersRadps.stream().map(radps -> radps / (2 * (float) Math.PI) * 60).toList()
         );
     }
 
