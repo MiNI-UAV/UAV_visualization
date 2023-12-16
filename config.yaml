@@ -4,8 +4,8 @@ bindingsConfig:
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
-  downloadMissingAssets: false
-  assetsToUse: fda1faff # Comment out if above is true.
+  downloadMissingAssets: true
+  #assetsToUse: acda6e01 # Comment out if above is true.
   heartBeatIntervalMs: 500
   serverTimoutMs: 10000
 droneSettings:
