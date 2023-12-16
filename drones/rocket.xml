@@ -3,8 +3,8 @@
    <type>rocket</type>
    <initial>
       <mode>RAUTOLAUNCH</mode>
-      <position>0.0, 0.0, 0.0</position>
-      <orientation>0.0, 1.57, 0.0</orientation>
+      <position>0.0, 0.0, -50.0</position>
+      <orientation>0.0, 0.0, 0.0</orientation>
       <velocity>0.0, 0.0, 0.0</velocity>
    </initial>
    <ineria>
@@ -33,163 +33,81 @@
    <jets no='1'>
       <jet>
          <position>-0.15, 0.0, 0.0</position>
-         <axis>1.0, 0.001, 0.001</axis>
+         <axis>1.0, 0.0, 0.0</axis>
          <hinges no='0'>
          </hinges>
          <phases>4</phases>
-         <thrust>25, 9, 9, 0</thrust>
-         <time>0.25, 0.6, 1.9, 2.15</time>
+         <thrust>25, 12, 12, 0</thrust>
+         <time>0.25, 0.6, 100.0, 105.0</time>
       </jet>
    </jets>
-   <surface no='4'>
+   <surface no='1'>
       <matrix>
-          0.0,  0.0,  0.0,  0.0,
-          0.0,  0.0,  0.0,  0.0,
-          0.0,  0.0,  0.0,  0.0,
-         -0.5,  0.5,  0.0,  0.0,
-          0.0,  0.0,  1.0,  0.0,
-          0.0,  0.0,  0.0,  0.2
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          1.5,
+          0.0
       </matrix>
       <min>
-         -0.1, -0.1, -0.1, -0.1
+         -0.1, -0.1
       </min>
       <max>
-          0.1,  0.1,  0.1,  0.1
+          0.1,  0.1
       </max>
       <trim>
-          0.0,  0.0,  0.0,  0.0
+          0.0,  0.0
       </trim>
    </surface>
    <aero>
       <S>0.00153438526</S>
-      <d>0.001</d>
+      <d>0.01</d>
       <eAR>0</eAR>
-      <C0>-0.6, 0.0, 0.0, 0.0, 0.0, 0.0</C0>
+      <!-- Cp0 0.1 is good -->
+      <C0>-0.6, 0.0, 0.0, 0.03, 0.0, 0.0</C0>
       <Cpqr>
           0.0,   0.0,   0.0,
           0.0,   0.0,   0.0,
           0.0,   0.0,   0.0,
-         -3.5,   0.0,   0.0,
-          0.0,  -3.5,   0.0,
-          0.0,   0.0,  -3.5
+         -0.3,   0.0,   0.0,
+          0.0,  -0.3,   0.0,
+          0.0,   0.0,  -0.3
       </Cpqr>
       <Cab>
-          0.0 ,  0.0 , -0.3,  0.0,
-          0.0 , -0.1 ,  0.0,  0.0,
-         -3.8 ,  0.0 ,  0.0,  0.0,
+          0.0 ,  0.0 , -0.1, -0.1,
           0.0 ,  0.0 ,  0.0,  0.0,
-         -0.5,  0.0 ,  0.0,  0.0,
-          0.0 ,  0.5,  0.0,  0.0
+          0.0 ,  0.0 ,  0.0,  0.0,
+          0.0 ,  0.0 ,  0.0,  0.0,
+         -0.07,  0.0 ,  0.0,  0.0,
+          0.0 ,  0.07,   0.0,  0.0
       </Cab>
-      <stallLimit>0.35</stallLimit>
+      <stallLimit>3.14</stallLimit>
    </aero>
    <controllers>
-      <X>
-         <type>PID</type>
-         <P>0.8</P>
-         <I>0.01</I>
-         <D>0.0</D>
-         <min>-30</min>
-         <max>30</max>
-      </X>
-      <Y>
-         <type>PID</type>
-         <P>0.8</P>
-         <I>0.01</I>
-         <D>0.0</D>
-         <min>-30</min>
-         <max>30</max>
-      </Y>
-      <Z>
-         <type>PID</type>
-         <P>2.122</P>
-         <I>0.035</I>
-         <D>-0.387</D>
-         <min>-2.2</min>
-         <max>2</max>
-      </Z>
-      <U>
-         <type>PID</type>
-         <P>-0.05</P>
-         <I>-0.001</I>
-         <D>0.0</D>
-         <min>-0.3</min>
-         <max>0.3</max>
-      </U>
       <V>
          <type>PID</type>
-         <P>0.05</P>
-         <I>0.001</I>
-         <D>0.0</D>
-         <min>-0.3</min>
-         <max>0.3</max>
+         <P>1.5</P>
+         <I>0.0</I>
+         <D>0.3</D>
+         <min>-1</min>
+         <max>1</max>
       </V>
-      <W>
+      <H>
          <type>PID</type>
-         <P>-3556.149</P>
-         <I>-538.572</I>
-         <D>-112.917</D>
-         <min>-500</min>
-         <max>500</max>
-      </W>
-      <Fi>
-         <type>PID</type>
-         <P>9.584</P>
-         <I>0.798</I>
-         <D>0.192</D>
-         <min>-100</min>
-         <max>100</max>
-      </Fi>
-      <Theta>
-         <type>PID</type>
-         <P>5.191</P>
-         <I>0.228</I>
-         <D>0.127</D>
-         <min>-100</min>
-         <max>100</max>
-      </Theta>
-      <Psi>
-         <type>PID</type>
-         <P>7.288</P>
-         <I>0.230</I>
-         <D>-0.151</D>
-         <min>-500</min>
-         <max>500</max>
-      </Psi>
-      <Roll>
-         <type>PID</type>
-         <P>-6.249</P>
-         <I>-0.904</I>
-         <D>-0.219</D>
-         <min>-250</min>
-         <max>250</max>
-      </Roll>
-      <Pitch>
-         <type>PID</type>
-         <P>6.304</P>
-         <I>1.174</I>
-         <D>0.433</D>
-         <min>-250</min>
-         <max>250</max>
-      </Pitch>
-      <Yaw>
-         <type>PID</type>
-         <P>112.662</P>
-         <I>22.778</I>
-         <D>3.419</D>
-         <min>-250</min>
-         <max>250</max>
-      </Yaw>
+         <P>1.5</P>
+         <I>0.0</I>
+         <D>0.3</D>
+         <min>-1</min>
+         <max>1</max>
+      </H>
    </controllers>
    <mixers>
       <rotorMixer>
          1,  0,  0,  0,
       </rotorMixer>
       <surfaceMixer>
-         0,  -0.1,   0.0,   0.0,
-         0,   0.1,   0.0,   0.0,
-         0,   0.0,   0.1,   0.0,
-         0,   0.0,   0.0,   0.1
+         0.0, 0.0, 0.1, 0.0
       </surfaceMixer>
    </mixers>
    <navi>
@@ -238,40 +156,8 @@
          <zScaler>1e1</zScaler>
       </EKF>
    </navi>
-   <ammo no='2'>
-      <paintball>
-         <model>paintball</model>
-         <V0>90.0, 0.0, 0.0</V0>
-         <position>0.0, 0.0, 0.1</position>
-         <reload>0.3</reload>
-         <radius>0.003</radius>
-         <C0>0.47</C0>
-         <mass>0.003</mass>
-         <ammount>100</ammount>
-      </paintball>
-      <bullet9mm>
-         <model>9mm</model>
-         <V0>350.0, 0.0, 0.0</V0>
-         <position>0.0, 0.0, 0.1</position>
-         <reload>0.1</reload>
-         <radius>0.0045</radius>
-         <C0>0.47</C0>
-         <mass>0.008</mass>
-         <ammount>20</ammount>
-      </bullet9mm>
+   <ammo no='0'>
    </ammo>
-   <cargo no='1'>
-      <parcel>
-         <model>parcel</model>
-         <hook>0.0, 0.0, 0.0</hook>
-         <length>5.0</length>
-         <k>10.0</k>
-         <b>2.0</b>
-         <reload>2.0</reload>
-         <radius>0.1</radius>
-         <C0>0.47</C0>
-         <mass>0.1</mass>
-         <ammount>2</ammount>
-      </parcel>
+   <cargo no='0'>
    </cargo>
 </params>
