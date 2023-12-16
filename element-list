@@ -6,6 +6,7 @@ org.uav.bindingsGeneration
 org.uav.config
 org.uav.importer
 org.uav.input
+org.uav.messages
 org.uav.model
 org.uav.model.controlMode
 org.uav.model.rope
@@ -23,6 +24,8 @@ org.uav.scene.gui.widget.artificialHorizon.layers
 org.uav.scene.gui.widget.debug
 org.uav.scene.gui.widget.display
 org.uav.scene.gui.widget.map
+org.uav.scene.gui.widget.messageBoard
+org.uav.scene.gui.widget.messageBoard.layers
 org.uav.scene.gui.widget.projectiles
 org.uav.scene.gui.widget.propellersDisplay
 org.uav.scene.gui.widget.radar
