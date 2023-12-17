@@ -1,77 +1,86 @@
-
-steering: # Default Throttle, Roll, Pitch, YAW. Add as many as you want
-  - axis: 2 # Throttle
-    inverse: true
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
-  - axis: 0 # Roll
-    inverse: false
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
-  - axis: 1 # Pitch
-    inverse: true
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
-  - axis: 5 # Yaw
-    inverse: false
-    deadzone: 0.1
-    min: -0.9
-    max: 0.9
-    trim: 0
+---
+steering:
+- axis: 2
+  inverse: true
+  deadzone: 1.4901161E-8
+  min: -1.0
+  max: 1.0
+  trim: 0.003921628
+- axis: 0
+  inverse: false
+  deadzone: 0.030000014
+  min: -1.0
+  max: 0.99804497
+  trim: -0.0029325485
+- axis: 1
+  inverse: true
+  deadzone: 0.030000014
+  min: -0.99804497
+  max: 0.99608994
+  trim: 0.0029325485
+- axis: 5
+  inverse: false
+  deadzone: 0.030000014
+  min: -1.0
+  max: 1.0
+  trim: 0.003921628
 actions:
   shoot:
-    - axis: 7
-      inverse: false
-      lowerBound: 0.6
+  - button: 0
+    inverse: false
   drop:
-    - axis: 7
-      inverse: false
-      upperBound: -0.6
+  - button: 1
+    inverse: false
   release:
-    - key: r
+  - button: 3
+    inverse: false
   respawn:
-    - button: 7
-      inverse: false
+  - button: 13
+    inverse: false
+  nextAmmo:
+  - button: 2
+    inverse: false
+  nextCargo:
+  - button: 12
+    inverse: false
   map:
-    - button: 14
-      inverse: false
-    - key: m
+  - key: 77
+  toggleRadio:
+  - key: 82
+  nextSong:
+  - key: 78
+  toggleSpotLight:
+  - key: 76
   mapZoomIn:
-    - button: 13
-      inverse: false
+  - key: 90
   mapZoomOut:
-    - button: 12
-      inverse: false
+  - key: 81
   prevCamera:
-    - button: 12
-      inverse: false
+  - button: 8
+    inverse: false
   nextCamera:
-    - button: 13
-      inverse: false
-  freeCamera:
-    - key: '0'
+  - button: 9
+    inverse: false
+  freeCamera: 
+  - key: 49
   droneCamera:
-    - key: '1'
+  - key: 50
   observerCamera:
-    - key: '2'
+  - key: 51
   racingCamera:
-    - key: '3'
+  - key: 52
   horizontalCamera:
-    - key: '4'
+  - key: 53
   hardFPV:
-    - key: '5'
+  - key: 54
   softFPV:
-    - key: '6'
+  - key: 55
 modes:
-  - - button: 4
-      inverse: false
-  - - button: 5
-      inverse: false
-  - - button: 6
-      inverse: false
+- - button: 7
+    inverse: false
+- - button: 6
+    inverse: false
+- - button: 5
+    inverse: false
+- - button: 4
+    inverse: false
