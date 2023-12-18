@@ -41,6 +41,7 @@ public class Config {
         String assetsToUse;
         Integer heartBeatIntervalMs;
         Integer serverTimeoutMs;
+        Integer droneTimeoutMs;
     }
 
     @Value

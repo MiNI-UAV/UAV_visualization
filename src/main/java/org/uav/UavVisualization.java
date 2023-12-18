@@ -73,14 +73,15 @@ public class UavVisualization {
     }
 
     public void update() {
-        heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone());
-        inputHandler.handleInput();
         simulationStateProcessor.updateSimulationState();
         simulationStateProcessor.updateCamera();
         simulationStateProcessor.nextFrame();
         audioManager.update(simulationState);
         musicPlayer.update();
         messageBoard.deprecateMessages();
+        if(simulationState.getCurrentlyControlledDrone().isPresent())
+            heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone().get());
+        inputHandler.handleInput();
     }
 
     private void init() throws IOException {
@@ -122,11 +123,11 @@ public class UavVisualization {
         audioManager.play();
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters, messageBoard);
-        simulationStateProcessor.openCommunication();
         simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneConfig());
         // Request drone for the player.
         loadingScreen.render("Spawning drone...");
-        simulationStateProcessor.requestNewDrone();
+        simulationStateProcessor.openCommunication();
+        simulationStateProcessor.requestFirstDrone();
     }
 
     private void close() {

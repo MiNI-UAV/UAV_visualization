@@ -62,9 +62,9 @@ public class InputHandler {
             initAction(mode, () -> {if(!simulationState.isMapOverlay() && modeId < config.getDroneSettings().getModes().size()) changeControlMode(config.getDroneSettings().getModes().get(modeId));});
         }
         var actions = bindingConfig.getActions();
-        initAction(actions.getShoot(), () -> {if(!simulationState.isMapOverlay()) simulationState.getAmmos().get(simulationState.getCurrentlyChosenAmmo()).parseProjectileMessage(joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.shoot, simulationState.getCurrentlyChosenAmmo()));});
-        initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay()) simulationState.getCargos().get(simulationState.getCurrentlyChosenCargo()).parseProjectileMessage(joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.drop, simulationState.getCurrentlyChosenCargo()));});
-        initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay()) joystickProducer.send(simulationState.getCurrentlyControlledDrone(), Action.release);});
+        initAction(actions.getShoot(), () -> {if(!simulationState.isMapOverlay() && simulationState.getCurrentlyControlledDrone().isPresent()) simulationState.getAmmos().get(simulationState.getCurrentlyChosenAmmo()).parseProjectileMessage(joystickProducer.send(simulationState.getCurrentlyControlledDrone().get(), Action.shoot, simulationState.getCurrentlyChosenAmmo()));});
+        initAction(actions.getDrop(), () ->{if(!simulationState.isMapOverlay() && simulationState.getCurrentlyControlledDrone().isPresent()) simulationState.getCargos().get(simulationState.getCurrentlyChosenCargo()).parseProjectileMessage(joystickProducer.send(simulationState.getCurrentlyControlledDrone().get(), Action.drop, simulationState.getCurrentlyChosenCargo()));});
+        initAction(actions.getRelease(), () ->{if(!simulationState.isMapOverlay() && simulationState.getCurrentlyControlledDrone().isPresent()) joystickProducer.send(simulationState.getCurrentlyControlledDrone().get(), Action.release);});
         initAction(actions.getPrevCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().prev());});
         initAction(actions.getNextCamera(), () -> {if(!simulationState.isMapOverlay()) simulationState.setCurrentCameraMode(simulationState.getCurrentCameraMode().next());});
         initAction(actions.getRespawn(), () -> {if(!simulationState.isMapOverlay()) simulationStateProcessor.respawnDrone();});
@@ -100,10 +100,8 @@ public class InputHandler {
     }
 
     public void handleInput() {
-        if(simulationState.getCurrentlyControlledDrone() != null) {
-            handleJoystick();
-            handleKeyboard();
-        }
+        handleJoystick();
+        handleKeyboard();
     }
 
     private void handleKeyboard() {
@@ -124,6 +122,7 @@ public class InputHandler {
 
     private void handleButtons(int joystick) {
         ByteBuffer byteBuffer = glfwGetJoystickButtons(joystick);
+        if(byteBuffer == null) return;
         byte[] arr = new byte[byteBuffer.remaining()];
         byteBuffer.get(arr);
 
@@ -132,6 +131,7 @@ public class InputHandler {
 
     private void handleAxes(int joystick) {
         FloatBuffer floatBuffer = glfwGetJoystickAxes(joystick);
+        if(floatBuffer == null) return;
         float[] arr = new float[floatBuffer.remaining()];
         floatBuffer.get(arr);
 
@@ -140,11 +140,13 @@ public class InputHandler {
         JoystickStatus joystickStatus = new JoystickStatus();
         steeringAxisBindings.forEach(binding -> joystickStatus.axes.add(convertToRawData(arr[binding.getAxis()], binding)));
         simulationState.setJoystickStatus(joystickStatus);
-        joystickProducer.send(simulationState.getCurrentlyControlledDrone(), joystickStatus);
+        if(simulationState.getCurrentlyControlledDrone().isPresent())
+            joystickProducer.send(simulationState.getCurrentlyControlledDrone().get(), joystickStatus);
     }
 
     private void changeControlMode(String controlMode) {
-        joystickProducer.send(simulationState.getCurrentlyControlledDrone(), controlMode);
+        if(simulationState.getCurrentlyControlledDrone().isPresent())
+            joystickProducer.send(simulationState.getCurrentlyControlledDrone().get(), controlMode);
     }
 
     private float convertToRawData(float axisValue, BindingConfig.SteeringAxis steeringAxis) {

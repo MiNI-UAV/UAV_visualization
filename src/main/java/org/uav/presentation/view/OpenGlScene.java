@@ -243,7 +243,8 @@ public class OpenGlScene {
     }
 
     private Matrix4f getShadowShaderViewMatrix() {
-        var drone = simulationState.getDronesInAir().get(simulationState.getCurrentlyControlledDrone().getId());
+        if(simulationState.getCurrentlyControlledDrone().isEmpty()) return new Matrix4f();
+        var drone = simulationState.getDronesInAir().get(simulationState.getCurrentlyControlledDrone().get().getId());
         if(drone == null) return new Matrix4f();
         return new Matrix4f().lookAt(
                 new Vector3f(drone.droneStatus.position).add( // TODO lookAt function breaks down when looking stright down

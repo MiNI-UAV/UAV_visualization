@@ -9,14 +9,13 @@ import org.uav.logic.state.simulation.SimulationState;
 import org.zeromq.SocketType;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import zmq.ZError;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static org.uav.utils.ZmqUtils.checkErrno;
 
 public class DroneCommunication {
 
@@ -42,23 +41,27 @@ public class DroneCommunication {
 
         steerSocket = context.createSocket(SocketType.REQ);
         String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + steerPort;
-        steerSocket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
-        steerSocket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
+        steerSocket.setReceiveTimeOut(config.getServerSettings().getDroneTimeoutMs());
+        steerSocket.setSendTimeOut(config.getServerSettings().getDroneTimeoutMs());
         steerSocket.connect(address);
 
         utilsSocket = context.createSocket(SocketType.PAIR);
         String address2 = "tcp://" + config.getServerSettings().getServerAddress() + ":" + utilsPort;
-        utilsSocket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
-        utilsSocket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
+        utilsSocket.setReceiveTimeOut(config.getServerSettings().getDroneTimeoutMs());
+        utilsSocket.setSendTimeOut(config.getServerSettings().getDroneTimeoutMs());
         utilsSocket.connect(address2);
     }
 
     public void sendSteeringCommand(String command) {
-        if(!steerSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkErrno(steerSocket);
-        byte[] reply = steerSocket.recv(0);
-        if(reply == null) checkErrno(steerSocket);
-        String message = new String(reply, ZMQ.CHARSET);
-        parseSteeringCommand(message);
+        try {
+            if (!steerSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkDroneErrno(steerSocket);
+            byte[] reply = steerSocket.recv(0);
+            if (reply == null) checkDroneErrno(steerSocket);
+            String message = new String(reply, ZMQ.CHARSET);
+            parseSteeringCommand(message);
+        } catch (DroneTimeoutException e) {
+            simulationState.setCurrentlyControlledDrone(null);
+        }
     }
 
     private void parseSteeringCommand(String message) {
@@ -83,9 +86,26 @@ public class DroneCommunication {
     }
 
     public String sendUtilsCommand(String command) {
-        if(!utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkErrno(utilsSocket);
-        byte[] reply = utilsSocket.recv(0);
-        if(reply == null) checkErrno(utilsSocket);
-        return new String(reply, ZMQ.CHARSET);
+        try {
+            if(!utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkDroneErrno(utilsSocket);
+            byte[] reply = utilsSocket.recv(0);
+            if(reply == null) checkDroneErrno(utilsSocket);
+            return new String(reply, ZMQ.CHARSET);
+        } catch (DroneTimeoutException e) {
+            simulationState.setCurrentlyControlledDrone(null);
+            return "ok;";
+        }
+    }
+
+
+    public static void checkDroneErrno(ZMQ.Socket socket) throws DroneTimeoutException {
+        if(socket.errno() == ZError.EAGAIN)
+            throw new DroneTimeoutException("Drone communication reached timeout.");
+    }
+
+    public static class DroneTimeoutException extends Exception {
+        public DroneTimeoutException(String message) {
+            super(message);
+        }
     }
 }

@@ -50,7 +50,7 @@ public class DroneRequester {
     public boolean parseReply(String reply)
     {
         //Invalid drone name or Unknown config file
-        return !reply.equals("-1") && !reply.equals("-2");
+        return !reply.equals("-1") && !reply.equals("-2") && !reply.equals("-3");
     }
 
     public String sendConfigFile(String configPath)

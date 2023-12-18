@@ -91,7 +91,12 @@ public class SimulationState {
     }
 
     public Optional<DroneState> getPlayerDrone() {
-        var drone = dronesInAir.get(getCurrentlyControlledDrone().getId());
+        if(getCurrentlyControlledDrone().isEmpty()) return Optional.empty();
+        var drone = dronesInAir.get(getCurrentlyControlledDrone().get().getId());
         return Optional.ofNullable(drone);
+    }
+
+    public Optional<DroneCommunication> getCurrentlyControlledDrone() {
+        return Optional.ofNullable(currentlyControlledDrone);
     }
 }

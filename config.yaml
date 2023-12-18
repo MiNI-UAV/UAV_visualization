@@ -8,6 +8,7 @@ serverSettings:
   #assetsToUse: acda6e01 # Comment out if above is true.
   heartBeatIntervalMs: 500
   serverTimeoutMs: 10000
+  droneTimeoutMs: 1000
 droneSettings:
   droneName: Maurice
   droneConfig: quadcopter.xml

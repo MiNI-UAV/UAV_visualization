@@ -4,14 +4,21 @@ import org.lwjgl.glfw.GLFW;
 import org.uav.logic.assets.AvailableControlModes;
 import org.uav.logic.communication.*;
 import org.uav.logic.config.Config;
+import org.uav.logic.messages.Message;
 import org.uav.logic.messages.MessageBoard;
+import org.uav.logic.messages.Publisher;
 import org.uav.logic.state.projectile.Projectile;
 import org.uav.presentation.entity.drone.DroneState;
 import org.zeromq.ZContext;
 
+import java.awt.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
-public class SimulationStateProcessor implements AutoCloseable {
+public class SimulationStateProcessor implements AutoCloseable, Publisher {
 
     private static final String KILL_COMMAND = "kill";
     private final SimulationState simulationState;
@@ -20,6 +27,7 @@ public class SimulationStateProcessor implements AutoCloseable {
     private final DroneStatusConsumer droneStatusConsumer;
     private final ProjectileStatusesConsumer projectileStatusesConsumer;
     private final NotificationsConsumer notificationsConsumer;
+    private final List<Consumer<Message>> subscribers;
 
 
     public SimulationStateProcessor(ZContext context, SimulationState simulationState, Config config, AvailableControlModes availableControlModes, MessageBoard messageBoard) {
@@ -30,6 +38,8 @@ public class SimulationStateProcessor implements AutoCloseable {
         projectileStatusesConsumer = new ProjectileStatusesConsumer(context, simulationState, config);
         notificationsConsumer = new NotificationsConsumer(context, config, simulationState);
         notificationsConsumer.subscribe(messageBoard.produceSubscriber());
+        subscribers = new ArrayList<>();
+        subscribe(messageBoard.produceSubscriber());
     }
 
     public void openCommunication() {
@@ -38,22 +48,12 @@ public class SimulationStateProcessor implements AutoCloseable {
         notificationsConsumer.start();
     }
 
-    public void requestNewDrone() {
-        var newDroneResult = droneRequester.requestNewDrone(config.getDroneSettings().getDroneName(), simulationState.getDroneModelChecksum());
-        simulationState.setCurrentlyControlledDrone(newDroneResult.orElseThrow());
+    public Optional<DroneCommunication> requestNewDrone() {
+        return droneRequester.requestNewDrone(config.getDroneSettings().getDroneName(), simulationState.getDroneModelChecksum());
     }
 
     public void updateSimulationState() {
-        simulationState.getDroneStatusesMutex().lock();
-        var droneModels = simulationState.getNotifications().droneModelsNames;
-        var previousDrones = simulationState.getDronesInAir().keySet().stream().toList();
-        for(int key : previousDrones)
-            if (!simulationState.getDroneStatuses().map.containsKey(key)) simulationState.getDronesInAir().remove(key);
-        for(var status : simulationState.getDroneStatuses().map.values()) {
-            simulationState.getDronesInAir().computeIfPresent(status.id, (id, droneState) -> droneState.update(status, droneModels));
-            simulationState.getDronesInAir().putIfAbsent(status.id, new DroneState(status));
-        }
-        simulationState.getDroneStatusesMutex().unlock();
+        updateDronesInAir();
 
         simulationState.getProjectileStatusesMutex().lock();
         simulationState.getCurrPassProjectileStatuses().map = simulationState.getProjectileStatuses().map;
@@ -65,17 +65,36 @@ public class SimulationStateProcessor implements AutoCloseable {
         simulationState.setSimulationTimeS((float) GLFW.glfwGetTime());
     }
 
-    @Override
-    public void close() {
-        droneStatusConsumer.stop();
-        projectileStatusesConsumer.stop();
-        notificationsConsumer.interrupt();
+    private void updateDronesInAir() {
+        simulationState.getDroneStatusesMutex().lock();
+        var droneModels = simulationState.getNotifications().droneModelsNames;
+        var previousDrones = simulationState.getDronesInAir().keySet().stream().toList();
+        for(int key : previousDrones)
+            if (!simulationState.getDroneStatuses().map.containsKey(key)) simulationState.getDronesInAir().remove(key);
+        for(var status : simulationState.getDroneStatuses().map.values()) {
+            simulationState.getDronesInAir().computeIfPresent(status.id, (id, droneState) -> droneState.update(status, droneModels));
+            simulationState.getDronesInAir().putIfAbsent(status.id, new DroneState(status));
+        }
+        simulationState.getDroneStatusesMutex().unlock();
+    }
+
+    public void requestFirstDrone() {
+        var drone = requestNewDrone();
+        simulationState.setCurrentlyControlledDrone(drone.orElseThrow(() -> new RuntimeException("Failed to request first drone")));
     }
 
     public void respawnDrone() {
-        DroneCommunication oldDrone = simulationState.getCurrentlyControlledDrone();
-        requestNewDrone();
-        oldDrone.sendUtilsCommand(KILL_COMMAND);
+        DroneCommunication oldDrone = null;
+        if(simulationState.getCurrentlyControlledDrone().isPresent())
+            oldDrone = simulationState.getCurrentlyControlledDrone().get();
+        var newDrone = requestNewDrone();
+        if(newDrone.isEmpty()) {
+            notifySubscriber(new Message("Server denied request for a new UAV", "droneRequest", 10, Color.ORANGE, false));
+            return;
+        }
+        simulationState.setCurrentlyControlledDrone(newDrone.get());
+        if(oldDrone != null)
+            oldDrone.sendUtilsCommand(KILL_COMMAND);
         simulationState.setCurrentControlModeDemanded(null);
         simulationState.getCargos().forEach(Projectile::reset);
         simulationState.getAmmos().forEach(Projectile::reset);
@@ -93,5 +112,18 @@ public class SimulationStateProcessor implements AutoCloseable {
 
     public void nextFrame() {
         simulationState.getFpsCounter().nextFrame();
+    }
+
+    @Override
+    public void close() {
+        droneStatusConsumer.stop();
+        projectileStatusesConsumer.stop();
+        notificationsConsumer.interrupt();
+//        heartbeatProducer.stop();
+    }
+
+    @Override
+    public List<Consumer<Message>> getSubscribers() {
+        return subscribers;
     }
 }
