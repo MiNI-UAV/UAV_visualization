@@ -14,6 +14,8 @@
       <orientation>0.0, 0.0, 0.0</orientation>
       <!-- Initial linear velocity in NED world frame in meters per second -->
       <velocity>20.0, 0.0, 0.0</velocity>
+      <!-- Target of guided modes -->
+      <target>0.0, 0.0, 0.0</target>
    </initial>
    <!-- Inertia parameters  -->
    <ineria>
