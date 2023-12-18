@@ -1,5 +1,5 @@
 #version 420 core
-layout(binding=2)uniform sampler2D droneMask;
+uniform sampler2D droneMask;
 out vec4 fragColor;
 
 uniform vec4 color;

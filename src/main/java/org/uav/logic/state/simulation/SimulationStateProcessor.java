@@ -86,4 +86,12 @@ public class SimulationStateProcessor implements AutoCloseable {
         String droneModelChecksum = droneRequester.sendConfigFile(droneModelConfigPath);
         simulationState.setDroneModelChecksum(droneModelChecksum);
     }
+
+    public void updateCamera() {
+        simulationState.getCamera().updateCamera();
+    }
+
+    public void nextFrame() {
+        simulationState.getFpsCounter().nextFrame();
+    }
 }

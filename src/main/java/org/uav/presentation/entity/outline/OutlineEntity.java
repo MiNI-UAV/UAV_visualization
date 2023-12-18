@@ -19,6 +19,7 @@ import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 
 public class OutlineEntity {
 
+    private static final int OUTLINE_TEXTURE_ID = 5;
     private final int droneMaskFBO;
     private final int droneMask;
     private final Shader flatShader;
@@ -49,11 +50,12 @@ public class OutlineEntity {
         flatShader.setVec4("color", new Vector4f(1,0,0, 1));
 
         // Outline shader initialization
-        var outlineVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ghost/outlineShader.vert"));
-        var outlineFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/ghost/outlineShader.frag"));
+        var outlineVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/outline/outlineShader.vert"));
+        var outlineFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/outline/outlineShader.frag"));
         outlineShader = new Shader(outlineVertexShaderSource, outlineFragmentShaderSource);
         outlineShader.use();
         outlineShader.setVec4("color", new Vector4f(0, 1, 0, 0.3f));
+        outlineShader.setInt("droneMask", OUTLINE_TEXTURE_ID);
     }
 
     public void generateDroneMask(DroneEntity droneEntity, SimulationState simulationState, MemoryStack stack, float time, Matrix4f view, Matrix4f projection) {
@@ -68,7 +70,7 @@ public class OutlineEntity {
     }
 
     private void drawOutline(DroneEntity droneEntity, SimulationState simulationState, Shader shader, MemoryStack stack, float time) {
-        glActiveTexture(GL_TEXTURE2);
+        glActiveTexture(GL_TEXTURE0 + OUTLINE_TEXTURE_ID);
         glBindTexture(GL_TEXTURE_2D, droneMask);
         simulationState.getPlayerDrone().ifPresent(
                 drone -> drawWithDepthFunc(

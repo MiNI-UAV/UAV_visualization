@@ -6,9 +6,20 @@ in vec3 normal;
 in vec3 fragPos;
 in vec4 fragPosDirLightSpace;
 
-uniform bool useTexture;
-uniform sampler2D objectTexture;
+uniform bool useAlbedoMap;
+uniform sampler2D albedoMap;
+
+uniform bool useNormalMap;
+uniform sampler2D normalMap;
+
+uniform bool useMetallicRoughnessMap;
+uniform sampler2D metallicRoughnessMap;
+
+uniform bool useAmbientOcclusionMap;
+uniform sampler2D ambientOcclusionMap;
+
 uniform sampler2D shadowMap;
+
 uniform vec3 viewPos;
 uniform vec3 backgroundColor;
 uniform float gammaCorrection;
@@ -16,13 +27,11 @@ uniform bool useGammaCorrection;
 
 // Material
 struct Material {
-    vec4 baseColor;
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    float shininess;
-    vec3 metallic;
+    vec4 albedo;
+    float normalScale;
+    float metallic;
     float roughness;
+    float aoStrength;
 };
 uniform Material material;
 
@@ -75,57 +84,14 @@ struct Fog {
 };
 uniform Fog fog;
 
-vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor);
-vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal);
-float getFogFactor(Fog fog, float fogCoordinate);
+const float PI = 3.14159265359;
 
-void main()
+float getFogFactor(Fog fog, float fogCoordinate)
 {
-    vec4 objectColor = (useTexture == true) ? texture(objectTexture, texCoord) : material.baseColor;
-    vec3 viewDir = normalize(viewPos - fragPos);
-    vec3 normNormal = normalize(normal);
-    vec3 result = backgroundColor;
-
-    result = calcDirLight(dirLight, normNormal, viewDir, objectColor);
-    result += (spotLightOn == true)? calcSpotLight(spotLight, normNormal, fragPos, viewDir): vec3(0);
-    result += calcPointLight(cameraPointLight, normNormal, fragPos, viewDir);
-    result *= objectColor.xyz;
-    result = mix(result, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
-
-    if(useGammaCorrection)
-        result = pow(result, vec3(1.0/gammaCorrection));
-    fragColor = vec4(result, objectColor.w);
-}
-
-vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor)
-{
-    vec3 lightDir = normalize(-light.direction);
-    // diffuse shading
-    float diff = max(dot(normal, lightDir), 0.0);
-    // specular shading
-    float kPi = 3.14159265;
-    float kEnergyConservation = ( 8.0 + material.shininess ) / ( 8.0 * kPi );
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = kEnergyConservation * pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-    //vec3 reflectDir = reflect(-lightDir, normal);
-    //float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // PBR
-    float gloss = 1.0-material.roughness;
-    vec3 diffuseColor = mix(objectColor.xyz, vec3(0), material.metallic);
-    vec3 specularColor = mix(vec3(1), objectColor.xyz, material.metallic);
-
-    // combine results
-    vec3 ambient  = light.ambient  * material.ambient;
-    vec3 diffuse  = light.diffuse  * diff * material.diffuse;
-    vec3 specular = light.specular * spec * material.specular;
-    //vec3 ambient = light.ambient;
-    //vec3 diffuse = light.diffuse * diff * diffuseColor;
-    //vec3 specular = light.specular * spec * specularColor; // TODO PBR model
-
-    float shadow = shadowCalculation(fragPosDirLightSpace, lightDir, normal);
-    return (ambient + (1.0 - shadow) * (diffuse + specular));
+    float result = 0.0;
+    result = exp(-pow(fog.density * fogCoordinate, 2.0));
+    result = 1.0 - clamp(result, 0.0, 1.0);
+    return result;
 }
 
 float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
@@ -152,59 +118,109 @@ float shadowCalculation(vec4 fragPosLightSpace, vec3 lightDir, vec3 normal)
     return shadow;
 }
 
-vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
-{
-    vec3 lightDir = normalize(light.position - fragPos);
-    // diffuse shading
-    float diff = max(dot(normal, lightDir), 0.0);
-    // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // attenuation
-    float distance    = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance +
-    light.quadratic * (distance * distance));
-    // combine results
-    vec3 ambient  = light.ambient  * material.ambient;
-    vec3 diffuse  = light.diffuse  * diff * material.diffuse;
-    vec3 specular = light.specular * spec * material.specular;
-    ambient  *= attenuation;
-    diffuse  *= attenuation;
-    specular *= attenuation;
-    return (ambient + diffuse + specular);
+vec3 fresnelSchlick(float cosTheta, vec3 F0) {
+    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
-{
-    vec3 lightDir = normalize(light.position - fragPos);
+float DistributionGGX(vec3 N, vec3 H, float roughness) {
+    float a = roughness * roughness;
+    float a2 = a * a;
+    float NdotH = max(dot(N, H), 0.0);
+    float NdotH2 = NdotH * NdotH;
 
-    float theta     = dot(lightDir, normalize(-light.direction));
-    float epsilon   = light.cutOff - light.outerCutOff;
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+    float num = a2;
+    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
+    denom = PI * denom * denom;
 
-    // diffuse shading
-    float diff = max(dot(normal, lightDir), 0.0);
-    // specular shading
-    vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // attenuation
-    float distance    = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance +
-    light.quadratic * (distance * distance));
-    // combine results
-    vec3 ambient  = light.ambient  * material.ambient;
-    vec3 diffuse  = light.diffuse  * diff * material.diffuse;
-    vec3 specular = light.specular * spec * material.specular;
-    ambient  *= attenuation * intensity;
-    diffuse  *= attenuation * intensity;
-    specular *= attenuation * intensity;
-    return (ambient + diffuse + specular);
+    return num / denom;
 }
 
-float getFogFactor(Fog fog, float fogCoordinate)
+float GeometrySchlickGGX(float NdotV, float roughness) {
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+
+    float num   = NdotV;
+    float denom = NdotV * (1.0 - k) + k;
+
+    return num / denom;
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
+    float NdotV = max(dot(N, V), 0.0);
+    float NdotL = max(dot(N, L), 0.0);
+    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
+    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+vec3 getNormalFromMap()
 {
-    float result = 0.0;
-    result = exp(-pow(fog.density * fogCoordinate, 2.0));
-    result = 1.0 - clamp(result, 0.0, 1.0);
-    return result;
+    if(useNormalMap == false) return normalize(normal);
+    vec3 tangentNormal = texture(normalMap, texCoord).xyz * 2.0 - 1.0;
+
+    vec3 Q1  = dFdx(fragPos);
+    vec3 Q2  = dFdy(fragPos);
+    vec2 st1 = dFdx(texCoord);
+    vec2 st2 = dFdy(texCoord);
+
+    vec3 N   = normalize(normal);
+    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B  = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    vec3 result = TBN * tangentNormal;
+    result = vec3(result.xy * material.normalScale, result.z);
+    return normalize(result);
+}
+
+void main() {
+    vec4 albedo = (useAlbedoMap == true) ? texture(albedoMap, texCoord) * material.albedo: material.albedo;
+    float metallic  = (useMetallicRoughnessMap == true) ? texture(metallicRoughnessMap, texCoord).b * material.metallic: material.metallic;
+    float roughness = (useMetallicRoughnessMap == true) ? texture(metallicRoughnessMap, texCoord).g * material.roughness: material.roughness;
+    float ao        = (useAmbientOcclusionMap == true) ? texture(ambientOcclusionMap, texCoord).r: 0.0f;
+    ao = 1.0 + material.aoStrength * (ao - 1.0);
+
+    vec3 N = getNormalFromMap();
+    vec3 V = normalize(viewPos - fragPos);
+
+    const int DIRECTIONAL_LIGHTS = 1;
+    vec3 Lo = vec3(0.0);
+    for(int i = 0; i < DIRECTIONAL_LIGHTS; ++i)
+    {
+        vec3 L = normalize(dirLight.direction);
+        vec3 H = normalize(V + L);
+        vec3 radiance = dirLight.diffuse;
+        // Fresnel
+        vec3 F0 = vec3(0.04);
+        F0 = mix(F0, albedo.rgb, metallic);
+        vec3 F  = fresnelSchlick(max(dot(H, V), 0.0), F0);
+
+        float NDF = DistributionGGX(N, H, roughness);
+        float G   = GeometrySmith(N, V, L, roughness);
+
+        vec3 numerator    = NDF * G * F;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0)  + 0.0001;
+        vec3 specular     = numerator / denominator;
+
+        vec3 kS = F;
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallic;
+
+        float NdotL = max(dot(N, L), 0.0);
+
+        float shadow = shadowCalculation(fragPosDirLightSpace, L, N);
+        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL * (1.0 - shadow);
+    }
+
+    vec3 ambient = vec3(0.1) * albedo.rgb;// * material.ao; TODO
+    vec3 color   = ambient + Lo;
+
+    //    vec3 result = color;
+
+    if(useGammaCorrection) {
+        color = color / (color + vec3(1.0));
+        color = pow(color, vec3(1.0/gammaCorrection));
+    }
+    fragColor = vec4(color, material.albedo.w);
 }

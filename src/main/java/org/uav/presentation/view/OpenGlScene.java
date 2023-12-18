@@ -39,6 +39,7 @@ import static org.lwjgl.opengl.GL30C.*;
 import static org.uav.utils.OpenGLUtils.getSunDirectionVector;
 
 public class OpenGlScene {
+    public static final int SHADOW_TEXTURE_ID = 4;
     private final SimulationState simulationState;
     private final Config config;
     private Shader objectShader;
@@ -67,8 +68,11 @@ public class OpenGlScene {
 
         fog = new Fog(simulationState.getSkyColor(), config.getSceneSettings().getFogDensity());
         directionalLight = new DirectionalLight(
-                getSunDirectionVector(new Vector3f(0,0,1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
-                new Vector3f(0.2f), new Vector3f(0.8f), new Vector3f(0.6f));
+                getSunDirectionVector(new Vector3f(0,0,-1), config.getSceneSettings().getSunAngleYearCycle(), config.getSceneSettings().getSunAngleDayCycle()),
+                new Vector3f(simulationState.getSkyColor()).mul(0.6f),
+                new Vector3f(simulationState.getSkyColor()).mul(2f),
+                new Vector3f(simulationState.getSkyColor()).mul(1f)
+        );
         pointLight = PointLight.PointLightFactory.createDronePointLight();
         spotLight = SpotLight.SpotlightFactory.createDroneSpotlight();
 
@@ -117,8 +121,7 @@ public class OpenGlScene {
         objectShader.setVec3("backgroundColor", simulationState.getSkyColor());
         objectShader.setBool("useGammaCorrection", config.getGraphicsSettings().getUseGammaCorrection());
         objectShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
-        objectShader.setInt("objectTexture", 0);
-        objectShader.setInt("shadowMap", 1);
+        objectShader.setInt("shadowMap", SHADOW_TEXTURE_ID);
         directionalLight.applyTo(objectShader);
         spotLight.applyTo(objectShader);
         fog.applyTo(objectShader);
@@ -156,7 +159,7 @@ public class OpenGlScene {
             objectShader.setMatrix4f(stack,"directionalLightView", getShadowShaderViewMatrix());
             objectShader.setMatrix4f(stack,"directionalLightProjection", getShadowShaderProjectionMatrix());
             updateLights();
-            glActiveTexture(GL_TEXTURE1);
+            glActiveTexture(GL_TEXTURE0 + SHADOW_TEXTURE_ID);
             glBindTexture(GL_TEXTURE_2D, depthMap);
             renderScene(stack, objectShader, deltaTimeS);
         }

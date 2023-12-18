@@ -204,13 +204,13 @@ public class GltfImporter {
         return animation;
     }
 
-    private List<Mesh> processMeshModels(List<MeshModel> meshModels) throws IOException {
+    private List<Mesh> processMeshModels(List<MeshModel> meshModels) {
         List<Mesh> meshes = new ArrayList<>();
         for (MeshModel meshModel : meshModels)
         {
             for (MeshPrimitiveModel meshPrimitiveModel : meshModel.getMeshPrimitiveModels())
             {
-                List<ModelVertex> vertices = new ArrayList<>();
+                List<ModelVertex> ver = new ArrayList<>();
                 List<Vector3f> positions = getPosition(meshPrimitiveModel);
                 List<Vector3f> normals = getNormals(meshPrimitiveModel);
                 List<Vector2f> textureCoords = getTextureCoords(meshPrimitiveModel);
@@ -218,88 +218,103 @@ public class GltfImporter {
                     Vector3f pos = positions.get(i);
                     Vector3f nor = i < normals.size() ? normals.get(i) : new Vector3f();
                     Vector2f texc = i < textureCoords.size() ? textureCoords.get(i) : new Vector2f();
-                    vertices.add(new ModelVertex(pos, nor, texc));
+                    ver.add(new ModelVertex(pos, nor, texc));
                 }
 
                 List<Integer> ind = getIndices(meshPrimitiveModel);
 
                 MaterialModelV2 materialModel = (MaterialModelV2) meshPrimitiveModel.getMaterialModel();
+                Material material = getMaterial(materialModel);
 
-                Vector4f baseColor = new Vector4f(materialModel.getBaseColorFactor());
-                float roughnessFactor = materialModel.getRoughnessFactor();
-                float metallicFactor = materialModel.getMetallicFactor();
+                Texture albedoTexture = null;
+                Texture normalTexture = null;
+                Texture metallicRoughnessTexture = null;
+                Texture ambientOcclusionTexture = null;
 
-                Material material = new Material(baseColor, new Vector3f(0.5f,0.5f,0.5f), roughnessFactor, metallicFactor);
+                if(materialModel != null && materialModel.getBaseColorTexture() != null) albedoTexture = loadTexture(materialModel.getBaseColorTexture(), false);
+                if(materialModel != null && materialModel.getNormalTexture() != null) normalTexture = loadTexture(materialModel.getNormalTexture(), true);
+                if(materialModel != null && materialModel.getMetallicRoughnessTexture() != null) metallicRoughnessTexture = loadTexture(materialModel.getMetallicRoughnessTexture(), true);
+                if(materialModel != null && materialModel.getOcclusionTexture() != null) ambientOcclusionTexture = loadTexture(materialModel.getOcclusionTexture(), true);
+                boolean isTransparent = albedoTexture != null && albedoTexture.isTransparent();
 
-                if(materialModel.getBaseColorTexture() != null) {
-                    TextureModel textureModel = materialModel.getBaseColorTexture();
-                    Texture texture = loadTexture(textureModel);
-                    meshes.add(new Mesh(vertices, ind, List.of(texture), texture.isTransparent(), material));
-                } else {
-                    meshes.add(new Mesh(vertices, ind, List.of(), false, material));
-                } // TODO: Check if missing is no longer required
-//                } else {
-//                    Texture texture = loadTexture("missing", Paths.get(System.getProperty("user.dir"),"assets", "missing.jpg"));
-//                    meshes.add(new Mesh(vertices, ind, List.of(texture), false, material));
-//                }
+                var list = new ArrayList<Texture>();
+                if(albedoTexture != null) list.add(albedoTexture);
+                meshes.add(new Mesh(ver, ind, list, albedoTexture, normalTexture, metallicRoughnessTexture, ambientOcclusionTexture,isTransparent, material));
             }
         }
         return meshes;
     }
 
-    private Texture loadTexture(TextureModel textureModel) throws IOException {
+    private static Material getMaterial(MaterialModelV2 materialModel) {
+        if(materialModel == null)
+            return new Material(new Vector4f(1,1,1,1), 1,1,1,1);
+        Vector4f albedo = new Vector4f(materialModel.getBaseColorFactor());
+        float normalScale = materialModel.getNormalScale();
+        float roughnessFactor = materialModel.getRoughnessFactor();
+        float metallicFactor = materialModel.getMetallicFactor();
+        float aoStrength = materialModel.getOcclusionStrength();
+
+        return new Material(albedo, normalScale, roughnessFactor, metallicFactor, aoStrength);
+    }
+
+    private Texture loadTexture(TextureModel textureModel, boolean forceLinearRgb) {
         if(loadedTextures.containsKey(textureModel.getImageModel().getUri()))
             return loadedTextures.get(textureModel.getImageModel().getUri());
 
         ImageModel imageModel = textureModel.getImageModel();
         String s = imageModel.getUri();
         String fileName = Paths.get(s).getFileName().toString();
-        return loadTexture(textureModel.getImageModel().getUri(), Paths.get(textureDirectory, fileName));
+        return loadTexture(textureModel.getImageModel().getUri(), Paths.get(textureDirectory, fileName), forceLinearRgb);
     }
 
-    private Texture loadTexture(String name, Path path) throws IOException {
+    private Texture loadTexture(String name, Path path, boolean forceLinearRgb) {
         loadingScreen.render("Loading " + name + "...");
 
-        BufferedImage img = ImageIO.read(new File(path.toString()));
-        ByteBuffer imageDirectByteBuffer = allocateDirect(img.getHeight() * img.getWidth() * img.getColorModel().getNumComponents());
-        imageDirectByteBuffer.put(ByteBuffer.wrap(extractImageData(img)));
-        imageDirectByteBuffer.position(0);
-        int components = img.getColorModel().getNumComponents();
-        int format = switch(components) {
-            case 1 -> GL_BACK;
-            case 4 -> GL_RGBA;
-            default -> GL_RGB;
-        };
-        ColorSpace colorSpace = img.getColorModel().getColorSpace();
-        int internalFormat = config.getGraphicsSettings().getUseGammaCorrection() ?
-            switch(components) {
+
+        try {
+            BufferedImage img = ImageIO.read(new File(path.toString()));
+            ByteBuffer imageDirectByteBuffer = allocateDirect(img.getHeight() * img.getWidth() * img.getColorModel().getNumComponents());
+            imageDirectByteBuffer.put(ByteBuffer.wrap(extractImageData(img)));
+            imageDirectByteBuffer.position(0);
+            int components = img.getColorModel().getNumComponents();
+            int format = switch(components) {
                 case 1 -> GL_BACK;
-                case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
-                default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
-            } : format;
-        boolean transparent = Arrays.stream(
-                img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth())
-                ).anyMatch((rgb -> ((rgb >> 24) & 0xFF) != 0xFF));
+                case 4 -> GL_RGBA;
+                default -> GL_RGB;
+            };
+            ColorSpace colorSpace = img.getColorModel().getColorSpace();
+            int internalFormat = !forceLinearRgb && config.getGraphicsSettings().getUseGammaCorrection() ?
+                    switch(components) {
+                        case 1 -> GL_BACK;
+                        case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
+                        default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
+                    } : format;
+            boolean transparent = Arrays.stream(
+                    img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth())
+            ).anyMatch((rgb -> ((rgb >> 24) & 0xFF) != 0xFF));
 
-        int texture = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
-        glGenerateMipmap(GL_TEXTURE_2D);
+            int texture = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
+            glGenerateMipmap(GL_TEXTURE_2D);
 
-        Texture texture1 = new Texture(texture, "texture_diffuse", transparent);
-        loadedTextures.put(name, texture1);
-        return texture1;
+            Texture texture1 = new Texture(texture, "texture_diffuse", transparent);
+            loadedTextures.put(name, texture1);
+            return texture1;
+        } catch(IOException e) {
+            throw new RuntimeException("Could not load a texture: " + name);
+        }
     }
 
     private static List<Integer> getIndices(MeshPrimitiveModel meshPrimitiveModel) {
         List<Integer> list = new ArrayList<>();
         AccessorModel accessorModel = meshPrimitiveModel.getIndices();
         AccessorData accessorData = accessorModel.getAccessorData();
-        if(accessorData.getComponentType() == short.class) // TODO: prettier
+        if(accessorData.getComponentType() == short.class)
         {
             AccessorShortData accessorShortData =
                     (AccessorShortData) accessorData;
@@ -323,38 +338,25 @@ public class GltfImporter {
     }
 
     private static List<Vector3f> getPosition(MeshPrimitiveModel meshPrimitiveModel) {
-        var list = new ArrayList<Vector3f>();
-        AccessorModel accessorModel =
-                meshPrimitiveModel.getAttributes().get("POSITION");
-        AccessorData accessorData = accessorModel.getAccessorData();
-        AccessorFloatData accessorFloatData =
-                (AccessorFloatData) accessorData;
-        int n = accessorFloatData.getNumElements();
-        for (int i = 0; i < n; i++)
-        {
-            float x = accessorFloatData.get(i, 0);
-            float y = accessorFloatData.get(i, 1);
-            float z = accessorFloatData.get(i, 2);
-            //System.out.println("Position " + i + " is " + x + " " + y + " " + z);
-            list.add(new Vector3f(x, y, z));
-        }
-        return list;
+        AccessorModel accessorModel = meshPrimitiveModel.getAttributes().get("POSITION");
+        return getVector3fs(accessorModel);
     }
 
     private static List<Vector3f> getNormals(MeshPrimitiveModel meshPrimitiveModel) {
+        AccessorModel accessorModel = meshPrimitiveModel.getAttributes().get("NORMAL");
+        return getVector3fs(accessorModel);
+    }
+
+    private static List<Vector3f> getVector3fs(AccessorModel accessorModel) {
         var list = new ArrayList<Vector3f>();
-        AccessorModel accessorModel =
-                meshPrimitiveModel.getAttributes().get("NORMAL");
         AccessorData accessorData = accessorModel.getAccessorData();
-        AccessorFloatData accessorFloatData =
-                (AccessorFloatData) accessorData;
+        AccessorFloatData accessorFloatData = (AccessorFloatData) accessorData;
         int n = accessorFloatData.getNumElements();
         for (int i = 0; i < n; i++)
         {
             float x = accessorFloatData.get(i, 0);
             float y = accessorFloatData.get(i, 1);
             float z = accessorFloatData.get(i, 2);
-            //System.out.println("Normal " + i + " is " + x + " " + y + " " + z);
             list.add(new Vector3f(x, y, z));
         }
         return list;
@@ -362,11 +364,10 @@ public class GltfImporter {
 
     private static List<Vector2f> getTextureCoords(MeshPrimitiveModel meshPrimitiveModel) {
         var list = new ArrayList<Vector2f>();
-        AccessorModel accessorModel =
-                meshPrimitiveModel.getAttributes().get("TEXCOORD_0");
-        if(accessorModel== null)
+        AccessorModel accessorModel = meshPrimitiveModel.getAttributes().get("TEXCOORD_0");
+        if(accessorModel == null)
             return list;
-        AccessorData accessorData = accessorModel.getAccessorData(); // TODO [MU-119] There might be no TEXCOORD because there is only baseColor in material. Add suupport for that
+        AccessorData accessorData = accessorModel.getAccessorData();
         AccessorFloatData accessorFloatData =
                 (AccessorFloatData) accessorData;
         int n = accessorFloatData.getNumElements();
@@ -374,7 +375,6 @@ public class GltfImporter {
         {
             float x = accessorFloatData.get(i, 0);
             float y = accessorFloatData.get(i, 1);
-            //System.out.println("TextureCoords " + i + " is " + x + " " + y );
             list.add(new Vector2f(x, y));
         }
         return list;

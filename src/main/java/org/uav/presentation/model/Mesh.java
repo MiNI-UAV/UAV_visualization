@@ -6,6 +6,7 @@ import org.uav.presentation.model.importer.IndicesLoader;
 import org.uav.presentation.model.importer.VerticesLoader;
 import org.uav.presentation.rendering.Shader;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -18,52 +19,71 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 public class Mesh {
     private final List<ModelVertex> vertices;
     private final List<Integer> indices;
+    @Nullable
+    private final Texture albedoTexture;
+    @Nullable
+    private final Texture normalTexture;
+    @Nullable
+    private final Texture metallicRoughnessTexture;
+    @Nullable
+    private final Texture ambientOcclusionTexture;
     private final List<Texture> textures;
-    private final boolean transparentTexture;
+    private final boolean isTransparentTexture;
     private final Material material;
     private int VAO;
 
-    public Mesh(List<ModelVertex> vertices, List<Integer> indices, List<Texture> textures, boolean transparentTexture, Material material) {
+    public Mesh(
+            List<ModelVertex> vertices,
+            List<Integer> indices,
+            List<Texture> textures,
+            @Nullable Texture albedoTexture,
+            @Nullable Texture normalTexture,
+            @Nullable Texture metallicRoughnessTexture,
+            @Nullable Texture ambientOcclusionTexture,
+            boolean isTransparentTexture,
+            Material material
+    ) {
         this.vertices = vertices;
         this.indices = indices;
+        this.albedoTexture = albedoTexture;
+        this.normalTexture = normalTexture;
+        this.metallicRoughnessTexture = metallicRoughnessTexture;
+        this.ambientOcclusionTexture = ambientOcclusionTexture;
         this.textures = textures;
-        this.transparentTexture = transparentTexture;
+        this.isTransparentTexture = isTransparentTexture;
         this.material = material;
         setupMesh();
     }
 
     public void draw(MemoryStack stack, Shader shader, Matrix4f modelMatrix) {
-        int diffuseNr = 1;
-        int specularNr = 1;
         shader.use();
-        shader.setBool("useTexture", false);
-        for (int i = 0; i < textures.size(); i++) { // TODO Remove. We don't need multiple texture samplers for models for now.
-            glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-            // retrieve texture number (the N in diffuse_textureN)
-            String number = "";
-            String name = textures.get(i).getType();
-            if (name.equals("texture_diffuse"))
-                number = String.valueOf(diffuseNr++);
-            else if (name.equals("texture_specular"))
-                number = String.valueOf(specularNr++);
-            shader.setInt("material." + name + number, i);
-            glBindTexture(GL_TEXTURE_2D, textures.get(i).getId());
-            shader.setBool("useTexture", true);
-        }
+
+        bindTextures(shader, albedoTexture, "useAlbedoMap", "albedoMap", 0);
+        bindTextures(shader, normalTexture, "useNormalMap", "normalMap", 1);
+        bindTextures(shader, metallicRoughnessTexture, "useMetallicRoughnessMap", "metallicRoughnessMap", 2);
+        bindTextures(shader, ambientOcclusionTexture, "useAmbientOcclusionMap", "ambientOcclusionMap", 3);
 
         // TODO TEXCOORD_1 2 3 4 ...
         // draw mesh
         shader.setMatrix4f(stack,"model", modelMatrix);
-        shader.setVec4("material.baseColor", material.getBaseColor());
-        shader.setVec3("material.ambient", material.getDiffuse());
-        shader.setVec3("material.diffuse", material.getDiffuse());
-        shader.setVec3("material.specular", material.getDiffuse());
-        shader.setFloat("material.shininess", 16.0f);
+        shader.setVec4("material.albedo", material.getAlbedo());
+        shader.setFloat("material.normalScale", material.getNormalScale());
         shader.setFloat("material.roughness", material.getRoughness());
         shader.setFloat("material.metallic", material.getMetallic());
+        shader.setFloat("material.aoStrength", material.getAoStrength());
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+    }
+
+    private void bindTextures(Shader shader, Texture texture, String useVariable, String textureName, int index) {
+        if(texture != null) {
+            shader.setInt(textureName, index);
+            glActiveTexture(GL_TEXTURE0 + index);
+            glBindTexture(GL_TEXTURE_2D, texture.getId());
+            shader.setBool(useVariable, true);
+        } else
+            shader.setBool(useVariable, false);
     }
 
     private void setupMesh() {
@@ -89,6 +109,6 @@ public class Mesh {
     }
 
     public boolean isTransparent() {
-        return transparentTexture;
+        return isTransparentTexture;
     }
 }

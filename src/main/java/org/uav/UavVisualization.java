@@ -55,9 +55,6 @@ public class UavVisualization {
     private HeartbeatProducer heartbeatProducer;
     private InputHandler inputHandler;
     private Config config;
-    private DroneParameters droneParameters;
-    private BindingConfig bindingConfig;
-    private AvailableControlModes availableControlModes;
     private MusicPlayer musicPlayer;
     private AudioManager audioManager;
     private MessageBoard messageBoard;
@@ -80,8 +77,8 @@ public class UavVisualization {
         heartbeatProducer.sustainHeartBeat(simulationState.getCurrentlyControlledDrone());
         inputHandler.handleInput();
         simulationStateProcessor.updateSimulationState();
-        simulationState.getCamera().updateCamera();
-        simulationState.getFpsCounter().nextFrame();
+        simulationStateProcessor.updateCamera();
+        simulationStateProcessor.nextFrame();
         audioManager.update(simulationState);
         musicPlayer.update();
         messageBoard.deprecateMessages();
@@ -99,8 +96,8 @@ public class UavVisualization {
             new BindingsLoop(window, config).loop();
         }
         // Other configs
-        droneParameters = FileMapper.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones",config.getDroneSettings().getDroneConfig()), new XmlMapper());
-        bindingConfig = FileMapper.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig().getSource()), new YAMLMapper());
+        DroneParameters droneParameters = FileMapper.load(DroneParameters.class, Paths.get(System.getProperty("user.dir"), "drones", config.getDroneSettings().getDroneConfig()), new XmlMapper());
+        BindingConfig bindingConfig = FileMapper.load(BindingConfig.class, Paths.get(System.getProperty("user.dir"), config.getBindingsConfig().getSource()), new YAMLMapper());
         // Loading screen
         var loadingScreen = new LoadingScreen(window, config);
         loadingScreen.render("Initializing...");
@@ -120,8 +117,8 @@ public class UavVisualization {
         assetDownloader.checkAndUpdateAssets(config, simulationState, loadingScreen);
 
         heartbeatProducer = new HeartbeatProducer(config);
-        availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
         simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes, messageBoard);
+        AvailableControlModes availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
         audioManager = new AudioManager(simulationState, droneParameters, config);
         audioManager.play();
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);
