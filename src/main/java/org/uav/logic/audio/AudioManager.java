@@ -47,7 +47,7 @@ public class AudioManager {
                 var propellerSound = propellerSounds.get(i);
                 var om = oms.get(i);
                 var propellerOffset = new Vector3f(propellerOffsets.get(i)).mul(new Matrix3f().rotate(droneStatus.rotation));
-                propellerSound.setGain(om*0.001f * soundVolumeMultiplier);
+                propellerSound.setGain(om*0.001f * soundVolumeMultiplier / oms.size());
                 propellerSound.setPitch(0.5f + om*0.001f);
                 propellerSound.setPosition(new Vector3f(droneStatus.position).add(propellerOffset));
                 propellerSound.setVelocity(droneStatus.linearVelocity);
