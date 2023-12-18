@@ -45,7 +45,7 @@ public class DroneCommunication {
         steerSocket.setSendTimeOut(config.getServerSettings().getDroneTimeoutMs());
         steerSocket.connect(address);
 
-        utilsSocket = context.createSocket(SocketType.PAIR);
+        utilsSocket = context.createSocket(SocketType.REQ);
         String address2 = "tcp://" + config.getServerSettings().getServerAddress() + ":" + utilsPort;
         utilsSocket.setReceiveTimeOut(config.getServerSettings().getDroneTimeoutMs());
         utilsSocket.setSendTimeOut(config.getServerSettings().getDroneTimeoutMs());

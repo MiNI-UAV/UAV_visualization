@@ -31,10 +31,10 @@ public class DroneStatusConsumer {
         this.droneStatusMutex = simulationState.getDroneStatusesMutex();
         String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getDroneStatuses();
         socket = context.createSocket(SocketType.SUB);
+        socket.subscribe("");
         socket.setSendTimeOut(config.getServerSettings().getServerTimeoutMs());
         socket.setReceiveTimeOut(config.getServerSettings().getServerTimeoutMs());
         socket.connect(address);
-        socket.subscribe("");
         thread = new PositionThread();
     }
 
@@ -54,7 +54,6 @@ public class DroneStatusConsumer {
                     byte[] reply = socket.recv(0);
                     if(reply == null) checkErrno(socket);
                     String message = new String(reply, ZMQ.CHARSET);
-                    //System.out.println("Received: [" + message + "]");
                     droneStatusMutex.lock();
                     droneStatuses.map = parse(message).stream()
                             .collect(Collectors.toMap(drone -> drone.id, Function.identity()));
