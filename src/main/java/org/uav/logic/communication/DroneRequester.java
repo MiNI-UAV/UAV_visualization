@@ -29,8 +29,8 @@ public class DroneRequester {
         this.config = config;
         String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getDroneRequester();
         socket = context.createSocket(SocketType.REQ);
-        socket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
-        socket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
+        socket.setSendTimeOut(config.getServerSettings().getServerTimeoutMs());
+        socket.setReceiveTimeOut(config.getServerSettings().getServerTimeoutMs());
         socket.connect(address);
     }
 

@@ -31,8 +31,8 @@ public class DroneStatusConsumer {
         this.droneStatusMutex = simulationState.getDroneStatusesMutex();
         String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getDroneStatuses();
         socket = context.createSocket(SocketType.SUB);
-        socket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
-        socket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
+        socket.setSendTimeOut(config.getServerSettings().getServerTimeoutMs());
+        socket.setReceiveTimeOut(config.getServerSettings().getServerTimeoutMs());
         socket.connect(address);
         socket.subscribe("");
         thread = new PositionThread();

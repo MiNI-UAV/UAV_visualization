@@ -20,7 +20,7 @@ public class Message {
         this.isCritical = isCritical;
     }
 
-    public Message(String content, String category, int showTimeMS) {
-        this(content, category, showTimeMS, Color.WHITE, false);
+    public Message(String content, String category, int showTimeS) {
+        this(content, category, showTimeS, Color.WHITE, false);
     }
 }

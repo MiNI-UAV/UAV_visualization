@@ -33,8 +33,8 @@ public class NotificationsConsumer extends Thread implements Publisher {
         notifications = simulationState.getNotifications();
         String address = "tcp://" + config.getServerSettings().getServerAddress() + ":" + config.getPorts().getNotifications();
         socket = context.createSocket(SocketType.SUB);
-        socket.setSendTimeOut(config.getServerSettings().getServerTimoutMs());
-        socket.setReceiveTimeOut(config.getServerSettings().getServerTimoutMs());
+        socket.setSendTimeOut(config.getServerSettings().getServerTimeoutMs());
+        socket.setReceiveTimeOut(config.getServerSettings().getServerTimeoutMs());
         socket.connect(address);
         socket.subscribe("");
     }

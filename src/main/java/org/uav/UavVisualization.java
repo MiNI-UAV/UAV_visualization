@@ -59,7 +59,6 @@ public class UavVisualization {
     private AudioManager audioManager;
     private MessageBoard messageBoard;
 
-
     public void run() throws IOException {
         init();
         loop();
@@ -117,8 +116,8 @@ public class UavVisualization {
         assetDownloader.checkAndUpdateAssets(config, simulationState, loadingScreen);
 
         heartbeatProducer = new HeartbeatProducer(config);
-        simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes, messageBoard);
         AvailableControlModes availableControlModes = FileMapper.load(AvailableControlModes.class, Paths.get(simulationState.getAssetsDirectory(), "data", "available_control_modes.yaml"), new YAMLMapper());
+        simulationStateProcessor = new SimulationStateProcessor(context, simulationState, config, availableControlModes, messageBoard);
         audioManager = new AudioManager(simulationState, droneParameters, config);
         audioManager.play();
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);

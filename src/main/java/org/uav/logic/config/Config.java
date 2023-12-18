@@ -40,7 +40,7 @@ public class Config {
         @Nullable
         String assetsToUse;
         Integer heartBeatIntervalMs;
-        Integer serverTimoutMs;
+        Integer serverTimeoutMs;
     }
 
     @Value
