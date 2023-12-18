@@ -3,7 +3,7 @@
    <type>rocket</type>
    <initial>
       <mode>RAUTOLAUNCH</mode>
-      <position>-150.0, 0.0, -350.0</position>
+      <position>-450.0, 0.0, -350.0</position>
       <orientation>0.0, 0.0, 0.0</orientation>
       <velocity>0.0, 0.0, 0.0</velocity>
    </initial>
@@ -85,19 +85,35 @@
       <stallLimit>3.14</stallLimit>
    </aero>
    <controllers>
+      <Theta>
+         <type>PID</type>
+         <P>30.0</P>
+         <I>2.5</I>
+         <D>0.8</D>
+         <min>-10</min>
+         <max>10</max>
+      </Theta>
+      <Psi>
+         <type>PID</type>
+         <P>30.0</P>
+         <I>2.5</I>
+         <D>0.8</D>
+         <min>-10</min>
+         <max>10</max>
+      </Psi>
       <V>
          <type>PID</type>
-         <P>0.3</P>
-         <I>0.0</I>
-         <D>0.1</D>
+         <P>0.4</P>
+         <I>0.1</I>
+         <D>0.2</D>
          <min>-1</min>
          <max>1</max>
       </V>
       <H>
          <type>PID</type>
-         <P>0.3</P>
-         <I>0.0</I>
-         <D>0.1</D>
+         <P>0.4</P>
+         <I>0.1</I>
+         <D>0.2</D>
          <min>-1</min>
          <max>1</max>
       </H>
