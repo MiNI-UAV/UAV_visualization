@@ -313,6 +313,7 @@ public class GltfImporter {
     private static List<Integer> getIndices(MeshPrimitiveModel meshPrimitiveModel) {
         List<Integer> list = new ArrayList<>();
         AccessorModel accessorModel = meshPrimitiveModel.getIndices();
+        if(accessorModel == null) return List.of();
         AccessorData accessorData = accessorModel.getAccessorData();
         if(accessorData.getComponentType() == short.class)
         {

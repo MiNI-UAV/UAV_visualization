@@ -72,7 +72,10 @@ public class Mesh {
         shader.setFloat("material.metallic", material.getMetallic());
         shader.setFloat("material.aoStrength", material.getAoStrength());
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        if(indices.isEmpty())
+            glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        else
+            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
     }
 
