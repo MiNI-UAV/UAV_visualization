@@ -6,6 +6,7 @@
       <position>-450.0, 0.0, -350.0</position>
       <orientation>0.0, 0.0, 0.0</orientation>
       <velocity>0.0, 0.0, 0.0</velocity>
+      <target>1530.0, -330.0, -300.0</target>
    </initial>
    <ineria>
       <mass>0.216</mass>
