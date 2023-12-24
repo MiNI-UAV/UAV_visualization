@@ -110,10 +110,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(org.lwjgl.system.MemoryStack,org.joml.Vector3f,org.joml.Matrix4f,org.joml.Matrix4f,java.util.List,java.util.Map,java.util.Map)" class="member-name-link">draw</a><wbr>(org.lwjgl.system.MemoryStack&nbsp;stack,
- org.joml.Vector3f&nbsp;viewPos,
- org.joml.Matrix4f&nbsp;view,
- org.joml.Matrix4f&nbsp;projection,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(org.joml.Vector3f,java.nio.FloatBuffer,java.nio.FloatBuffer,java.util.List,java.util.Map,java.util.Map)" class="member-name-link">draw</a><wbr>(org.joml.Vector3f&nbsp;viewPos,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/FloatBuffer.html" title="class or interface in java.nio" class="external-link">FloatBuffer</a>&nbsp;viewBuffer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/FloatBuffer.html" title="class or interface in java.nio" class="external-link">FloatBuffer</a>&nbsp;projectionBuffer,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Rope.html" title="class in org.uav.presentation.entity.rope">Rope</a>&gt;&nbsp;ropes,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="../drone/DroneState.html" title="class in org.uav.presentation.entity.drone">DroneState</a>&gt;&nbsp;drones,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="../../../logic/state/projectile/ProjectileStatus.html" title="class in org.uav.logic.state.projectile">ProjectileStatus</a>&gt;&nbsp;projectiles)</code></div>
@@ -173,12 +172,11 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="draw(org.lwjgl.system.MemoryStack,org.joml.Vector3f,org.joml.Matrix4f,org.joml.Matrix4f,java.util.List,java.util.Map,java.util.Map)">
+<section class="detail" id="draw(org.joml.Vector3f,java.nio.FloatBuffer,java.nio.FloatBuffer,java.util.List,java.util.Map,java.util.Map)">
 <h3>draw</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(org.lwjgl.system.MemoryStack&nbsp;stack,
- org.joml.Vector3f&nbsp;viewPos,
- org.joml.Matrix4f&nbsp;view,
- org.joml.Matrix4f&nbsp;projection,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(org.joml.Vector3f&nbsp;viewPos,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/FloatBuffer.html" title="class or interface in java.nio" class="external-link">FloatBuffer</a>&nbsp;viewBuffer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/FloatBuffer.html" title="class or interface in java.nio" class="external-link">FloatBuffer</a>&nbsp;projectionBuffer,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="Rope.html" title="class in org.uav.presentation.entity.rope">Rope</a>&gt;&nbsp;ropes,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="../drone/DroneState.html" title="class in org.uav.presentation.entity.drone">DroneState</a>&gt;&nbsp;drones,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>,<wbr><a href="../../../logic/state/projectile/ProjectileStatus.html" title="class in org.uav.logic.state.projectile">ProjectileStatus</a>&gt;&nbsp;projectiles)</span></div>

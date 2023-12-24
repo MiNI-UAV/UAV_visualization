@@ -89,18 +89,6 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#ANIMATION_AILERON" class="member-name-link">ANIMATION_AILERON</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#ANIMATION_ELEVATOR" class="member-name-link">ANIMATION_ELEVATOR</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color"><code><a href="#ANIMATION_PROPELLER" class="member-name-link">ANIMATION_PROPELLER</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#ANIMATION_RUDDER" class="member-name-link">ANIMATION_RUDDER</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../../../logic/state/drone/DroneStatus.html" title="class in org.uav.logic.state.drone">DroneStatus</a></code></div>
 <div class="col-second even-row-color"><code><a href="#droneStatus" class="member-name-link">droneStatus</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -118,7 +106,8 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.uav.logic.state.drone.DroneStatus)" class="member-name-link">DroneState</a><wbr>(<a href="../../../logic/state/drone/DroneStatus.html" title="class in org.uav.logic.state.drone">DroneStatus</a>&nbsp;droneStatus)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.uav.logic.state.simulation.SimulationState,org.uav.logic.state.drone.DroneStatus)" class="member-name-link">DroneState</a><wbr>(<a href="../../../logic/state/simulation/SimulationState.html" title="class in org.uav.logic.state.simulation">SimulationState</a>&nbsp;simulationState,
+ <a href="../../../logic/state/drone/DroneStatus.html" title="class in org.uav.logic.state.drone">DroneStatus</a>&nbsp;droneStatus)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -161,62 +150,6 @@ loadScripts(document, 'script');</script>
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="ANIMATION_PROPELLER">
-<h3>ANIMATION_PROPELLER</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">ANIMATION_PROPELLER</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../../../../constant-values.html#org.uav.presentation.entity.drone.DroneState.ANIMATION_PROPELLER">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="ANIMATION_RUDDER">
-<h3>ANIMATION_RUDDER</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">ANIMATION_RUDDER</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../../../../constant-values.html#org.uav.presentation.entity.drone.DroneState.ANIMATION_RUDDER">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="ANIMATION_ELEVATOR">
-<h3>ANIMATION_ELEVATOR</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">ANIMATION_ELEVATOR</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../../../../constant-values.html#org.uav.presentation.entity.drone.DroneState.ANIMATION_ELEVATOR">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="ANIMATION_AILERON">
-<h3>ANIMATION_AILERON</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">ANIMATION_AILERON</span></div>
-<dl class="notes">
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list">
-<li><a href="../../../../../constant-values.html#org.uav.presentation.entity.drone.DroneState.ANIMATION_AILERON">Constant Field Values</a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="droneStatus">
 <h3>droneStatus</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../logic/state/drone/DroneStatus.html" title="class in org.uav.logic.state.drone">DroneStatus</a></span>&nbsp;<span class="element-name">droneStatus</span></div>
@@ -238,9 +171,10 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(org.uav.logic.state.drone.DroneStatus)">
+<section class="detail" id="&lt;init&gt;(org.uav.logic.state.simulation.SimulationState,org.uav.logic.state.drone.DroneStatus)">
 <h3>DroneState</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DroneState</span><wbr><span class="parameters">(<a href="../../../logic/state/drone/DroneStatus.html" title="class in org.uav.logic.state.drone">DroneStatus</a>&nbsp;droneStatus)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DroneState</span><wbr><span class="parameters">(<a href="../../../logic/state/simulation/SimulationState.html" title="class in org.uav.logic.state.simulation">SimulationState</a>&nbsp;simulationState,
+ <a href="../../../logic/state/drone/DroneStatus.html" title="class in org.uav.logic.state.drone">DroneStatus</a>&nbsp;droneStatus)</span></div>
 </section>
 </li>
 </ul>
