@@ -27,8 +27,8 @@ public class Sprite implements AutoCloseable {
     private final int VAO;
     private final List<Integer> indices;
     private Texture texture;
-    private Shader spriteShader;
-    private FloatBuffer transform;
+    private final Shader spriteShader;
+    private final FloatBuffer transform;
     @Setter
     private float opacity;
 
