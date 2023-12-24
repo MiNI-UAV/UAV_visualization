@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.rendering.OrderedRenderQueue;
 import org.uav.presentation.rendering.Shader;
 
@@ -37,7 +36,7 @@ public class Model {
         scale = new Vector3f(1);
     }
 
-    public void draw(MemoryStack stack, Shader shader) {
+    public void draw(Shader shader) {
         var modelTransformation = getModelTransformation();
         if(modelTransformation == null) return;
         var map = new HashMap<String, Map<String, Float>>();
@@ -45,7 +44,7 @@ public class Model {
         map.put("rotation", new HashMap<>());
         map.put("scale", new HashMap<>());
         animationInfos.forEach(info -> map.get(info.animationType).put(info.animatedModelName, info.animationProgress));
-        rootNode.draw(stack, shader, modelTransformation, map);
+        rootNode.draw(shader, modelTransformation, map);
     }
 
     public void addToQueue(OrderedRenderQueue orderedRenderQueue, Shader shader) {

@@ -2,7 +2,10 @@ package org.uav.presentation.rendering;
 
 import com.google.common.primitives.Floats;
 import org.apache.commons.io.IOUtils;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
@@ -133,6 +136,11 @@ public class Shader {
     public void setVec3(String name, Vector3f vec) {
         glUniform3f(glGetUniformLocation(shaderProgram, name), vec.x, vec.y, vec.z);
     }
+
+    public void setMatrix4f(String name, FloatBuffer matrix) {
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), false, matrix);
+    }
+
     public void setMatrix4f(MemoryStack stack, String name, Matrix4f matrix) {
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, name), false, matrix.get(stack.mallocFloat(16)));
     }
@@ -145,8 +153,8 @@ public class Shader {
         glUniform3fv(glGetUniformLocation(shaderProgram, name), buffer);
     }
 
-    public void setMatrix3x2f(MemoryStack stack, String name, Matrix3x2f matrix) {
-        glUniformMatrix3x2fv(glGetUniformLocation(shaderProgram, name), false, matrix.get(stack.mallocFloat(6)));
+    public void setMatrix3x2f(String name, FloatBuffer matrix) {
+        glUniformMatrix3x2fv(glGetUniformLocation(shaderProgram, name), false, matrix);
     }
 
     public void setVec2(String name, Vector2f vec) {

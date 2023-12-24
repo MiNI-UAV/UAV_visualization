@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.artificialHorizon;
 
 import org.joml.Matrix3x2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.state.controlMode.ControlModeReply;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.sprite.Sprite;
@@ -70,24 +69,24 @@ public class ArtificialHorizonCompassLayer {
         }
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         var transform = new Matrix3x2f();
         transform.translate((float) compassOffset / compassTexture.getWidth(), 0);
         transform.scale((float) horizonScreenX / compassTexture.getWidth() ,1);
         compassSprite.setTransform(transform);
-        compassSprite.draw(stack);
+        compassSprite.draw();
 
-        compassCursorShape.draw(stack);
-        drawDemanded(stack);
+        compassCursorShape.draw();
+        drawDemanded();
     }
 
-    private void drawDemanded(MemoryStack stack) {
+    private void drawDemanded() {
         if(drawDemandedRotZ) {
             var transform = new Matrix3x2f();
             transform.translate(-demandedRotZ, 0);
             demandedCompassCursorShape.setColor(Color.RED);
             demandedCompassCursorShape.setTransform(transform);
-            demandedCompassCursorShape.draw(stack);
+            demandedCompassCursorShape.draw();
         }
     }
 }

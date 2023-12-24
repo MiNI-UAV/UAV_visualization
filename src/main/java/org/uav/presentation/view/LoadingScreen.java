@@ -32,7 +32,7 @@ public class LoadingScreen {
     public void render(String description) {
         displayWidget.update(description);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        displayWidget.draw(null);
+        displayWidget.draw();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

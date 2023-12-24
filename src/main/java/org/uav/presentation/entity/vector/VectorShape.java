@@ -3,11 +3,13 @@ package org.uav.presentation.entity.vector;
 import lombok.Setter;
 import org.joml.Matrix3x2f;
 import org.joml.Vector4f;
+import org.lwjgl.system.MemoryUtil;
 import org.uav.presentation.model.importer.IndicesLoader;
 import org.uav.presentation.model.importer.VerticesLoader;
 import org.uav.presentation.rendering.Shader;
 
 import java.awt.*;
+import java.nio.FloatBuffer;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11C.GL_FLOAT;
@@ -17,12 +19,11 @@ import static org.lwjgl.opengl.GL20C.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
-public abstract class VectorShape {
+public abstract class VectorShape implements AutoCloseable {
     protected final List<Integer> indices;
     protected final int VAO;
     protected final Shader vectorShader;
-    @Setter
-    protected Matrix3x2f transform;
+    protected FloatBuffer transform;
     protected Vector4f color;
     @Setter Vector4f cropRectangle;
 
@@ -30,9 +31,13 @@ public abstract class VectorShape {
         this.vectorShader = vectorShader;
         this.indices = indices;
         VAO = loadPrimitives(points);
-        transform = new Matrix3x2f();
+        transform = MemoryUtil.memCallocFloat(6);
         color = new Vector4f(Color.WHITE.getComponents(new float[4]));
         cropRectangle = new Vector4f(-1,-1,2,2);
+    }
+
+    public void setTransform(Matrix3x2f transform) {
+        transform.get(this.transform);
     }
 
     public void setColor(Color color) {
@@ -57,5 +62,10 @@ public abstract class VectorShape {
 
         glBindVertexArray(0);
         return VAO;
+    }
+
+    @Override
+    public void close() throws Exception {
+        MemoryUtil.memFree(transform);
     }
 }

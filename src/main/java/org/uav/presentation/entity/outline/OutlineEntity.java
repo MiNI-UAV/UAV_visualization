@@ -1,8 +1,6 @@
 package org.uav.presentation.entity.outline;
 
-import org.joml.Matrix4f;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.drone.DroneEntity;
@@ -10,6 +8,7 @@ import org.uav.presentation.rendering.Shader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11C.*;
@@ -58,32 +57,32 @@ public class OutlineEntity {
         outlineShader.setInt("droneMask", OUTLINE_TEXTURE_ID);
     }
 
-    public void generateDroneMask(DroneEntity droneEntity, SimulationState simulationState, MemoryStack stack, float time, Matrix4f view, Matrix4f projection) {
+    public void generateDroneMask(DroneEntity droneEntity, SimulationState simulationState, float time, FloatBuffer viewBuffer, FloatBuffer projectionBuffer) {
         flatShader.use();
-        flatShader.setMatrix4f(stack,"view", view);
-        flatShader.setMatrix4f(stack,"projection", projection);
+        flatShader.setMatrix4f("view", viewBuffer);
+        flatShader.setMatrix4f("projection", projectionBuffer);
 
         glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        drawOutline(droneEntity, simulationState, flatShader, stack, time);
+        drawOutline(droneEntity, simulationState, flatShader, time);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    private void drawOutline(DroneEntity droneEntity, SimulationState simulationState, Shader shader, MemoryStack stack, float time) {
+    private void drawOutline(DroneEntity droneEntity, SimulationState simulationState, Shader shader, float time) {
         glActiveTexture(GL_TEXTURE0 + OUTLINE_TEXTURE_ID);
         glBindTexture(GL_TEXTURE_2D, droneMask);
         simulationState.getPlayerDrone().ifPresent(
                 drone -> drawWithDepthFunc(
-                        () -> droneEntity.draw(stack, shader, time, drone, simulationState.getJoystickStatus()), GL_GREATER
+                        () -> droneEntity.draw(shader, time, drone, simulationState.getJoystickStatus()), GL_GREATER
                 )
         );
     }
 
-    public void draw(DroneEntity droneEntity, SimulationState simulationState, MemoryStack stack, float time, Matrix4f view, Matrix4f projection) {
+    public void draw(DroneEntity droneEntity, SimulationState simulationState, float time, FloatBuffer viewBuffer, FloatBuffer projectionBuffer) {
         outlineShader.use();
-        outlineShader.setMatrix4f(stack,"view", view);
-        outlineShader.setMatrix4f(stack,"projection", projection);
+        outlineShader.setMatrix4f("view", viewBuffer);
+        outlineShader.setMatrix4f("projection", projectionBuffer);
 
-        drawOutline(droneEntity, simulationState, outlineShader, stack, time);
+        drawOutline(droneEntity, simulationState, outlineShader, time);
     }
 }

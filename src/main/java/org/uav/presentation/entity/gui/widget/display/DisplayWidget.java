@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.display;
 
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.presentation.entity.gui.GuiAnchorPoint;
 import org.uav.presentation.entity.gui.Widget;
@@ -35,7 +34,7 @@ public class DisplayWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
+    protected void drawWidget() {
         textEngine.renderText(text);
     }
 }

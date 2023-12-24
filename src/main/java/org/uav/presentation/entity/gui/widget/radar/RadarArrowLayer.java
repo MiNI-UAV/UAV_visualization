@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.radar;
 
 import org.joml.Matrix3x2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.entity.sprite.Sprite;
 import org.uav.presentation.rendering.Shader;
 
@@ -18,10 +17,10 @@ public class RadarArrowLayer {
     public void update(float radarArrowAngle) {
         this.radarArrowAngle = radarArrowAngle;
     }
-    public void draw(MemoryStack stack) {
+    public void draw() {
         var transform = new Matrix3x2f();
         transform.rotateAbout(-radarArrowAngle, 0.5f,0.5f);
         radarArrowSprite.setTransform(transform);
-        radarArrowSprite.draw(stack);
+        radarArrowSprite.draw();
     }
 }

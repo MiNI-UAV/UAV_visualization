@@ -3,7 +3,6 @@ package org.uav.presentation.entity.gui.widget.map;
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.state.controlMode.ControlModeReply;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.sprite.Sprite;
@@ -90,13 +89,13 @@ public class MapProjectionLayer {
         }
     }
 
-    public void draw(MemoryStack stack) {
-        drawMap(stack);
-        drawDemanded(stack);
-        drawDrone(stack);
+    public void draw() {
+        drawMap();
+        drawDemanded();
+        drawDrone();
     }
 
-    private void drawDrone(MemoryStack stack) {
+    private void drawDrone() {
 
         var transform = new Matrix3x2f();
         transform.translate(0.5f , 0.5f);
@@ -104,26 +103,26 @@ public class MapProjectionLayer {
         transform.translate(- (float) mapResolution.x / droneImage.getWidth() / 2,  - (float) mapResolution.y / droneImage.getHeight() / 2);
         transform.scale((float) mapResolution.x / droneImage.getWidth(), (float) mapResolution.y / droneImage.getHeight());
         droneSprite.setTransform(transform);
-        droneSprite.draw(stack);
+        droneSprite.draw();
 
         transform = new Matrix3x2f();
         transform.rotate((float) (Math.atan2(droneVelocity.y, droneVelocity.x) + Math.PI / 2));
         transform.scale(1, droneVelocity.length());
         velocityShape.setColor(Color.YELLOW);
         velocityShape.setTransform(transform);
-        velocityShape.draw(stack);
+        velocityShape.draw();
     }
 
-    private void drawMap(MemoryStack stack) {
+    private void drawMap() {
         var transform = new Matrix3x2f();
         transform.translate(0.5f - dronePosition.x / mapImage.getWidth() - mapResolution.x / 2f / mapZoom / mapImage.getWidth(), 0.5f - dronePosition.y /mapImage.getHeight() - mapResolution.y / 2f / mapZoom / mapImage.getHeight());
         transform.scale((float) mapResolution.x / mapImage.getWidth() / mapZoom, (float) mapResolution.y / mapImage.getHeight() / mapZoom);
         mapSprite.setTransform(transform);
         mapSprite.setOpacity(0.7f);
-        mapSprite.draw(stack);
+        mapSprite.draw();
     }
 
-    private void drawDemanded(MemoryStack stack) {
+    private void drawDemanded() {
         if(drawDemandedPositional) {
             var transform = new Matrix3x2f();
             transform.translate(0.5f , 0.5f);
@@ -133,7 +132,7 @@ public class MapProjectionLayer {
             transform.scale((float) mapResolution.x / droneImage.getWidth(), (float) mapResolution.y / droneImage.getHeight());
             droneDemandedSprite.setOpacity(0.3f);
             droneDemandedSprite.setTransform(transform);
-            droneDemandedSprite.draw(stack);
+            droneDemandedSprite.draw();
 
         }
 

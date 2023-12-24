@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.debug;
 
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.gui.GuiAnchorPoint;
@@ -43,8 +42,8 @@ public class DebugWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
-        backgroundSprite.draw(stack);
+    protected void drawWidget() {
+        backgroundSprite.draw();
         textEngine.renderText(text);
     }
 }

@@ -2,7 +2,6 @@ package org.uav.presentation.entity.gui.widget.artificialHorizon;
 
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.state.controlMode.ControlModeReply;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.sprite.Sprite;
@@ -66,19 +65,19 @@ public class ArtificialHorizonRollLayer {
         }
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         var transform = new Matrix3x2f();
         transform.scale(fromViewScale);
         transform.rotateAbout(rotX, 0.5f * toViewScale.x,0.5f);
         transform.scale(toViewScale);
 
         horizonRollSprite.setTransform(transform);
-        horizonRollSprite.draw(stack);
+        horizonRollSprite.draw();
 
-        drawDemanded(stack);
+        drawDemanded();
     }
 
-    private void drawDemanded(MemoryStack stack) {
+    private void drawDemanded() {
         if(drawDemandedRotX) {
             var transform = new Matrix3x2f();
             transform.scale(fromViewScale);
@@ -87,7 +86,7 @@ public class ArtificialHorizonRollLayer {
 
             demandedRollShape.setTransform(transform);
             demandedRollShape.setColor(new Color(1, 0, 0, 1f));
-            demandedRollShape.draw(stack);
+            demandedRollShape.draw();
         }
     }
 }

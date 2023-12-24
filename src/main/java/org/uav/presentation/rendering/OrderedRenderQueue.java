@@ -3,7 +3,6 @@ package org.uav.presentation.rendering;
 import org.javatuples.Triplet;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.model.Mesh;
 
 import java.util.ArrayDeque;
@@ -34,14 +33,14 @@ public class OrderedRenderQueue {
             standardMeshes.add(Triplet.with(mesh, modelMatrix, shader));
     }
 
-    public void render(MemoryStack stack) {
+    public void render() {
         while(!standardMeshes.isEmpty()) {
             var drawable = standardMeshes.remove();
-            drawable.getValue0().draw(stack, drawable.getValue2(), drawable.getValue1());
+            drawable.getValue0().draw(drawable.getValue2(), drawable.getValue1());
         }
         while(!transparentMeshes.isEmpty()) {
             var drawable = transparentMeshes.remove();
-            drawable.getValue0().draw(stack, drawable.getValue2(), drawable.getValue1());
+            drawable.getValue0().draw(drawable.getValue2(), drawable.getValue1());
         }
 
     }

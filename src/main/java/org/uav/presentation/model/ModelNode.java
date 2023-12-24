@@ -3,7 +3,6 @@ package org.uav.presentation.model;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.model.animation.AnimationPlayer;
 import org.uav.presentation.rendering.OrderedRenderQueue;
 import org.uav.presentation.rendering.Shader;
@@ -38,10 +37,10 @@ public class ModelNode {
         this.animationPlayer = animationPlayer;
     }
 
-    public void draw(MemoryStack stack, Shader shader, Matrix4f parentTransform, Map<String, Map<String, Float>> animationProgressPerModelNode) {
+    public void draw(Shader shader, Matrix4f parentTransform, Map<String, Map<String, Float>> animationProgressPerModelNode) {
         Matrix4f globalTransformation = getGlobalTransformation(parentTransform, animationProgressPerModelNode);
-        meshes.forEach(m -> m.draw(stack, shader, globalTransformation));
-        children.forEach(n -> n.draw(stack, shader, globalTransformation, animationProgressPerModelNode));
+        meshes.forEach(m -> m.draw(shader, globalTransformation));
+        children.forEach(n -> n.draw(shader, globalTransformation, animationProgressPerModelNode));
     }
 
     public void addToQueue(OrderedRenderQueue orderedRenderQueue, Matrix4f parentTransform, Shader shader, Map<String, Map<String, Float>> animationProgressPerModelNode) {

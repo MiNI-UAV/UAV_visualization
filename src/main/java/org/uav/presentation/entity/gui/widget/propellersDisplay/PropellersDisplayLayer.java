@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.propellersDisplay;
 
 import org.joml.*;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.config.DroneParameters;
 import org.uav.logic.state.simulation.SimulationState;
@@ -153,7 +152,7 @@ public class PropellersDisplayLayer {
         );
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         if (scaledPropellers.size() > propellerRPMs.size()) return;
         for (int i = 0; i < scaledPropellers.size(); i++) {
             var rotor = scaledPropellers.get(i);
@@ -165,17 +164,17 @@ public class PropellersDisplayLayer {
             transform.translate(rotorXNorm, rotorYNorm);
             propellerBackgroundShape.setTransform(transform);
             propellerBackgroundShape.setColor(new Color(0, 0, 0, 0.4f));
-            propellerBackgroundShape.draw(stack);
+            propellerBackgroundShape.draw();
 
             propellerCenterShape.setTransform(transform);
-            propellerCenterShape.draw(stack);
+            propellerCenterShape.draw();
 
             int rpms = propellerRPMs.get(i).intValue();
             float ratio = (float) rpms / maxRPMs.get(i);
             propellerArcShape.setStartAngle((float)Math.PI / 2 * 3);
             propellerArcShape.setArcAngle(ratio * 2 * (float)Math.PI * -rotationDirection.get(i));
             propellerArcShape.setTransform(transform);
-            propellerArcShape.draw(stack);
+            propellerArcShape.draw();
 
             String rpmsString = rpms + " rpm";
             textEngine.setPosition(rotorXNorm - textEngine.getStringWidth(rpmsString) / 2, - (rotorYNorm + radiusNorm - textHeightNorm));

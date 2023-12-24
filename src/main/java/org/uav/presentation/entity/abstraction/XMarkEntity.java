@@ -2,7 +2,6 @@ package org.uav.presentation.entity.abstraction;
 
 import lombok.AllArgsConstructor;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.state.controlMode.ControlModeDemanded;
 import org.uav.logic.state.controlMode.ControlModeReply;
 import org.uav.presentation.model.Model;
@@ -20,7 +19,7 @@ public class XMarkEntity {
 
     private final Model xMarkModel;
 
-    public void draw(ControlModeDemanded currentControlModeDemanded, MemoryStack stack, Shader shader) {
+    public void draw(ControlModeDemanded currentControlModeDemanded, Shader shader) {
         if(currentControlModeDemanded == null) return;
         var demanded = currentControlModeDemanded.demanded;
         if(xMarkDemands.stream().allMatch(demanded::containsKey)) {
@@ -30,7 +29,7 @@ public class XMarkEntity {
             float demandedYaw = demanded.get(YAW);
             xMarkModel.setPosition(new Vector3f(demandedX, demandedY, demandedZ));
             xMarkModel.setRotation(toQuaternion(new Vector3f(0, 0, demandedYaw)));
-            xMarkModel.draw(stack, shader);
+            xMarkModel.draw(shader);
         }
     }
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.projectile.Projectile;
 import org.uav.logic.state.simulation.SimulationState;
@@ -54,8 +53,8 @@ public class ProjectileWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
-        backgroundSprite.draw(stack);
+    protected void drawWidget() {
+        backgroundSprite.draw();
 
         float scale = (getScaledPosition().x - getScaledPosition().y) / (getScaledPosition().w - getScaledPosition().z);
         if(chosenAmmo != null) {
@@ -66,7 +65,7 @@ public class ProjectileWidget extends Widget {
             transform.scale(scale, 1);
             reloadShape.setTransform(transform);
             reloadShape.setArcAngle(ammoRatio);
-            reloadShape.draw(stack);
+            reloadShape.draw();
             textEngine.setPosition(-0.7f, 0.2f);
             textEngine.renderText(ammoString);
         }
@@ -79,7 +78,7 @@ public class ProjectileWidget extends Widget {
             transform.scale(scale, 1);
             reloadShape.setTransform(transform);
             reloadShape.setArcAngle(cargoRatio);
-            reloadShape.draw(stack);
+            reloadShape.draw();
             textEngine.setPosition(-0.7f, -0.2f);
             textEngine.renderText(cargoString);
         }

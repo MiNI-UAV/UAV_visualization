@@ -1,9 +1,7 @@
 package org.uav.presentation.entity.rope;
 
-import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.logic.state.projectile.ProjectileStatus;
 import org.uav.presentation.entity.drone.DroneState;
@@ -12,6 +10,7 @@ import org.uav.presentation.model.importer.VerticesLoader;
 import org.uav.presentation.rendering.Shader;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -93,18 +92,17 @@ public class RopeEntity {
         recalculateCatenary();
     }
 
-    public void draw(MemoryStack stack,
-                     Vector3f viewPos,
-                     Matrix4f view,
-                     Matrix4f projection,
+    public void draw(Vector3f viewPos,
+                     FloatBuffer viewBuffer,
+                     FloatBuffer projectionBuffer,
                      List<Rope> ropes,
                      Map<Integer, DroneState> drones,
                      Map<Integer, ProjectileStatus> projectiles
     ) {
         ropeShader.use();
         ropeShader.setVec3("viewPos", viewPos);
-        ropeShader.setMatrix4f(stack,"view", view);
-        ropeShader.setMatrix4f(stack,"projection", projection);
+        ropeShader.setMatrix4f("view", viewBuffer);
+        ropeShader.setMatrix4f("projection", projectionBuffer);
 
         for (Rope rope: ropes) {
             if(drones.containsKey(rope.ownerId) && projectiles.containsKey(rope.objectId)) {

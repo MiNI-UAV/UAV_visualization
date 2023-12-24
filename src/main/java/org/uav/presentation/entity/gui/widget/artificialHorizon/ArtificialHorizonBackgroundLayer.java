@@ -2,7 +2,6 @@ package org.uav.presentation.entity.gui.widget.artificialHorizon;
 
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.state.controlMode.ControlModeReply;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.sprite.Sprite;
@@ -77,7 +76,7 @@ public class ArtificialHorizonBackgroundLayer {
         }
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         var transform = new Matrix3x2f();
         var viewRatio = new Vector2f((float) horizonScreenX / horizonScreenY, 1);
         var inverseViewRatio = new Vector2f((float) horizonScreenY / horizonScreenX, 1);
@@ -93,12 +92,12 @@ public class ArtificialHorizonBackgroundLayer {
         transform.scale(viewRatio);
 
         horizontSprite.setTransform(transform);
-        horizontSprite.draw(stack);
+        horizontSprite.draw();
 
-        drawDemanded(stack);
+        drawDemanded();
     }
 
-    private void drawDemanded(MemoryStack stack) {
+    private void drawDemanded() {
         var viewRatio = new Vector2f((float) horizonScreenX / horizonScreenY, 1);
         var inverseViewRatio = new Vector2f((float) horizonScreenY / horizonScreenX, 1);
         if(drawDemandedRotY) {
@@ -109,7 +108,7 @@ public class ArtificialHorizonBackgroundLayer {
             transform.translate(0, -demandedRotY);
             demandedPitchShape.setColor(Color.RED);
             demandedPitchShape.setTransform(transform);
-            demandedPitchShape.draw(stack);
+            demandedPitchShape.draw();
         }
     }
 }

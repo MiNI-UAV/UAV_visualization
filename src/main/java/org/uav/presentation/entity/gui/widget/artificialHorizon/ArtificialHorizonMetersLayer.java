@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.artificialHorizon;
 
 import org.joml.*;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.controlMode.ControlModeDemanded;
 import org.uav.logic.state.controlMode.ControlModeReply;
@@ -166,15 +165,15 @@ public class ArtificialHorizonMetersLayer {
         }
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
 
         float meterBottomNorm = OPENGL_CANVAS_BOTTOM + (float) OPENGL_CANVAS_SIZE / 4;
 
         float velocityMeterLeftNorm = OPENGL_CANVAS_LEFT;
-        drawMeter(stack, velocity, false, false, meterBottomNorm, velocityMeterLeftNorm, demandedVelocityX, drawDemandedVelocityX);
+        drawMeter(velocity, false, false, meterBottomNorm, velocityMeterLeftNorm, demandedVelocityX, drawDemandedVelocityX);
 
         float heightMeterLeftNorm = OPENGL_CANVAS_RIGHT - meterWidthNorm;
-        drawMeter(stack, height, true, true, meterBottomNorm, heightMeterLeftNorm, demandedHeight, drawDemandedHeight);
+        drawMeter(height, true, true, meterBottomNorm, heightMeterLeftNorm, demandedHeight, drawDemandedHeight);
 
         String modeString = controlModeDemanded != null? MessageFormat.format("{0}", controlModeDemanded.name): "";
         textEngine.setPosition(-0.95f, 5f/8);
@@ -191,7 +190,6 @@ public class ArtificialHorizonMetersLayer {
     }
 
     private void drawMeter(
-            MemoryStack stack,
             float meterValue,
             boolean allowNegative,
             boolean mirrored,
@@ -204,14 +202,14 @@ public class ArtificialHorizonMetersLayer {
         var bgTransform = new Matrix3x2f();
         bgTransform.translate(meterLeftNorm - (0.0f - meterWidthNorm / 2), 0);
         meterBackgroundShape.setTransform(bgTransform);
-        meterBackgroundShape.draw(stack);
+        meterBackgroundShape.draw();
 
         var stripeTransform = new Matrix3x2f();
         stripeTransform.translate(meterLeftNorm - (0.0f - stripeWidthNorm / 2), 0);
         if(mirrored)
             stripeTransform.translate(meterWidthNorm - stripeWidthNorm, 0);
         meterStripeShape.setTransform(stripeTransform);
-        meterStripeShape.draw(stack);
+        meterStripeShape.draw();
 
         var cursorTransform = new Matrix3x2f();
         cursorTransform.translate(meterLeftNorm - (0.0f - cursorWidthNorm / 2), 0);
@@ -220,7 +218,7 @@ public class ArtificialHorizonMetersLayer {
             cursorTransform.rotate((float)Math.PI);
         }
         meterCursorShape.setTransform(cursorTransform);
-        meterCursorShape.draw(stack);
+        meterCursorShape.draw();
 
         Vector4f cropRectangle = new Vector4f(meterLeftNorm, meterBottomNorm, meterWidthNorm, meterHeightNorm);
         if(drawDemandedValue) {
@@ -236,7 +234,7 @@ public class ArtificialHorizonMetersLayer {
             demandedMeterCursorShape.setCropRectangle(cropRectangle);
             demandedMeterCursorShape.setColor(Color.RED);
             demandedMeterCursorShape.setTransform(demandedCursorTransform);
-            demandedMeterCursorShape.draw(stack);
+            demandedMeterCursorShape.draw();
         }
 
         int pointCount = (int) (meterHeightNorm / (METER_UNIT_HEIGHT / horizonScreenY * OPENGL_CANVAS_SIZE) / METER_PRECISION) + 1;
@@ -265,7 +263,7 @@ public class ArtificialHorizonMetersLayer {
             if(mirrored)
                 barTransform.translate(meterWidthNorm - barWidthNorm, 0);
             meterBarsShape.setTransform(barTransform);
-            meterBarsShape.draw(stack);
+            meterBarsShape.draw();
         }
     }
 }

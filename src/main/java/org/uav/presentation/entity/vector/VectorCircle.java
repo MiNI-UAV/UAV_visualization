@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.vector;
 
 import org.joml.Vector2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.rendering.Shader;
 
 import java.util.ArrayList;
@@ -42,10 +41,10 @@ public class VectorCircle extends VectorShape {
         return vertices;
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         vectorShader.use();
         vectorShader.setVec4("color", color);
-        vectorShader.setMatrix3x2f(stack, "transform", transform);
+        vectorShader.setMatrix3x2f("transform", transform);
         vectorShader.setVec4("cropRectangle", cropRectangle);
 
         glBindVertexArray(VAO);

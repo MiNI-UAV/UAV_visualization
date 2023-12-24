@@ -2,7 +2,6 @@ package org.uav.presentation.entity.vector;
 
 import lombok.Setter;
 import org.joml.Vector2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.rendering.Shader;
 
 import java.util.ArrayList;
@@ -53,10 +52,10 @@ public class VectorCircleArc extends VectorShape {
         return vertices;
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         circleArcShader.use();
         circleArcShader.setVec4("color", color);
-        circleArcShader.setMatrix3x2f(stack, "transform", transform);
+        circleArcShader.setMatrix3x2f("transform", transform);
         circleArcShader.setVec4("cropRectangle", cropRectangle);
         circleArcShader.setFloat("startAngle", startAngle);
         circleArcShader.setFloat("arcAngle", arcAngle);

@@ -2,7 +2,6 @@ package org.uav.presentation.entity.gui.widget.messageBoard;
 
 import org.javatuples.Pair;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.messages.Message;
 import org.uav.logic.messages.MessageBoard;
@@ -30,7 +29,7 @@ public class CriticalMessageBoardWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
+    protected void drawWidget() {
         for(int i=0; i<messageBoard.getCriticalMessages().size(); i++) {
             Pair<Float, Message> message = messageBoard.getCriticalMessages().get(i);
             var color = getMessageColor(message.getValue1().getColor(), messageBoard.getTimeLeft(message));

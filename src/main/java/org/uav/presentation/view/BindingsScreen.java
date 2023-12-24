@@ -33,7 +33,7 @@ public class BindingsScreen {
     public void render(List<String> description) {
         displayWidget.update(description);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        displayWidget.draw(null);
+        displayWidget.draw();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

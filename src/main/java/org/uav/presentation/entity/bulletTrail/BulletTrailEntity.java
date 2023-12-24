@@ -1,6 +1,5 @@
 package org.uav.presentation.entity.bulletTrail;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
@@ -9,6 +8,7 @@ import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.rendering.Shader;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Objects;
@@ -30,24 +30,26 @@ public class BulletTrailEntity {
         bulletTrailShader.setFloat("startingOpacity", 1f);
     }
 
-    public void draw(MemoryStack stack, Matrix4f view, Matrix4f projection, Collection<ProjectileStatus> projectiles, SimulationState simulationState) {
+    public void draw(FloatBuffer viewBuffer, FloatBuffer projectionBuffer, Collection<ProjectileStatus> projectiles, SimulationState simulationState) {
         bulletTrailShader.use();
-        bulletTrailShader.setMatrix4f(stack,"view", view);
-        bulletTrailShader.setMatrix4f(stack,"projection", projection);
+        bulletTrailShader.setMatrix4f("view", viewBuffer);
+        bulletTrailShader.setMatrix4f("projection", projectionBuffer);
 
-        HashMap<Integer, BulletTrail> newBulletTrails = new HashMap<>();
-        for(ProjectileStatus status: projectiles) {
-            BulletTrail bt;
-            if(bulletTrails.containsKey(status.id)) {
-                bt = bulletTrails.get(status.id);
-            } else {
-                bt = new BulletTrail(bulletTrailShader);
-                simulationState.getPlayerDrone().ifPresent(drone-> bt.addPoint(drone.droneStatus.position));
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            HashMap<Integer, BulletTrail> newBulletTrails = new HashMap<>();
+            for(ProjectileStatus status: projectiles) {
+                BulletTrail bt;
+                if(bulletTrails.containsKey(status.id)) {
+                    bt = bulletTrails.get(status.id);
+                } else {
+                    bt = new BulletTrail(bulletTrailShader);
+                    simulationState.getPlayerDrone().ifPresent(drone-> bt.addPoint(drone.droneStatus.position));
+                }
+                bt.addPoint(status.position);
+                newBulletTrails.put(status.id, bt);
+                bt.draw(stack);
             }
-            bt.addPoint(status.position);
-            newBulletTrails.put(status.id, bt);
-            bt.draw(stack);
+            bulletTrails = newBulletTrails;
         }
-        bulletTrails = newBulletTrails;
     }
 }

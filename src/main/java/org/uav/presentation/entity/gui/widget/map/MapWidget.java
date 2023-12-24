@@ -3,7 +3,6 @@ package org.uav.presentation.entity.gui.widget.map;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.gui.GuiAnchorPoint;
@@ -39,8 +38,8 @@ public class MapWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
-        backgroundSprite.draw(stack);
-        mapProjection.draw(stack);
+    protected void drawWidget() {
+        backgroundSprite.draw();
+        mapProjection.draw();
     }
 }

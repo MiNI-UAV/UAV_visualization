@@ -1,6 +1,5 @@
 package org.uav.presentation.entity.environment;
 
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.model.Model;
 import org.uav.presentation.rendering.OrderedRenderQueue;
@@ -13,9 +12,9 @@ public class EnvironmentEntity {
         this.environmentModel = environmentModel;
     }
 
-    public void draw(SimulationState simulationState, MemoryStack stack, Shader shader) {
+    public void draw(SimulationState simulationState, Shader shader) {
         var renderQueue = new OrderedRenderQueue(simulationState.getCamera().getCameraPos());
         environmentModel.addToQueue(renderQueue, shader);
-        renderQueue.render(stack);
+        renderQueue.render();
     }
 }

@@ -3,7 +3,6 @@ package org.uav.presentation.entity.gui.widget.radar;
 
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.entity.vector.VectorCircle;
 import org.uav.presentation.rendering.Shader;
 
@@ -28,7 +27,7 @@ public class RadarPointsLayer {
         pointShape = new VectorCircle(new Vector2f(), (float) POINT_RADIUS / radarPointsCanvasX, POINT_CORNERS, vectorShader);
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         radarPoints.forEach(point -> {
             // X and Y adjusted
             float x = point.coordinates.x / radarRange;
@@ -38,7 +37,7 @@ public class RadarPointsLayer {
             transform.translate(x, y);
             pointShape.setTransform(transform);
             pointShape.setColor(new Color(0, 1, 0, strength));
-            pointShape.draw(stack);
+            pointShape.draw();
         });
     }
 }

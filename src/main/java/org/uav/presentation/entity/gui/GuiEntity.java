@@ -1,6 +1,5 @@
 package org.uav.presentation.entity.gui;
 
-import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.logic.config.Config;
 import org.uav.logic.config.DroneParameters;
@@ -106,23 +105,23 @@ public class GuiEntity {
         textShader.setFloat("gammaCorrection", gammaCorrection);
     }
 
-    public void draw(SimulationState simulationState, MemoryStack stack) {
+    public void draw(SimulationState simulationState) {
         openMap(simulationState.isMapOverlay());
         update(simulationState);
-        drawWithDepthFunc(() -> draw(stack), GL_ALWAYS);
+        drawWithDepthFunc(this::draw, GL_ALWAYS);
     }
 
-    private void draw(MemoryStack stack) {
-        debug.draw(stack);
+    private void draw() {
+        debug.draw();
         if(!drawGui) return;
-        controlPanel.draw(stack);
-        artificialHorizon.draw(stack);
-        radar.draw(stack);
-        propellersDisplay.draw(stack);
-        if(!map.isHidden()) map.draw(stack);
-        projectiles.draw(stack);
-        messageBoardWidget.draw(stack);
-        criticalMessageBoardWidget.draw(stack);
+        controlPanel.draw();
+        artificialHorizon.draw();
+        radar.draw();
+        propellersDisplay.draw();
+        if(!map.isHidden()) map.draw();
+        projectiles.draw();
+        messageBoardWidget.draw();
+        criticalMessageBoardWidget.draw();
     }
 
     public void update(SimulationState simulationState) {

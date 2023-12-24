@@ -3,13 +3,14 @@ package org.uav.presentation.entity.sprite;
 import lombok.Setter;
 import org.joml.Matrix3x2f;
 import org.joml.Vector2f;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.uav.presentation.model.Texture;
 import org.uav.presentation.model.importer.IndicesLoader;
 import org.uav.presentation.model.importer.VerticesLoader;
 import org.uav.presentation.rendering.Shader;
 
 import java.awt.image.BufferedImage;
+import java.nio.FloatBuffer;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -22,13 +23,12 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 import static org.uav.utils.OpenGLUtils.setupTexture;
 
-public class Sprite {
+public class Sprite implements AutoCloseable {
     private final int VAO;
     private final List<Integer> indices;
     private Texture texture;
     private Shader spriteShader;
-    @Setter
-    private Matrix3x2f transform;
+    private FloatBuffer transform;
     @Setter
     private float opacity;
 
@@ -55,13 +55,17 @@ public class Sprite {
                 new SpriteVertex(new Vector2f(-1, -1), new Vector2f(0, 1))
         );
         VAO = loadPrimitives(vertices);
-        transform = new Matrix3x2f();
+        transform = MemoryUtil.memCallocFloat(6);
         opacity = 1.0f;
     }
 
-    public void draw(MemoryStack stack) {
+    public void setTransform(Matrix3x2f transform) {
+        transform.get(this.transform);
+    }
+
+    public void draw() {
         spriteShader.use();
-        spriteShader.setMatrix3x2f(stack, "transform", transform);
+        spriteShader.setMatrix3x2f("transform", transform);
         spriteShader.setFloat("opacity", opacity);
 
         glActiveTexture(GL_TEXTURE0);
@@ -93,5 +97,10 @@ public class Sprite {
 
         glBindVertexArray(0);
         return VAO;
+    }
+
+    @Override
+    public void close() throws Exception {
+        MemoryUtil.memFree(transform);
     }
 }

@@ -5,7 +5,6 @@ import lombok.Setter;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import org.joml.Vector4i;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 
 import static org.lwjgl.opengl.GL11C.glViewport;
@@ -42,15 +41,15 @@ public abstract class Widget {
     }
 
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         if(!isHidden) {
             glViewport(viewportResolution.x, viewportResolution.y, viewportResolution.z, viewportResolution.w);
-            drawWidget(stack);
+            drawWidget();
             glViewport(0, 0, originalResolution.x, originalResolution.y);
         }
     }
 
-    protected abstract void drawWidget(MemoryStack stack);
+    protected abstract void drawWidget();
 
     protected float getViewRatio() {
         return viewRatio;

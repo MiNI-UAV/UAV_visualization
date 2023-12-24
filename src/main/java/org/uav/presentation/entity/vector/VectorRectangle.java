@@ -1,6 +1,5 @@
 package org.uav.presentation.entity.vector;
 
-import org.lwjgl.system.MemoryStack;
 import org.uav.presentation.rendering.Shader;
 
 import java.util.List;
@@ -27,10 +26,10 @@ public class VectorRectangle extends VectorShape{
         );
     }
 
-    public void draw(MemoryStack stack) {
+    public void draw() {
         vectorShader.use();
         vectorShader.setVec4("color", color);
-        vectorShader.setMatrix3x2f(stack, "transform", transform);
+        vectorShader.setMatrix3x2f("transform", transform);
         vectorShader.setVec4("cropRectangle", cropRectangle);
 
         glBindVertexArray(VAO);

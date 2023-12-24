@@ -2,7 +2,6 @@ package org.uav.presentation.entity.gui.widget.radar;
 
 import org.joml.Vector2f;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.drone.DroneStatus;
 import org.uav.logic.state.simulation.SimulationState;
@@ -115,9 +114,9 @@ public class RadarWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
-        radarSprite.draw(stack);
-        radarPointsLayer.draw(stack);
-        radarArrowLayer.draw(stack);
+    protected void drawWidget() {
+        radarSprite.draw();
+        radarPointsLayer.draw();
+        radarArrowLayer.draw();
     }
 }

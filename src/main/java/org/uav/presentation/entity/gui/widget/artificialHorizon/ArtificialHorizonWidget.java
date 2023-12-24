@@ -1,7 +1,6 @@
 package org.uav.presentation.entity.gui.widget.artificialHorizon;
 
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.gui.GuiAnchorPoint;
@@ -51,11 +50,11 @@ public class ArtificialHorizonWidget extends Widget {
         metersLayer.update(simulationState);
     }
     @Override
-    protected void drawWidget(MemoryStack stack) {
-        backgroundLayer.draw(stack);
-        compassLayer.draw(stack);
-        rollLayer.draw(stack);
-        cursorSprite.draw(stack);
-        metersLayer.draw(stack);
+    protected void drawWidget() {
+        backgroundLayer.draw();
+        compassLayer.draw();
+        rollLayer.draw();
+        cursorSprite.draw();
+        metersLayer.draw();
     }
 }

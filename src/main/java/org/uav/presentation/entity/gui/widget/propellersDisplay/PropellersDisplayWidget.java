@@ -2,7 +2,6 @@ package org.uav.presentation.entity.gui.widget.propellersDisplay;
 
 import org.joml.Vector2i;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.config.DroneParameters;
 import org.uav.logic.state.simulation.SimulationState;
@@ -33,7 +32,7 @@ public class PropellersDisplayWidget extends Widget {
     }
 
     @Override
-    protected void drawWidget(MemoryStack stack) {
-        propellersDisplay.draw(stack);
+    protected void drawWidget() {
+        propellersDisplay.draw();
     }
 }

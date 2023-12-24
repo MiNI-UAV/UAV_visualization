@@ -3,7 +3,7 @@ package org.uav.presentation.view;
 import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.uav.UavVisualization;
 import org.uav.logic.config.Config;
 import org.uav.logic.config.DroneParameters;
@@ -28,6 +28,7 @@ import org.uav.presentation.rendering.Shader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.file.Paths;
 import java.util.Objects;
 
@@ -43,11 +44,15 @@ public class OpenGlScene {
     private final SimulationState simulationState;
     private final Config config;
     private Shader objectShader;
+    private final FloatBuffer viewBuffer;
+    private final FloatBuffer projectionBuffer;
 
     // Shading
     private int depthMapFBO;
     private int depthMap;
     private Shader shadingShader;
+    private final FloatBuffer shadowViewBuffer;
+    private final FloatBuffer shadowProjectionBuffer;
 
     private final DirectionalLight directionalLight;
     private final PointLight pointLight;
@@ -86,6 +91,11 @@ public class OpenGlScene {
 
         guiEntity = new GuiEntity(simulationState, config, droneParameters, messageBoard);
         outlineEntity = new OutlineEntity(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
+
+        viewBuffer = MemoryUtil.memCallocFloat(16);
+        projectionBuffer = MemoryUtil.memCallocFloat(16);
+        shadowViewBuffer = MemoryUtil.memCallocFloat(16);
+        shadowProjectionBuffer = MemoryUtil.memCallocFloat(16);
 
         setUpShaders();
         setUpShadingFrameBuffer();
@@ -133,121 +143,118 @@ public class OpenGlScene {
     }
 
     public void render() {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            float deltaTimeS = simulationState.getSimulationTimeS() - simulationState.getLastSimulationTimeS();
+        float deltaTimeS = simulationState.getSimulationTimeS() - simulationState.getLastSimulationTimeS();
 
-            // Shading pass
-            if(config.getGraphicsSettings().getUseShadows()) {
-                glViewport(0, 0, config.getGraphicsSettings().getShadowsTextureResolution(), config.getGraphicsSettings().getShadowsTextureResolution());
-                glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-                glClear(GL_DEPTH_BUFFER_BIT);
-                prepareShadingShader(stack, getShadowShaderViewMatrix(), getShadowShaderProjectionMatrix());
-                renderSceneShadows(stack, shadingShader);
-                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                glViewport(0, 0, config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
-            }
-
-            // Drone Mask
-            outlineEntity.generateDroneMask(droneEntity, simulationState, stack, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
-
-            // Scene pass
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-            objectShader.use();
-            objectShader.setVec3("viewPos", getSceneShaderViewPos());
-            objectShader.setMatrix4f(stack,"view", getSceneShaderViewMatrix());
-            objectShader.setMatrix4f(stack,"projection", getSceneShaderProjectionMatrix());
-            objectShader.setMatrix4f(stack,"directionalLightView", getShadowShaderViewMatrix());
-            objectShader.setMatrix4f(stack,"directionalLightProjection", getShadowShaderProjectionMatrix());
-            updateLights();
-            glActiveTexture(GL_TEXTURE0 + SHADOW_TEXTURE_ID);
-            glBindTexture(GL_TEXTURE_2D, depthMap);
-            renderScene(stack, objectShader, deltaTimeS);
-
-            // UI pass
-            guiEntity.draw(simulationState, stack);
+        // Shading pass
+        if(config.getGraphicsSettings().getUseShadows()) {
+            glViewport(0, 0, config.getGraphicsSettings().getShadowsTextureResolution(), config.getGraphicsSettings().getShadowsTextureResolution());
+            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+            glClear(GL_DEPTH_BUFFER_BIT);
+            prepareShadingShader(getShadowShaderViewMatrix(), getShadowShaderProjectionMatrix());
+            renderSceneShadows(shadingShader);
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(0, 0, config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
         }
+
+        // Drone Mask
+        outlineEntity.generateDroneMask(droneEntity, simulationState, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+
+        // Scene pass
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        objectShader.use();
+        objectShader.setVec3("viewPos", getSceneShaderViewPos());
+        objectShader.setMatrix4f("view", getSceneShaderViewMatrix());
+        objectShader.setMatrix4f("projection", getSceneShaderProjectionMatrix());
+        objectShader.setMatrix4f("directionalLightView", getShadowShaderViewMatrix());
+        objectShader.setMatrix4f("directionalLightProjection", getShadowShaderProjectionMatrix());
+        updateLights();
+        glActiveTexture(GL_TEXTURE0 + SHADOW_TEXTURE_ID);
+        glBindTexture(GL_TEXTURE_2D, depthMap);
+        renderScene(objectShader, deltaTimeS);
+
+        // UI pass
+        guiEntity.draw(simulationState);
 
         glfwSwapBuffers(simulationState.getWindow());
         glfwPollEvents();
     }
 
-    private void renderScene(MemoryStack stack, Shader shader, float deltaTimeS) {
+    private void renderScene(Shader shader, float deltaTimeS) {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
 
         glStencilMask(0x00);
 
-        environmentEntity.draw(simulationState, stack, shader);
-        projectileEntity.draw(stack, shader, simulationState.getCurrPassProjectileStatuses().map.values());
+        environmentEntity.draw(simulationState, shader);
+        projectileEntity.draw(shader, simulationState.getCurrPassProjectileStatuses().map.values());
         if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
-            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader);
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), shader);
 
         glStencilMask(0xFF);
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-        outlineEntity.draw(droneEntity, simulationState, stack, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
+        outlineEntity.draw(droneEntity, simulationState, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
         glStencilFunc(GL_EQUAL, 0, 0xFF);
-        droneEntity.draw(stack, shader, deltaTimeS, simulationState.getDronesInAir().values(), simulationState.getJoystickStatus());
+        droneEntity.draw(shader, deltaTimeS, simulationState.getDronesInAir().values(), simulationState.getJoystickStatus());
         glStencilFunc(GL_ALWAYS, 1, 0xFF);
 
         ropeEntity.draw(
-                stack,
                 getSceneShaderViewPos(),
                 getSceneShaderViewMatrix(),
                 getSceneShaderProjectionMatrix(),
                 simulationState.getNotifications().ropes,
                 simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
-        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
+        bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
     }
 
-    private void renderSceneShadows(MemoryStack stack, Shader shader) {
+    private void renderSceneShadows(Shader shader) {
         var skyColor = simulationState.getSkyColor();
         glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         float time = simulationState.getSimulationTimeS();
-        environmentEntity.draw(simulationState, stack, shader);
-        projectileEntity.draw(stack, shader, simulationState.getCurrPassProjectileStatuses().map.values());
+        environmentEntity.draw(simulationState, shader);
+        projectileEntity.draw(shader, simulationState.getCurrPassProjectileStatuses().map.values());
         if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
-            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), stack, shader);
-        droneEntity.draw(stack, shader, time, simulationState.getDronesInAir().values(), simulationState.getJoystickStatus());
+            xMarkEntity.draw(simulationState.getCurrentControlModeDemanded(), shader);
+        droneEntity.draw(shader, time, simulationState.getDronesInAir().values(), simulationState.getJoystickStatus());
 
         ropeEntity.draw(
-                stack,
                 getSceneShaderViewPos(),
                 getSceneShaderViewMatrix(),
                 getSceneShaderProjectionMatrix(),
                 simulationState.getNotifications().ropes,
                 simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
-        bulletTrailEntity.draw(stack, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
+        bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
     }
 
-    private void prepareShadingShader(MemoryStack stack, Matrix4f view, Matrix4f projection) {
+    private void prepareShadingShader(FloatBuffer view, FloatBuffer projection) {
         shadingShader.use();
-        shadingShader.setMatrix4f(stack,"view", view);
-        shadingShader.setMatrix4f(stack,"projection", projection);
+        shadingShader.setMatrix4f("view", view);
+        shadingShader.setMatrix4f("projection", projection);
     }
 
-    private Matrix4f getShadowShaderProjectionMatrix() {
+    private FloatBuffer getShadowShaderProjectionMatrix() {
         float near_plane = 100f;
         float far_plane = config.getGraphicsSettings().getShadowsRenderingDistance();
-        return new Matrix4f().ortho(
+        new Matrix4f().ortho(
                 -config.getGraphicsSettings().getShadowsRenderingDistance(),
                 config.getGraphicsSettings().getShadowsRenderingDistance(),
                 -config.getGraphicsSettings().getShadowsRenderingDistance(),
                 config.getGraphicsSettings().getShadowsRenderingDistance(),
                 near_plane,
                 far_plane
-        );
+        ).get(shadowProjectionBuffer);
+        return shadowProjectionBuffer;
     }
 
-    private Matrix4f getShadowShaderViewMatrix() {
-        if(simulationState.getCurrentlyControlledDrone().isEmpty()) return new Matrix4f();
+    private FloatBuffer getShadowShaderViewMatrix() {
+        if(simulationState.getCurrentlyControlledDrone().isEmpty()) return shadowViewBuffer;
         var drone = simulationState.getDronesInAir().get(simulationState.getCurrentlyControlledDrone().get().getId());
-        if(drone == null) return new Matrix4f();
-        return new Matrix4f().lookAt(
+        if(drone == null) return shadowViewBuffer;
+        new Matrix4f().lookAt(
                 new Vector3f(drone.droneStatus.position).add( // TODO lookAt function breaks down when looking stright down
                         new Vector3f(0, 0, -config.getGraphicsSettings().getShadowsRenderingDistance()*0.5f)
                                 .rotateY((90 - config.getSceneSettings().getSunAngleYearCycle()) / 180 * (float) Math.PI)
@@ -255,7 +262,8 @@ public class OpenGlScene {
                 ),
                 new Vector3f(drone.droneStatus.position),
                 new Vector3f(0, 0, -1f)
-        );
+        ).get(shadowViewBuffer);
+        return shadowViewBuffer;
     }
 
     private void updateLights() {
@@ -276,18 +284,20 @@ public class OpenGlScene {
         pointLight.applyTo(objectShader);
     }
 
-    private Matrix4f getSceneShaderProjectionMatrix() {
-        return new Matrix4f()
+    private FloatBuffer getSceneShaderProjectionMatrix() {
+        new Matrix4f()
                 .perspective(
                         toRadians(simulationState.getCamera().getFov()),
                         (float) config.getGraphicsSettings().getWindowWidth() / config.getGraphicsSettings().getWindowHeight(),
                         0.1f,
                         1000f
-                );
+                ).get(projectionBuffer);
+        return projectionBuffer;
     }
 
-    private Matrix4f getSceneShaderViewMatrix() {
-        return simulationState.getCamera().getViewMatrix();
+    private FloatBuffer getSceneShaderViewMatrix() {
+        simulationState.getCamera().getViewMatrix().get(viewBuffer);
+        return viewBuffer;
     }
 
     private Vector3f getSceneShaderViewPos() {

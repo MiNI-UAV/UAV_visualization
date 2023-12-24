@@ -1,12 +1,13 @@
 package org.uav.presentation.model;
 
 import org.joml.Matrix4f;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.uav.presentation.model.importer.IndicesLoader;
 import org.uav.presentation.model.importer.VerticesLoader;
 import org.uav.presentation.rendering.Shader;
 
 import javax.annotation.Nullable;
+import java.nio.FloatBuffer;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
@@ -16,7 +17,7 @@ import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class Mesh {
+public class Mesh implements AutoCloseable {
     private final List<ModelVertex> vertices;
     private final List<Integer> indices;
     @Nullable
@@ -31,6 +32,7 @@ public class Mesh {
     private final boolean isTransparentTexture;
     private final Material material;
     private int VAO;
+    private final FloatBuffer modelMatrixBuffer;
 
     public Mesh(
             List<ModelVertex> vertices,
@@ -52,10 +54,11 @@ public class Mesh {
         this.textures = textures;
         this.isTransparentTexture = isTransparentTexture;
         this.material = material;
+        modelMatrixBuffer = MemoryUtil.memCallocFloat(16);
         setupMesh();
     }
 
-    public void draw(MemoryStack stack, Shader shader, Matrix4f modelMatrix) {
+    public void draw(Shader shader, Matrix4f modelMatrix) {
         shader.use();
 
         bindTextures(shader, albedoTexture, "useAlbedoMap", "albedoMap", 0);
@@ -65,7 +68,8 @@ public class Mesh {
 
         // TODO TEXCOORD_1 2 3 4 ...
         // draw mesh
-        shader.setMatrix4f(stack, "model", modelMatrix);
+        modelMatrix.get(modelMatrixBuffer);
+        shader.setMatrix4f("model", modelMatrixBuffer);
         shader.setVec4("material.albedo", material.getAlbedo());
         shader.setFloat("material.normalScale", material.getNormalScale());
         shader.setFloat("material.roughness", material.getRoughness());
@@ -113,5 +117,10 @@ public class Mesh {
 
     public boolean isTransparent() {
         return isTransparentTexture;
+    }
+
+    @Override
+    public void close() throws Exception {
+        MemoryUtil.memFree(modelMatrixBuffer);
     }
 }
