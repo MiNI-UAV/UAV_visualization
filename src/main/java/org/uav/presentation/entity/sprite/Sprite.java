@@ -56,6 +56,7 @@ public class Sprite implements AutoCloseable {
         );
         VAO = loadPrimitives(vertices);
         transform = MemoryUtil.memCallocFloat(6);
+        new Matrix3x2f().get(transform);
         opacity = 1.0f;
     }
 

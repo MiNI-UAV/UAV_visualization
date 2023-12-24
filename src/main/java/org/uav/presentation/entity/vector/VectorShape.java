@@ -32,6 +32,7 @@ public abstract class VectorShape implements AutoCloseable {
         this.indices = indices;
         VAO = loadPrimitives(points);
         transform = MemoryUtil.memCallocFloat(6);
+        new Matrix3x2f().get(transform);
         color = new Vector4f(Color.WHITE.getComponents(new float[4]));
         cropRectangle = new Vector4f(-1,-1,2,2);
     }
