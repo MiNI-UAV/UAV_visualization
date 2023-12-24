@@ -2,6 +2,7 @@ package org.uav.logic.state.simulation;
 
 import lombok.Data;
 import lombok.Getter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.joml.Vector3f;
 import org.uav.logic.communication.DroneCommunication;
 import org.uav.logic.config.Config;
@@ -74,7 +75,7 @@ public class SimulationState {
         camera = new Camera(this, config);
         mapOverlay = false;
         mapZoom = 1;
-        skyColor = new Vector3f(0.529f, 0.808f, 0.922f);
+        skyColor = new Vector3f(ArrayUtils.toPrimitive(config.getSceneSettings().getSkyColor(), 0.0F));
         currentlyChosenAmmo = 0;
         ammos = droneParameters.getAmmo() == null? new ArrayList<>():
                 droneParameters.getAmmo().stream().map(e -> new Projectile(e, this)).toList();

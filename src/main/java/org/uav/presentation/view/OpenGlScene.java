@@ -160,6 +160,8 @@ public class OpenGlScene {
         outlineEntity.generateDroneMask(droneEntity, simulationState, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());
 
         // Scene pass
+        var skyColor = simulationState.getSkyColor();
+        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         objectShader.use();
         objectShader.setVec3("viewPos", getSceneShaderViewPos());
@@ -180,8 +182,6 @@ public class OpenGlScene {
     }
 
     private void renderScene(Shader shader, float deltaTimeS) {
-        var skyColor = simulationState.getSkyColor();
-        glClearColor(skyColor.x, skyColor.y, skyColor.z, 0.0f);
 
         glStencilMask(0x00);
 

@@ -64,6 +64,7 @@ public class Config {
     @Value
     @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
     public static class SceneSettings {
+        Float[] skyColor;
         Boolean drawInWorldDemandedPositionalCoords;
         Float sunAngleDayCycle;
         Float sunAngleYearCycle;
