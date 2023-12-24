@@ -8,6 +8,7 @@ import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.camera.Camera;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,13 +26,18 @@ public class AudioManager {
         this.soundVolumeMultiplier = config.getAudioSettings().getSoundVolume();
         this.camera = simulationState.getCamera();
         listener = new SoundListener();
-        propellerSounds = droneParameters.getRotors().getRotor().stream().map(r -> {
-            var propellerTrack = new VorbisTrack(Paths.get(simulationState.getAssetsDirectory(), "audio", "drone_sound_mono.ogg").toString(), new AtomicInteger());
-            var ar = new AudioRenderer((propellerTrack));
-            ar.setGain(0);
-            return ar;
-        }).toList();
-        propellerOffsets = droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getPosition).toList();
+        if(droneParameters.getRotors() != null && droneParameters.getRotors().getRotor() != null) {
+            propellerSounds = droneParameters.getRotors().getRotor().stream().map(r -> {
+                var propellerTrack = new VorbisTrack(Paths.get(simulationState.getAssetsDirectory(), "audio", "drone_sound_mono.ogg").toString(), new AtomicInteger());
+                var ar = new AudioRenderer((propellerTrack));
+                ar.setGain(0);
+                return ar;
+            }).toList();
+            propellerOffsets = droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getPosition).toList();
+        } else {
+            propellerSounds = new ArrayList<>();
+            propellerOffsets = new ArrayList<>();
+        }
     }
 
     public void play() {

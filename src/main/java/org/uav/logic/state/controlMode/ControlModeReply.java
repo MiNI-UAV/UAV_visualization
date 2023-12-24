@@ -12,5 +12,6 @@ public enum ControlModeReply {
     W,
     P,
     Q,
-    R
+    R,
+    THROTTLE
 }

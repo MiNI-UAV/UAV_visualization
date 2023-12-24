@@ -65,14 +65,14 @@ public class Mesh {
 
         // TODO TEXCOORD_1 2 3 4 ...
         // draw mesh
-        shader.setMatrix4f(stack,"model", modelMatrix);
+        shader.setMatrix4f(stack, "model", modelMatrix);
         shader.setVec4("material.albedo", material.getAlbedo());
         shader.setFloat("material.normalScale", material.getNormalScale());
         shader.setFloat("material.roughness", material.getRoughness());
         shader.setFloat("material.metallic", material.getMetallic());
         shader.setFloat("material.aoStrength", material.getAoStrength());
         glBindVertexArray(VAO);
-        if(indices.isEmpty())
+        if (indices.isEmpty())
             glDrawArrays(GL_TRIANGLES, 0, vertices.size());
         else
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

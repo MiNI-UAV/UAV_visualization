@@ -26,7 +26,7 @@ droneSettings:
   # - RGUIDED
 audioSettings:
   soundVolume: 0.5
-  musicVolume: 0.2
+  musicVolume: 0.5
 sceneSettings:
   drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset

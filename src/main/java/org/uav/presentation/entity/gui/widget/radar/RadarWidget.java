@@ -1,14 +1,14 @@
 package org.uav.presentation.entity.gui.widget.radar;
 
 import org.joml.Vector2f;
+import org.joml.Vector4f;
+import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.drone.DroneStatus;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.entity.gui.GuiAnchorPoint;
-import org.uav.presentation.entity.gui.GuiElement;
-import org.uav.presentation.entity.gui.GuiWidget;
-import org.uav.presentation.entity.gui.widget.radar.layers.RadarArrowLayer;
-import org.uav.presentation.entity.gui.widget.radar.layers.RadarPointsLayer;
+import org.uav.presentation.entity.gui.Widget;
+import org.uav.presentation.entity.sprite.Sprite;
 import org.uav.presentation.rendering.Shader;
 import org.uav.utils.Convert;
 
@@ -16,12 +16,11 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RadarWidget implements GuiWidget {
+public class RadarWidget extends Widget {
     private static final float FULL_CIRCUMFERENCE = (float) (2 * Math.PI);
-    private final GuiElement guiElement;
+    private final Sprite radarSprite;
     private final RadarArrowLayer radarArrowLayer;
     private final RadarPointsLayer radarPointsLayer;
-    private final SimulationState simulationState;
     private final float radarArrowSpeed;
     private float radarArrowAngle;
     private final List<RadarPoint> radarPoints;
@@ -29,8 +28,8 @@ public class RadarWidget implements GuiWidget {
     private final float radarRangeRadiusSquared;
     private final float radarSectorLength;
     private float currentSectorAngle;
-    public RadarWidget(BufferedImage radarTexture, BufferedImage radarArrowTexture, SimulationState simulationState, Config config) {
-        this.simulationState = simulationState;
+    public RadarWidget(BufferedImage radarTexture, BufferedImage radarArrowTexture, Shader spriteShader, Shader vectorShader, Config config) {
+        super(getWidgetPosition(), GuiAnchorPoint.BOTTOM_LEFT, config);
 
         radarArrowSpeed = (float) (1/30f * Math.PI);
         radarArrowAngle = 0;
@@ -43,28 +42,21 @@ public class RadarWidget implements GuiWidget {
         int radarPointsCanvasX = 100;
         int radarPointsCanvasY = 100;
 
-        radarArrowLayer = new RadarArrowLayer(radarArrowTexture);
-        radarPointsLayer = new RadarPointsLayer(radarPoints, startingTraceStrength, radarRangeRadius, radarPointsCanvasX);
+        radarSprite = new Sprite(radarTexture, spriteShader);
+        radarArrowLayer = new RadarArrowLayer(radarArrowTexture, spriteShader);
+        radarPointsLayer = new RadarPointsLayer(radarPoints, startingTraceStrength, radarRangeRadius, radarPointsCanvasX, vectorShader);
+        }
 
-        guiElement = new GuiElement.GuiElementBuilder()
-                .setPosition(-0.5f, -1.0f, -1.0f, -0.5f)
-                .setAnchorPoint(GuiAnchorPoint.BOTTOM_LEFT)
-                .setScale(config.getGraphicsSettings().getGuiScale())
-                .setResolution(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight())
-                .setHidden(false)
-                .setOverlayLevel(2)
-                .addLayer(radarTexture)
-                .addLayer(radarArrowTexture.getWidth(), radarArrowTexture.getHeight(), radarArrowLayer)
-                .addLayer(radarPointsCanvasX, radarPointsCanvasY, radarPointsLayer)
-                .build();
+    private static Vector4f getWidgetPosition() {
+        return new Vector4f(-0.5f, -1.0f, -1.0f, -0.5f);
     }
 
-    public void update() {
+    public void update(SimulationState simulationState) {
         // TODO: Make radar angle dependent on global clock not on FPS;
-        if(guiElement.getHidden()) return;
+//        if(guiElement.getHidden()) return;
         radarArrowAngle += radarArrowSpeed;
         if(radarArrowAngle > currentSectorAngle) {
-            activateRadar();
+            activateRadar(simulationState);
             while(radarArrowAngle > currentSectorAngle)
                 currentSectorAngle += radarSectorLength;
             if(currentSectorAngle > FULL_CIRCUMFERENCE)
@@ -75,7 +67,7 @@ public class RadarWidget implements GuiWidget {
         radarArrowLayer.update(radarArrowAngle);
     }
 
-    private void activateRadar() {
+    private void activateRadar(SimulationState simulationState) {
         // Test for drone position between (currentSectorAngle - radarSectorLength/2) and (currentSectorAngle+- radarSectorLength/2)
         radarPoints.forEach(point -> point.traceStrength--);
         radarPoints.removeIf(point -> point.traceStrength <= 0);
@@ -123,7 +115,9 @@ public class RadarWidget implements GuiWidget {
     }
 
     @Override
-    public void draw(Shader shader) {
-        guiElement.draw(shader);
+    protected void drawWidget(MemoryStack stack) {
+        radarSprite.draw(stack);
+        radarPointsLayer.draw(stack);
+        radarArrowLayer.draw(stack);
     }
 }

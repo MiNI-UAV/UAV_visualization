@@ -1,6 +1,7 @@
 package org.uav.logic.communication;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.uav.logic.assets.AvailableControlModes;
 import org.uav.logic.config.Config;
 import org.uav.logic.state.controlMode.ControlModeDemanded;
@@ -25,6 +26,8 @@ public class DroneCommunication {
     private final ZMQ.Socket utilsSocket;
     private final SimulationState simulationState;
     private final AvailableControlModes availableControlModes;
+    @Getter @Setter
+    private FlightStatus flightStatus;
 
     public DroneCommunication(
             ZContext context,
@@ -50,9 +53,12 @@ public class DroneCommunication {
         utilsSocket.setReceiveTimeOut(config.getServerSettings().getDroneTimeoutMs());
         utilsSocket.setSendTimeOut(config.getServerSettings().getDroneTimeoutMs());
         utilsSocket.connect(address2);
+
+        flightStatus = FlightStatus.INIT;
     }
 
     public void sendSteeringCommand(String command) {
+        if(flightStatus == FlightStatus.DEAD) return;
         try {
             if (!steerSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkDroneErrno(steerSocket);
             byte[] reply = steerSocket.recv(0);
@@ -86,10 +92,11 @@ public class DroneCommunication {
     }
 
     public String sendUtilsCommand(String command) {
+        if(flightStatus == FlightStatus.DEAD) return "ok;";
         try {
             if(!utilsSocket.send(command.getBytes(ZMQ.CHARSET), 0)) checkDroneErrno(utilsSocket);
             byte[] reply = utilsSocket.recv(0);
-            if(reply == null) checkDroneErrno(utilsSocket);
+            if(reply == null)  checkDroneErrno(utilsSocket);
             return new String(reply, ZMQ.CHARSET);
         } catch (DroneTimeoutException e) {
             simulationState.setCurrentlyControlledDrone(null);
@@ -107,5 +114,11 @@ public class DroneCommunication {
         public DroneTimeoutException(String message) {
             super(message);
         }
+    }
+
+    public enum FlightStatus {
+        INIT,
+        FLIGHT,
+        DEAD
     }
 }

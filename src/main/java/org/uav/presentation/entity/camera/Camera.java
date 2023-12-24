@@ -35,6 +35,8 @@ public class Camera {
     private final float movementSpeed;
     private float deltaTime;
     private float lastTime;
+    private Vector3f lastDronePosition;
+    private Quaternionf lastDroneRotation;
 
     public Camera(SimulationState simulationState, Config config) {
         this.simulationState = simulationState;
@@ -50,6 +52,8 @@ public class Camera {
         movementSpeed = 2.5f;
         deltaTime = 0f;
         lastTime = 0f;
+        lastDronePosition = new Vector3f();
+        lastDroneRotation = new Quaternionf();
     }
 
     public Matrix4f getViewMatrix() {
@@ -59,9 +63,11 @@ public class Camera {
 
     public void updateCamera() {
         var drone = simulationState.getPlayerDrone();
-        var dronePosition = drone.isPresent() ? drone.get().droneStatus.position : new Vector3f();
-        var droneRotation = drone.isPresent() ? drone.get().droneStatus.rotation : new Quaternionf();
+        var dronePosition = drone.isPresent() ? drone.get().droneStatus.position : lastDronePosition;
+        var droneRotation = drone.isPresent() ? drone.get().droneStatus.rotation : lastDroneRotation;
         var droneVelocity = drone.isPresent() ? drone.get().droneStatus.linearVelocity : new Vector3f();
+        lastDronePosition = dronePosition;
+        lastDroneRotation = droneRotation;
         float currTime = simulationState.getSimulationTimeS();
         deltaTime = currTime - lastTime;
         lastTime = currTime;

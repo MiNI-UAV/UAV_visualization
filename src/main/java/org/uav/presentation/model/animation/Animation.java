@@ -15,8 +15,6 @@ public class Animation {
     private final List<Pair<Float, Vector3f>> translationAnimation;
     private final List<Pair<Float, Quaternionf>> rotationAnimation;
     private final List<Pair<Float, Vector3f>> scaleAnimation;
-    private float startTime;
-    private boolean looping;
 
     public Animation(
             List<Pair<Float, Vector3f>> translationAnimation,
@@ -26,8 +24,6 @@ public class Animation {
         this.translationAnimation = translationAnimation;
         this.rotationAnimation = rotationAnimation;
         this.scaleAnimation = scaleAnimation;
-        startTime = 0;
-        looping = false;
     }
 
     public Vector3f getTranslationFrame(float progress) {
@@ -70,8 +66,6 @@ public class Animation {
     }
 
     public void startAnimation(float time, boolean loop) {
-        startTime = time;
-        looping = loop;
     }
 
 }

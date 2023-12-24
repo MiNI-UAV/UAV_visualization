@@ -6,8 +6,6 @@ import org.uav.presentation.entity.gui.widget.display.DisplayWidget;
 import org.uav.presentation.rendering.Shader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -16,27 +14,25 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class LoadingScreen {
     private final long window;
-    private final Shader shader;
+    private final Shader textShader;
     private final DisplayWidget displayWidget;
 
     public LoadingScreen(long window, Config config) throws IOException {
         this.window = window;
 
-        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
-        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
-        shader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
-        shader.use();
-        shader.setBool("useGammaCorrection", config.getGraphicsSettings().getUseGammaCorrection());
-        shader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
+        var textVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/text/textShader.vert"));
+        var textFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/text/textShader.frag"));
+        textShader = new Shader(textVertexShaderSource, textFragmentShaderSource);
+        textShader.use();
+        textShader.setFloat("gammaCorrection", config.getGraphicsSettings().getGammaCorrection());
 
-        displayWidget = new DisplayWidget(config, new ArrayList<>());
+        displayWidget = new DisplayWidget(textShader, config);
     }
 
     public void render(String description) {
-        displayWidget.update(List.of(description));
-        shader.use();
+        displayWidget.update(description);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        displayWidget.draw(shader);
+        displayWidget.draw(null);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

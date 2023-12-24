@@ -1,5 +1,6 @@
 package org.uav.presentation.entity.gui;
 
+import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.logic.config.Config;
 import org.uav.logic.config.DroneParameters;
@@ -9,59 +10,55 @@ import org.uav.presentation.entity.gui.widget.ControlPanelWidget;
 import org.uav.presentation.entity.gui.widget.artificialHorizon.ArtificialHorizonWidget;
 import org.uav.presentation.entity.gui.widget.debug.DebugWidget;
 import org.uav.presentation.entity.gui.widget.map.MapWidget;
+import org.uav.presentation.entity.gui.widget.messageBoard.CriticalMessageBoardWidget;
 import org.uav.presentation.entity.gui.widget.messageBoard.MessageBoardWidget;
 import org.uav.presentation.entity.gui.widget.projectiles.ProjectileWidget;
 import org.uav.presentation.entity.gui.widget.propellersDisplay.PropellersDisplayWidget;
 import org.uav.presentation.entity.gui.widget.radar.RadarWidget;
 import org.uav.presentation.rendering.Shader;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11C.GL_ALWAYS;
+import static org.uav.utils.IOUtils.loadImage;
 import static org.uav.utils.OpenGLUtils.drawWithDepthFunc;
 
 public class GuiEntity {
-    private Shader guiShader;
+    private Shader spriteShader;
+    private Shader vectorShader;
+    private Shader circleArcShader;
+    private Shader textShader;
     private boolean drawGui;
     private final ControlPanelWidget controlPanel;
     private final RadarWidget radar;
     private final ArtificialHorizonWidget artificialHorizon;
     private final MapWidget map;
-    private final PropellersDisplayWidget rotorDisplay;
+    private final PropellersDisplayWidget propellersDisplay;
     private final ProjectileWidget projectiles;
     private final MessageBoardWidget messageBoardWidget;
+    private final CriticalMessageBoardWidget criticalMessageBoardWidget;
     private final DebugWidget debug;
 
     public GuiEntity(SimulationState simulationState, Config config, DroneParameters droneParameters, MessageBoard messageBoard) throws IOException {
-        setUpShader(config.getGraphicsSettings().getUseGammaCorrection(), config.getGraphicsSettings().getGammaCorrection());
+        setUpShaders(config.getGraphicsSettings().getGammaCorrection());
         drawGui = config.getGraphicsSettings().getEnableGui();
         var assetsDirectory = Paths.get(simulationState.getAssetsDirectory() , "core", "GUI");
         var background = loadImage(Paths.get(assetsDirectory.toString(), "background.png").toString());
 
-        controlPanel = new ControlPanelWidget(background, config);
+        controlPanel = new ControlPanelWidget(background, spriteShader, config);
 
         radar = new RadarWidget(
                 loadImage(Paths.get(assetsDirectory.toString(), "radar.png").toString()),
                 loadImage(Paths.get(assetsDirectory.toString(), "radarArrow.png").toString()),
-                simulationState,
+                spriteShader,
+                vectorShader,
                 config
         );
+        artificialHorizon = new ArtificialHorizonWidget(assetsDirectory, spriteShader, vectorShader, textShader, config);
 
-        artificialHorizon = new ArtificialHorizonWidget(
-                loadImage(Paths.get(assetsDirectory.toString(), "horizon.png").toString()),
-                loadImage(Paths.get(assetsDirectory.toString(), "horizonCursor.png").toString()),
-                loadImage(Paths.get(assetsDirectory.toString(), "horizonRoll.png").toString()),
-                loadImage(Paths.get(assetsDirectory.toString(), "compass.png").toString()),
-                simulationState,
-                config
-        );
-
-        rotorDisplay = new PropellersDisplayWidget(simulationState, config, droneParameters);
+        propellersDisplay = new PropellersDisplayWidget(simulationState, droneParameters, vectorShader, circleArcShader, textShader, config);
 
         String mapPath = Paths.get(simulationState.getAssetsDirectory(), "maps", simulationState.getServerMap(), "model", "minimap.png").toString();
         map = new MapWidget(
@@ -70,60 +67,72 @@ public class GuiEntity {
                 loadImage(Paths.get(assetsDirectory.toString(), "droneIconLowRes.png").toString()),
                 loadImage(Paths.get(assetsDirectory.toString(), "droneIconLowResDemanded.png").toString()),
                 simulationState,
+                spriteShader,
+                vectorShader,
                 config
         );
 
-        projectiles = new ProjectileWidget(background, simulationState, config);
+        projectiles = new ProjectileWidget(background, spriteShader, vectorShader, circleArcShader, textShader, config);
 
-        messageBoardWidget = new MessageBoardWidget(config, messageBoard);
+        messageBoardWidget = new MessageBoardWidget(textShader, config, messageBoard);
+        criticalMessageBoardWidget = new CriticalMessageBoardWidget(textShader, config, messageBoard);
 
-        debug = new DebugWidget(background, simulationState, config);
+        debug = new DebugWidget(background, simulationState, spriteShader, textShader, config);
     }
 
-    private void setUpShader(boolean useGammaCorrection, float gammaCorrection) throws IOException {
-        var guiVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.vert"));
-        var guiFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/gui/guiShader.frag"));
-        guiShader = new Shader(guiVertexShaderSource, guiFragmentShaderSource);
-        guiShader.use();
-        guiShader.setBool("useGammaCorrection", useGammaCorrection);
-        guiShader.setFloat("gammaCorrection", gammaCorrection);
+    private void setUpShaders(float gammaCorrection) throws IOException {
+        var spriteVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/sprite/spriteShader.vert"));
+        var spriteFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/sprite/spriteShader.frag"));
+        spriteShader = new Shader(spriteVertexShaderSource, spriteFragmentShaderSource);
+        spriteShader.use();
+        spriteShader.setFloat("gammaCorrection", gammaCorrection);
+
+        var vectorVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/vector/vectorShader.vert"));
+        var vectorFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/vector/vectorShader.frag"));
+        vectorShader = new Shader(vectorVertexShaderSource, vectorFragmentShaderSource);
+        vectorShader.use();
+        vectorShader.setFloat("gammaCorrection", gammaCorrection);
+
+        var circleArcVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/vector/circleArc/circleArcShader.vert"));
+        var circleArcFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/vector/circleArc/circleArcShader.frag"));
+        circleArcShader = new Shader(circleArcVertexShaderSource, circleArcFragmentShaderSource);
+        circleArcShader.use();
+        circleArcShader.setFloat("gammaCorrection", gammaCorrection);
+
+        var textVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/text/textShader.vert"));
+        var textFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/text/textShader.frag"));
+        textShader = new Shader(textVertexShaderSource, textFragmentShaderSource);
+        textShader.use();
+        textShader.setFloat("gammaCorrection", gammaCorrection);
     }
 
-    public static BufferedImage loadImage(String path) {
-        try {
-            return  ImageIO.read(new File(path));
-        } catch (IOException e) {
-
-            throw new RuntimeException("Failed to load " + path);
-        }
+    public void draw(SimulationState simulationState, MemoryStack stack) {
+        openMap(simulationState.isMapOverlay());
+        update(simulationState);
+        drawWithDepthFunc(() -> draw(stack), GL_ALWAYS);
     }
 
-    public void draw(boolean isMapOverlay) {
-        openMap(isMapOverlay);
-        update();
-        drawWithDepthFunc(this::draw, GL_ALWAYS);
-    }
-
-    private void draw() {
-        debug.draw(guiShader);
+    private void draw(MemoryStack stack) {
+        debug.draw(stack);
         if(!drawGui) return;
-        controlPanel.draw(guiShader);
-        artificialHorizon.draw(guiShader);
-        radar.draw(guiShader);
-        rotorDisplay.draw(guiShader);
-        map.draw(guiShader);
-        projectiles.draw(guiShader);
-        messageBoardWidget.draw(guiShader);
+        controlPanel.draw(stack);
+        artificialHorizon.draw(stack);
+        radar.draw(stack);
+        propellersDisplay.draw(stack);
+        if(!map.isHidden()) map.draw(stack);
+        projectiles.draw(stack);
+        messageBoardWidget.draw(stack);
+        criticalMessageBoardWidget.draw(stack);
     }
 
-    public void update() {
+    public void update(SimulationState simulationState) {
         debug.update();
         if(!drawGui) return;
-        radar.update();
-        artificialHorizon.update();
-        rotorDisplay.update();
+        radar.update(simulationState);
+        artificialHorizon.update(simulationState);
+        propellersDisplay.update();
         map.update();
-        projectiles.update();
+        projectiles.update(simulationState);
     }
 
     public void openMap(boolean open) {

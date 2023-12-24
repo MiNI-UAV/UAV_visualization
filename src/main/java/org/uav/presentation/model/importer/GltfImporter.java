@@ -111,7 +111,6 @@ public class GltfImporter {
                     "Hover",
                     new Animation(translationAnimation, rotationAnimation, scaleAnimation)
             );
-            animationPlayer.start("Hover", 0, true);
         }
 
         List<Mesh> meshes = processMeshModels(nodeModel.getMeshModels());
@@ -170,7 +169,7 @@ public class GltfImporter {
     private List<Pair<Float, Vector3f>> getAnimation(NodeModel nodeModel, Map<String, AnimationModel.Sampler> samplerMap) throws IOException {
         if(!samplerMap.containsKey(nodeModel.getName())) return new ArrayList<>();
         var sampler = samplerMap.get(nodeModel.getName());
-        if(sampler.getInterpolation() != AnimationModel.Interpolation.LINEAR) throw new IOException(UNSUPPORTED_ANIMATION_MODEL);
+        if(sampler.getInterpolation() != AnimationModel.Interpolation.LINEAR) throw new IOException(UNSUPPORTED_ANIMATION_MODEL + " " + sampler.getInterpolation());
         AccessorFloatData animationTimeAccessor = (AccessorFloatData) sampler.getInput().getAccessorData();
         AccessorFloatData transformationAccessor = (AccessorFloatData) sampler.getOutput().getAccessorData();
         List<Pair<Float, Vector3f>> animation = new ArrayList<>();
@@ -269,7 +268,6 @@ public class GltfImporter {
 
     private Texture loadTexture(String name, Path path, boolean forceLinearRgb) {
         loadingScreen.render("Loading " + name + "...");
-
 
         try {
             BufferedImage img = ImageIO.read(new File(path.toString()));

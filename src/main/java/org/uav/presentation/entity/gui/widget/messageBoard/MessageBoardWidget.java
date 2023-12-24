@@ -1,47 +1,53 @@
 package org.uav.presentation.entity.gui.widget.messageBoard;
 
+import org.javatuples.Pair;
+import org.joml.Vector4f;
+import org.lwjgl.system.MemoryStack;
 import org.uav.logic.config.Config;
+import org.uav.logic.messages.Message;
 import org.uav.logic.messages.MessageBoard;
 import org.uav.presentation.entity.gui.GuiAnchorPoint;
-import org.uav.presentation.entity.gui.GuiElement;
-import org.uav.presentation.entity.gui.GuiWidget;
-import org.uav.presentation.entity.gui.widget.messageBoard.layers.CriticalMessageBoardLayer;
-import org.uav.presentation.entity.gui.widget.messageBoard.layers.MessageBoardLayer;
+import org.uav.presentation.entity.gui.Widget;
+import org.uav.presentation.entity.text.TextEngine;
 import org.uav.presentation.rendering.Shader;
 
-public class MessageBoardWidget implements GuiWidget {
-    private final GuiElement guiElementMessages;
-    private final GuiElement guiElementCritical;
-    private final MessageBoardLayer messageBoardLayer;
-    private final CriticalMessageBoardLayer criticalMessageBoardLayer;
-    MessageBoard messageBoard;
+import java.awt.*;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
-    public MessageBoardWidget(Config config, MessageBoard messageBoard) {
+public class MessageBoardWidget extends Widget {
+    private static final float FONT_SIZE_NORM = 30f / 1080;
+    private static final float FADING_TIME_LEFT_S = 0.5f;
+    MessageBoard messageBoard;
+    private TextEngine textEngine;
+
+    public MessageBoardWidget(Shader textShader, Config config, MessageBoard messageBoard) {
+        super(getWidgetPosition(), GuiAnchorPoint.BOTTOM_LEFT, config);
         this.messageBoard = messageBoard;
-        messageBoardLayer = new MessageBoardLayer(messageBoard, 300);
-        criticalMessageBoardLayer = new CriticalMessageBoardLayer(messageBoard, 480);
-        guiElementMessages = new GuiElement.GuiElementBuilder()
-                .setPosition(0.6f, -0.4f, -1f, 0.6f)
-                .setAnchorPoint(GuiAnchorPoint.BOTTOM_LEFT)
-                .setScale(config.getGraphicsSettings().getGuiScale())
-                .setResolution(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight())
-                .setHidden(!config.getGraphicsSettings().getShowDebugInfo())
-                .addLayer(480, 300, messageBoardLayer)
-                .build();
-        guiElementCritical = new GuiElement.GuiElementBuilder()
-                .setPosition(0.5f, -0.5f, -0.8f, 0.8f)
-                .setAnchorPoint(GuiAnchorPoint.CENTER)
-                .setScale(config.getGraphicsSettings().getGuiScale())
-                .setResolution(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight())
-                .setHidden(!config.getGraphicsSettings().getShowDebugInfo())
-                .addLayer(480, 300, criticalMessageBoardLayer)
-                .build();
+        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM, textShader, config);
+    }
+
+    private static Vector4f getWidgetPosition() {
+        return new Vector4f(1f, -0.4f, -1f, 0.6f);
     }
 
     @Override
-    public void draw(Shader shader) {
-        guiElementMessages.draw(shader);
-        guiElementCritical.draw(shader);
+    protected void drawWidget(MemoryStack stack) {
+        for(int i=0; i<messageBoard.getMessages().size(); i++) {
+            Pair<Float, Message> message = messageBoard.getMessages().get(i);
+            var color = getMessageColor(message.getValue1().getColor(), messageBoard.getTimeLeft(message));
+            var ds = DecimalFormatSymbols.getInstance();
+            ds.setDecimalSeparator('.');
+            var content = "[" + new DecimalFormat("#.0", ds).format(message.getValue0()) + "] " + message.getValue1().getContent();
+            textEngine.setColor(new Vector4f(color.getComponents(new float[4])));
+            textEngine.setPosition(-0.975f, -0.99f + i * textEngine.getFontHeight());
+            textEngine.renderText(content);
+        }
     }
 
+    public Color getMessageColor(Color color, float timeLeft) {
+        if(timeLeft > FADING_TIME_LEFT_S) return color;
+        if(timeLeft < 0) return new Color(0, true);
+        return new Color(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, timeLeft / FADING_TIME_LEFT_S);
+    }
 }

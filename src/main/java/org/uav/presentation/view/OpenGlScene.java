@@ -114,8 +114,8 @@ public class OpenGlScene {
     }
 
     private void setUpShaders() throws IOException {
-        var phongVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/models/phongShader.vert"));
-        var phongFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/models/phongShader.frag"));
+        var phongVertexShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/models/pbrShader.vert"));
+        var phongFragmentShaderSource = Objects.requireNonNull(UavVisualization.class.getClassLoader().getResourceAsStream("shaders/models/pbrShader.frag"));
         objectShader = new Shader(phongVertexShaderSource, phongFragmentShaderSource);
         objectShader.use();
         objectShader.setVec3("backgroundColor", simulationState.getSkyColor());
@@ -162,9 +162,10 @@ public class OpenGlScene {
             glActiveTexture(GL_TEXTURE0 + SHADOW_TEXTURE_ID);
             glBindTexture(GL_TEXTURE_2D, depthMap);
             renderScene(stack, objectShader, deltaTimeS);
+
+            // UI pass
+            guiEntity.draw(simulationState, stack);
         }
-        // UI pass
-        guiEntity.draw(simulationState.isMapOverlay());
 
         glfwSwapBuffers(simulationState.getWindow());
         glfwPollEvents();

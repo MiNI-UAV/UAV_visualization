@@ -2,7 +2,9 @@ package org.uav.utils;
 
 import org.lwjgl.BufferUtils;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -18,6 +20,16 @@ import static org.lwjgl.BufferUtils.createByteBuffer;
 import static org.lwjgl.system.MemoryUtil.memSlice;
 
 public final class IOUtils {
+
+    public static BufferedImage loadImage(String path) {
+        try {
+            return  ImageIO.read(new File(path));
+        } catch (IOException e) {
+
+            throw new RuntimeException("Failed to load " + path);
+        }
+    }
+
     public static byte[] extractImageData(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
@@ -48,11 +60,9 @@ public final class IOUtils {
 
                 // Store the color components in the byte array
                 imageData[index] = (byte) blue;
-                imageData[index + 1] = (byte) green;
-                imageData[index + 2] = (byte) red;
-                if (hasAlpha) {
-                    imageData[index + 3] = (byte) alpha;
-                }
+                if(bytesPerPixel >= 2) imageData[index + 1] = (byte) green;
+                if(bytesPerPixel >= 3) imageData[index + 2] = (byte) red;
+                if (hasAlpha) imageData[index + 3] = (byte) alpha;
             }
         }
         return imageData;

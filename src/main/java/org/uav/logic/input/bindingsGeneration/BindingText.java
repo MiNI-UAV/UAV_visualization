@@ -89,12 +89,12 @@ public class BindingText {
 
     public static final TriFunction<List<BindingConfig.Binding>, List<Field>, Integer, List<String>> BINDINGS_GENERAL_ACTIONS_LINE_3 =
             (List<BindingConfig.Binding> currentlyBindingActionList, List<Field> actionsToBind, Integer actionCurrentlyBinding) -> List.of(
-                    "Assign binding no. " + (currentlyBindingActionList.size() + 1) + " for " + actionsToBind.get(actionCurrentlyBinding).getName()
+                    "Assign binding no. " + (currentlyBindingActionList.size() + 1) + " for " + actionsToBind.get(actionCurrentlyBinding).getName() + " (Key, button or axis)"
             );
 
     public static final Function<List<List<BindingConfig.Binding>>, List<String>> BINDINGS_ACTIONS_MODES_LINE_3 =
             (List<List<BindingConfig.Binding>> modesBindings) -> List.of(
-                    "Assign binding no. " + (modesBindings.get(modesBindings.size() - 1).size() + 1) + " for mode no. " + (modesBindings.size())
+                    "Assign binding no. " + (modesBindings.get(modesBindings.size() - 1).size() + 1) + " for mode no. " + (modesBindings.size()) + " (Key, button or axis)"
             );
 
     public static final Function<Integer, List<String>> BINDINGS_ACTIONS_DETECTED_AXIS_LINES_4_9 = (Integer detectedAxisForBinding) -> List.of(

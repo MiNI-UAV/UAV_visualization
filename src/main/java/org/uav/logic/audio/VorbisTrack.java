@@ -94,16 +94,4 @@ public class VorbisTrack implements AutoCloseable {
         stb_vorbis_seek(handle, sampleIndex);
         setSampleIndex(sampleIndex);
     }
-
-    private void print(STBVorbisInfo info) {
-        System.out.println("stream length, samples: " + stb_vorbis_stream_length_in_samples(handle));
-        System.out.println("stream length, seconds: " + stb_vorbis_stream_length_in_seconds(handle));
-        System.out.println();
-        System.out.println("channels = " + info.channels());
-        System.out.println("sampleRate = " + info.sample_rate());
-        System.out.println("maxFrameSize = " + info.max_frame_size());
-        System.out.println("setupMemoryRequired = " + info.setup_memory_required());
-        System.out.println("setupTempMemoryRequired() = " + info.setup_temp_memory_required());
-        System.out.println("tempMemoryRequired = " + info.temp_memory_required());
-    }
 }

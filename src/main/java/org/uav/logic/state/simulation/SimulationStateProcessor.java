@@ -54,6 +54,7 @@ public class SimulationStateProcessor implements AutoCloseable, Publisher {
 
     public void updateSimulationState() {
         updateDronesInAir();
+        updateControlledDroneCommunication();
 
         simulationState.getProjectileStatusesMutex().lock();
         simulationState.getCurrPassProjectileStatuses().map = simulationState.getProjectileStatuses().map;
@@ -65,6 +66,18 @@ public class SimulationStateProcessor implements AutoCloseable, Publisher {
         simulationState.setSimulationTimeS((float) GLFW.glfwGetTime());
     }
 
+    private void updateControlledDroneCommunication() {
+        var droneComm = simulationState.getCurrentlyControlledDrone();
+        if(droneComm.isEmpty()) return;
+        if(droneComm.get().getFlightStatus() == DroneCommunication.FlightStatus.INIT && simulationState.getDronesInAir().containsKey(droneComm.get().getId())) {
+            notifySubscriber(new Message("TAKE OFF", "takeoff",1, Color.GREEN, true));
+            droneComm.get().setFlightStatus(DroneCommunication.FlightStatus.FLIGHT);
+        }
+        else if(droneComm.get().getFlightStatus() == DroneCommunication.FlightStatus.FLIGHT && !simulationState.getDronesInAir().containsKey(droneComm.get().getId())) {
+            droneComm.get().setFlightStatus(DroneCommunication.FlightStatus.DEAD);
+        }
+    }
+
     private void updateDronesInAir() {
         simulationState.getDroneStatusesMutex().lock();
         var droneModels = simulationState.getNotifications().droneModelsNames;
@@ -73,7 +86,7 @@ public class SimulationStateProcessor implements AutoCloseable, Publisher {
             if (!simulationState.getDroneStatuses().map.containsKey(key)) simulationState.getDronesInAir().remove(key);
         for(var status : simulationState.getDroneStatuses().map.values()) {
             simulationState.getDronesInAir().computeIfPresent(status.id, (id, droneState) -> droneState.update(status, droneModels));
-            simulationState.getDronesInAir().putIfAbsent(status.id, new DroneState(status));
+            simulationState.getDronesInAir().putIfAbsent(status.id, new DroneState(simulationState, status));
         }
         simulationState.getDroneStatusesMutex().unlock();
     }

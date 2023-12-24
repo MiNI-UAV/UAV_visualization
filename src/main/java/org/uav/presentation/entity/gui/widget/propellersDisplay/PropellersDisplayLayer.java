@@ -1,20 +1,25 @@
 package org.uav.presentation.entity.gui.widget.propellersDisplay;
 
-import org.joml.Vector2f;
-import org.joml.Vector2i;
-import org.joml.Vector3f;
+import org.joml.*;
+import org.lwjgl.system.MemoryStack;
+import org.uav.logic.config.Config;
 import org.uav.logic.config.DroneParameters;
 import org.uav.logic.state.simulation.SimulationState;
-import org.uav.presentation.entity.gui.DrawableGuiLayer;
+import org.uav.presentation.entity.text.TextEngine;
+import org.uav.presentation.entity.vector.VectorCircle;
+import org.uav.presentation.entity.vector.VectorCircleArc;
+import org.uav.presentation.rendering.Shader;
 
 import java.awt.*;
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class PropellersDisplayLayer implements DrawableGuiLayer {
-    private final Supplier<RuntimeException> noRotors = () -> new RuntimeException("No rotors on drone!");
+import static org.uav.utils.OpenGLUtils.OPENGL_CANVAS_SIZE;
 
+public class PropellersDisplayLayer {
+    private final Supplier<RuntimeException> noRotors = () -> new RuntimeException("No rotors on drone!");
     private final Vector2i canvasSize;
     private final Vector2i noMarginCanvasSize;
     private final List<Vector3f> rotors;
@@ -24,29 +29,52 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
     private final Vector2i displayMargin;
     private final Vector2i propellerPanelPadding;
     private final int textHeight;
+    private final float textHeightNorm;
     private final int minimalTextWidth;
     private final List<Float> maxRPMs;
     private List<Float> propellerRPMs;
 
-    public PropellersDisplayLayer(Vector2i canvasSize, DroneParameters droneParameters) {
+    // Shapes
+    private static final int CIRCLE_CORNER_COUNT = 30;
+    private final VectorCircle propellerBackgroundShape;
+    private final VectorCircle propellerCenterShape;
+    private final VectorCircleArc propellerArcShape;
+    private final TextEngine textEngine;
+
+    public PropellersDisplayLayer(Vector2i canvasSize, Vector4f widgetPosition, DroneParameters droneParameters, Shader vectorShader, Shader circleArcShader, Shader textShader, Config config) {
         this.canvasSize = canvasSize;
+        textHeight = 30;
+        textHeightNorm = (float) textHeight / 1080;
+        textEngine = new TextEngine(widgetPosition, textHeightNorm, textShader, config);
         displayMargin = new Vector2i((int) (0.025 * canvasSize.x), (int) (0.025 * canvasSize.y));
         noMarginCanvasSize = new Vector2i(canvasSize.x - 2*displayMargin.x, canvasSize.y - 2*displayMargin.y);
         propellerPanelPadding = new Vector2i((int) (0.0125 * canvasSize.x), (int) (0.0125 * canvasSize.y));
-        textHeight = 20;
         minimalTextWidth = 0;
-        rotors = droneParameters.getRotors() == null? new ArrayList<>():
-                droneParameters.getRotors().getRotor().stream().map(r -> new Vector3f(r.getPosition().x, r.getPosition().y, r.getPosition().z)).toList();
-        rotationDirection =  droneParameters.getRotors() == null? new ArrayList<>():
-                droneParameters.getRotors().getRotor().stream().map(DroneParameters.Rotors.Rotor::getDirection).toList();
-        maxRPMs = droneParameters.getRotors() == null? new ArrayList<>():
-                droneParameters.getRotors().getRotor().stream().map(
-                rotor -> rotor.getMaxSpeed() / (2.0f*(float)Math.PI) * 60.0f
-        ).toList();
-        propellerRPMs = new ArrayList<>();
-        if(droneParameters.getRotors() != null && !droneParameters.getRotors().getRotor().isEmpty())
+        if(droneParameters.getRotors() != null && droneParameters.getRotors().getRotor() != null && !droneParameters.getRotors().getRotor().isEmpty()) {
+            rotors = droneParameters.getRotors().getRotor().stream()
+                    .map(r -> new Vector3f(r.getPosition().x, r.getPosition().y, r.getPosition().z)).toList();
+            rotationDirection = droneParameters.getRotors().getRotor().stream()
+                    .map(DroneParameters.Rotors.Rotor::getDirection).toList();
+            maxRPMs = droneParameters.getRotors().getRotor().stream()
+                    .map(rotor -> rotor.getMaxSpeed() / (2.0f*(float)Math.PI) * 60.0f)
+                    .toList();
+            propellerRPMs = new ArrayList<>();
             initRadius();
-        else scaledPropellers = new ArrayList<>();
+            propellerBackgroundShape = new VectorCircle(new Vector2f(), (float) propellerRadius / canvasSize.x * OPENGL_CANVAS_SIZE, CIRCLE_CORNER_COUNT, vectorShader);
+            propellerCenterShape = new VectorCircle(new Vector2f(), 3f / canvasSize.x * OPENGL_CANVAS_SIZE, 6, vectorShader);
+            propellerArcShape = new VectorCircleArc(new Vector2f(), (float) propellerRadius / canvasSize.x * OPENGL_CANVAS_SIZE, CIRCLE_CORNER_COUNT, vectorShader, circleArcShader);
+        }
+        else {
+            rotors = new ArrayList<>();
+            rotationDirection = new ArrayList<>();
+            maxRPMs = new ArrayList<>();
+            propellerRPMs = new ArrayList<>();
+            scaledPropellers = new ArrayList<>();
+            propellerBackgroundShape = null;
+            propellerCenterShape = null;
+            propellerArcShape = null;
+        }
+
     }
 
     private void initRadius() {
@@ -125,39 +153,33 @@ public class PropellersDisplayLayer implements DrawableGuiLayer {
         );
     }
 
-    @Override
-    public void draw(Graphics2D g) {
+    public void draw(MemoryStack stack) {
         if (scaledPropellers.size() > propellerRPMs.size()) return;
         for (int i = 0; i < scaledPropellers.size(); i++) {
             var rotor = scaledPropellers.get(i);
-            g.setColor(new Color(0, 0, 0, 0.4f));
-            g.fillOval(
-                    rotor.y - propellerRadius + canvasSize.y / 2 - textHeight / 2,
-                    -rotor.x - propellerRadius + canvasSize.x / 2,
-                    2 * propellerRadius,
-                    2 * propellerRadius
-            );
-            g.setColor(Color.WHITE);
-            g.fillOval(rotor.y - 3 + canvasSize.y / 2 - textHeight / 2, -rotor.x - 3 + canvasSize.x / 2, 6, 6);
+            float rotorXNorm = (float) rotor.x / canvasSize.x * OPENGL_CANVAS_SIZE;
+            float rotorYNorm = (float) (rotor.y + textHeight/2) / canvasSize.y * OPENGL_CANVAS_SIZE; // - textHeight / 2
+            float radiusNorm = (float) propellerRadius / canvasSize.x * OPENGL_CANVAS_SIZE;
+
+            var transform = new Matrix3x2f();
+            transform.translate(rotorXNorm, rotorYNorm);
+            propellerBackgroundShape.setTransform(transform);
+            propellerBackgroundShape.setColor(new Color(0, 0, 0, 0.4f));
+            propellerBackgroundShape.draw(stack);
+
+            propellerCenterShape.setTransform(transform);
+            propellerCenterShape.draw(stack);
 
             int rpms = propellerRPMs.get(i).intValue();
             float ratio = (float) rpms / maxRPMs.get(i);
-            g.fillArc(
-                    rotor.y - propellerRadius + canvasSize.y / 2 - textHeight / 2,
-                    -rotor.x - propellerRadius + canvasSize.x / 2,
-                    2 * propellerRadius,
-                    2 * propellerRadius,
-                    90,
-                    (int) (360 * ratio) * -rotationDirection.get(i));
+            propellerArcShape.setStartAngle((float)Math.PI / 2 * 3);
+            propellerArcShape.setArcAngle(ratio * 2 * (float)Math.PI * -rotationDirection.get(i));
+            propellerArcShape.setTransform(transform);
+            propellerArcShape.draw(stack);
 
             String rpmsString = rpms + " rpm";
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setFont(new Font("SansSerif", Font.PLAIN, textHeight));
-            g.drawString(
-                    rpmsString,
-                    canvasSize.y / 2 + rotor.y- g.getFontMetrics().stringWidth(rpmsString) / 2,
-                    canvasSize.x / 2 - rotor.x + propellerRadius + textHeight
-            );
+            textEngine.setPosition(rotorXNorm - textEngine.getStringWidth(rpmsString) / 2, - (rotorYNorm + radiusNorm - textHeightNorm));
+            textEngine.renderText(rpmsString);
         }
     }
 }

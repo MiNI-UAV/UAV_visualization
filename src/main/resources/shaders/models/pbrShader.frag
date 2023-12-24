@@ -178,7 +178,7 @@ void main() {
     vec4 albedo = (useAlbedoMap == true) ? texture(albedoMap, texCoord) * material.albedo: material.albedo;
     float metallic  = (useMetallicRoughnessMap == true) ? texture(metallicRoughnessMap, texCoord).b * material.metallic: material.metallic;
     float roughness = (useMetallicRoughnessMap == true) ? texture(metallicRoughnessMap, texCoord).g * material.roughness: material.roughness;
-    float ao        = (useAmbientOcclusionMap == true) ? texture(ambientOcclusionMap, texCoord).r: 0.0f;
+    float ao        = (useAmbientOcclusionMap == true) ? texture(ambientOcclusionMap, texCoord).r: 1.0f;
     ao = 1.0 + material.aoStrength * (ao - 1.0);
 
     vec3 N = getNormalFromMap();
@@ -213,8 +213,10 @@ void main() {
         Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL * (1.0 - shadow);
     }
 
-    vec3 ambient = vec3(0.1) * albedo.rgb;// * material.ao; TODO
+    vec3 ambient = vec3(0.1) * albedo.rgb * ao;
     vec3 color   = ambient + Lo;
+
+    color = mix(color, fog.color, getFogFactor(fog, length(viewPos - fragPos))); // tODO Performance
 
     //    vec3 result = color;
 
@@ -222,5 +224,5 @@ void main() {
         color = color / (color + vec3(1.0));
         color = pow(color, vec3(1.0/gammaCorrection));
     }
-    fragColor = vec4(color, material.albedo.w);
+    fragColor = vec4(color, albedo.w);
 }

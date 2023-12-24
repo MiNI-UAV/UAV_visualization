@@ -2,9 +2,7 @@ package org.uav.presentation.rendering;
 
 import com.google.common.primitives.Floats;
 import org.apache.commons.io.IOUtils;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
 
@@ -17,6 +15,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL21C.glUniformMatrix3x2fv;
 import static org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER;
 
 public class Shader {
@@ -146,4 +145,11 @@ public class Shader {
         glUniform3fv(glGetUniformLocation(shaderProgram, name), buffer);
     }
 
+    public void setMatrix3x2f(MemoryStack stack, String name, Matrix3x2f matrix) {
+        glUniformMatrix3x2fv(glGetUniformLocation(shaderProgram, name), false, matrix.get(stack.mallocFloat(6)));
+    }
+
+    public void setVec2(String name, Vector2f vec) {
+        glUniform2f(glGetUniformLocation(shaderProgram, name), vec.x, vec.y);
+    }
 }
