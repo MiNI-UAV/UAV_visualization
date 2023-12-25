@@ -76,14 +76,15 @@ public class MapProjectionLayer {
         if(
                 simulationState.getCurrentControlModeDemanded() == null ||
                 !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.X) ||
-                !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Y) ||
-                !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.YAW)
+                !simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.Y)
         )
             drawDemandedPositional = false;
         else {
             float demandedX = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.X);
             float demandedY = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.Y);
-            demandedRotZ = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
+            if(simulationState.getCurrentControlModeDemanded().demanded.containsKey(ControlModeReply.YAW))
+                demandedRotZ = simulationState.getCurrentControlModeDemanded().demanded.get(ControlModeReply.YAW);
+            else demandedRotZ = 0;
             demandedPosition = new Vector2f(-demandedY, demandedX).mul(mapScale);
             drawDemandedPositional = true;
         }
