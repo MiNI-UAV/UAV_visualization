@@ -46,17 +46,11 @@ actions:
     - key: 78
   toggleSpotLight:
     - key: 83
-  mapZoomIn:
+  nextCamera_or_mapZoomIn:
     - button: 6
       inverse: false
-  mapZoomOut:
+  prevCamera_or_mapZoomOut:
     - button: 7
-      inverse: false
-  prevCamera:
-    - button: 7
-      inverse: false
-  nextCamera:
-    - button: 6
       inverse: false
   freeCamera:
   - key: 49

@@ -55,18 +55,12 @@ actions:
   nextSong:
     - key: 78
   toggleSpotLight:
-    - key: 83
-  mapZoomIn:
+    - key: 67
+  nextCamera_or_mapZoomIn:
   - button: 5
     inverse: false
-  mapZoomOut:
+  prevCamera_or_mapZoomOut:
   - button: 4
-    inverse: false
-  prevCamera:
-  - button: 4
-    inverse: false
-  nextCamera:
-  - button: 5
     inverse: false
   freeCamera:
   - key: 49

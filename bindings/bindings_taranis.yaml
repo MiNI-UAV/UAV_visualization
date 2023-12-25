@@ -43,13 +43,11 @@ actions:
   nextCargo: []
   map:
   - key: 77
-  mapZoomIn: []
-  mapZoomOut: []
-  prevCamera:
+  prevCamera_or_mapZoomOut:
   - axis: 6
     lowerBound: -1.1999999
     upperBound: -0.35000002
-  nextCamera:
+  nextCamera_or_mapZoomIn:
   - axis: 6
     lowerBound: 0.35000002
     upperBound: 1.1999999
