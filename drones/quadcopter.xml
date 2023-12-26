@@ -174,9 +174,9 @@
       </Y>
       <Z>
          <type>PID</type>
-         <P>2.122</P>
-         <I>0.035</I>
-         <D>-0.387</D>
+         <P>1.122</P>
+         <I>0.0035</I>
+         <D>0.387</D>
          <min>-5</min>
          <max>4</max>
       </Z>
@@ -198,8 +198,8 @@
       </V>
       <W>
          <type>PID</type>
-         <P>-3556.149</P>
-         <I>-538.572</I>
+         <P>-2556.149</P>
+         <I>-338.572</I>
          <D>-112.917</D>
          <min>0</min>
          <max>1000</max>
@@ -290,7 +290,7 @@
             <refreshTime>0.01</refreshTime>
          </barometer>
          <GPS>
-            <sd>0.15</sd>
+            <sd>0.1</sd>
             <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.3</refreshTime>
          </GPS>
