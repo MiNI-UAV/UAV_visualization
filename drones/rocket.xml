@@ -39,7 +39,7 @@
          </hinges>
          <phases>4</phases>
          <thrust>50, 25, 25, 0</thrust>
-         <time>0.25, 0.6, 10.0, 15.0</time>
+         <time>0.25, 0.6, 30.0, 35.0</time>
       </jet>
    </jets>
    <surface no='1'>
