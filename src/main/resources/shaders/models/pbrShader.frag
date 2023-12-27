@@ -216,13 +216,10 @@ void main() {
     vec3 ambient = vec3(0.1) * albedo.rgb * ao;
     vec3 color   = ambient + Lo;
 
-    color = mix(color, fog.color, getFogFactor(fog, length(viewPos - fragPos))); // tODO Performance
-
-    //    vec3 result = color;
-
     if(useGammaCorrection) {
         color = color / (color + vec3(1.0));
         color = pow(color, vec3(1.0/gammaCorrection));
     }
+    color = mix(color, fog.color, getFogFactor(fog, length(viewPos - fragPos)));
     fragColor = vec4(color, albedo.w);
 }

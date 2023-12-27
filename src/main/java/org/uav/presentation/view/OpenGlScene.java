@@ -1,6 +1,7 @@
 package org.uav.presentation.view;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
@@ -21,6 +22,7 @@ import org.uav.presentation.entity.outline.OutlineEntity;
 import org.uav.presentation.entity.projectile.ProjectileEntity;
 import org.uav.presentation.entity.rope.Rope;
 import org.uav.presentation.entity.rope.RopeEntity;
+import org.uav.presentation.entity.skybox.SkyboxEntity;
 import org.uav.presentation.entity.weather.Fog;
 import org.uav.presentation.model.importer.GltfImporter;
 import org.uav.presentation.model.importer.ModelImporter;
@@ -45,6 +47,7 @@ public class OpenGlScene {
     private final Config config;
     private Shader objectShader;
     private final FloatBuffer viewBuffer;
+    private final FloatBuffer viewBufferNoTranslation;
     private final FloatBuffer projectionBuffer;
 
     // Shading
@@ -66,6 +69,7 @@ public class OpenGlScene {
     private final RopeEntity ropeEntity;
     private final GuiEntity guiEntity;
     private final OutlineEntity outlineEntity;
+    private final SkyboxEntity skyboxEntity;
 
     public OpenGlScene(SimulationState simulationState, Config config, LoadingScreen loadingScreen, DroneParameters droneParameters, MessageBoard messageBoard) throws IOException {
         this.config = config;
@@ -88,11 +92,12 @@ public class OpenGlScene {
         xMarkEntity = new XMarkEntity(modelImporter.loadModel(Paths.get("core", "xMark").toString()));
         ropeEntity = new RopeEntity(Rope.SEGMENT_COUNT, Rope.THICKNESS, Rope.ROPE_COLOR_1, Rope.ROPE_COLOR_2, directionalLight, simulationState.getSkyColor());
         bulletTrailEntity = new BulletTrailEntity();
-
+        skyboxEntity = new SkyboxEntity(simulationState.getAssetsDirectory());
         guiEntity = new GuiEntity(simulationState, config, droneParameters, messageBoard);
         outlineEntity = new OutlineEntity(config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
 
         viewBuffer = MemoryUtil.memCallocFloat(16);
+        viewBufferNoTranslation = MemoryUtil.memCallocFloat(16);
         projectionBuffer = MemoryUtil.memCallocFloat(16);
         shadowViewBuffer = MemoryUtil.memCallocFloat(16);
         shadowProjectionBuffer = MemoryUtil.memCallocFloat(16);
@@ -208,6 +213,11 @@ public class OpenGlScene {
                 simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
         bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
+
+        skyboxEntity.draw(
+                getSceneShaderViewMatrixNoTranslation(),
+                getSceneShaderProjectionMatrix()
+        );
     }
 
     private void renderSceneShadows(Shader shader) {
@@ -298,6 +308,11 @@ public class OpenGlScene {
     private FloatBuffer getSceneShaderViewMatrix() {
         simulationState.getCamera().getViewMatrix().get(viewBuffer);
         return viewBuffer;
+    }
+
+    private FloatBuffer getSceneShaderViewMatrixNoTranslation() {
+        new Matrix4f(new Matrix3f(simulationState.getCamera().getViewMatrix())).get(viewBufferNoTranslation);
+        return viewBufferNoTranslation;
     }
 
     private Vector3f getSceneShaderViewPos() {

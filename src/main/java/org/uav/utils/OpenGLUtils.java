@@ -21,7 +21,6 @@ public class OpenGLUtils {
     public static final int OPENGL_CANVAS_LEFT = -1;
     public static final int OPENGL_CANVAS_RIGHT = 1;
     public static final int OPENGL_CANVAS_BOTTOM = -1;
-    public static final int OPENGL_CANVAS_TOP = 1;
 
     public static void drawWithDepthFunc(Runnable drawingFunc, int depthMode) {
         int previousDepthFunc = glGetInteger(GL_DEPTH_FUNC);
@@ -37,6 +36,19 @@ public class OpenGLUtils {
     }
 
     public static Texture setupTexture(BufferedImage img) {
+        ImageInfo imageInfo = getImageInfo(img);
+        int textureId = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, imageInfo.internalFormat(), img.getWidth(), img.getHeight(), 0, imageInfo.format(), GL_UNSIGNED_BYTE, imageInfo.imageDirectByteBuffer());
+        glGenerateMipmap(GL_TEXTURE_2D);
+        return new Texture(textureId, "texture_diffuse", false);
+    }
+
+    public static ImageInfo getImageInfo(BufferedImage img) {
         var imageDirectByteBuffer = allocateDirect(img.getHeight() * img.getWidth() * img.getColorModel().getNumComponents());
         imageDirectByteBuffer.put(ByteBuffer.wrap(extractImageData(img)));
         imageDirectByteBuffer.position(0);
@@ -53,16 +65,9 @@ public class OpenGLUtils {
             case 4 -> colorSpace.isCS_sRGB()? GL_SRGB_ALPHA: GL_RGBA;
             default -> colorSpace.isCS_sRGB()? GL_SRGB: GL_RGB;
         };
+        return new ImageInfo(imageDirectByteBuffer, format, internalFormat);
+    }
 
-
-        int textureId = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, textureId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, img.getWidth(), img.getHeight(), 0, format, GL_UNSIGNED_BYTE, imageDirectByteBuffer);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        return new Texture(textureId, "texture_diffuse", false);
+    public record ImageInfo(ByteBuffer imageDirectByteBuffer, int format, int internalFormat) {
     }
 }
