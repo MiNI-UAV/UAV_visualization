@@ -10,6 +10,7 @@ plugins {
 
 application {
     mainClass = 'org.uav.UavVisualization'
+    applicationDefaultJvmArgs = ["-Xms1024m", "-Xmx4096m"]
 }
 
 group 'org.uav'

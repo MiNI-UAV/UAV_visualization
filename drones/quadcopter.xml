@@ -155,53 +155,54 @@
       </Cab>
    </aero>
    <controllers>
+   <!-- K_kr = 4.4, T = 10.88 -->
       <X>
          <type>PID</type>
-         <P>0.8</P>
-         <I>0.01</I>
-         <D>0.0</D>
-         <min>-30</min>
-         <max>30</max>
+         <P>0.7</P>
+         <I>0.002</I>
+         <D>0.015</D>
+         <min>-5</min>
+         <max>5</max>
       </X>
       <Y>
          <type>PID</type>
-         <P>0.8</P>
-         <I>0.01</I>
-         <D>0.0</D>
-         <min>-30</min>
-         <max>30</max>
+         <P>0.7</P>
+         <I>0.002</I>
+         <D>0.015</D>
+         <min>-5</min>
+         <max>5</max>
       </Y>
       <Z>
          <type>PID</type>
-         <P>2.122</P>
-         <I>0.035</I>
-         <D>-0.387</D>
-         <min>-2.2</min>
-         <max>2</max>
+         <P>1.122</P>
+         <I>0.0035</I>
+         <D>0.387</D>
+         <min>-5</min>
+         <max>4</max>
       </Z>
       <U>
          <type>PID</type>
-         <P>-0.05</P>
-         <I>-0.001</I>
-         <D>0.0</D>
-         <min>-0.3</min>
-         <max>0.3</max>
+         <P>-0.35</P>
+         <I>-0.0005</I>
+         <D>-0.01</D>
+         <min>-0.4</min>
+         <max>0.4</max>
       </U>
       <V>
          <type>PID</type>
-         <P>0.05</P>
-         <I>0.001</I>
-         <D>0.0</D>
-         <min>-0.3</min>
-         <max>0.3</max>
+         <P>0.35</P>
+         <I>0.0005</I>
+         <D>0.01</D>
+         <min>-0.4</min>
+         <max>0.4</max>
       </V>
       <W>
          <type>PID</type>
-         <P>-3556.149</P>
-         <I>-538.572</I>
+         <P>-2556.149</P>
+         <I>-338.572</I>
          <D>-112.917</D>
-         <min>-500</min>
-         <max>500</max>
+         <min>0</min>
+         <max>1000</max>
       </W>
       <Fi>
          <type>PID</type>
@@ -289,7 +290,7 @@
             <refreshTime>0.01</refreshTime>
          </barometer>
          <GPS>
-            <sd>0.2</sd>
+            <sd>0.1</sd>
             <bias>0.0, 0.0, 0.0</bias>
             <refreshTime>0.3</refreshTime>
          </GPS>
