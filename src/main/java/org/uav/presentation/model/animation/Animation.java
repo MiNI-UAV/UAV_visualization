@@ -47,6 +47,7 @@ public class Animation {
         if(currentFrame >= 0) return animation.get(currentFrame).getValue1(); // Found the exact frame
         currentFrame = Math.abs(currentFrame + 1);
         if(currentFrame == 0) return animation.get(0).getValue1();
+        if(currentFrame >= animation.size()) return animation.get(animation.size()-1).getValue1();
         var p1 = animation.get(currentFrame - 1);
         var p2 = animation.get(currentFrame);
         return interpolator.apply(time, p1.getValue0(), p2.getValue0(), p1.getValue1(), p2.getValue1());
