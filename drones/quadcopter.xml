@@ -158,51 +158,51 @@
    <!-- K_kr = 4.4, T = 10.88 -->
       <X>
          <type>PID</type>
-         <P>0.7</P>
-         <I>0.002</I>
-         <D>0.015</D>
+         <P>0.6</P>
+         <I>0.00002</I>
+         <D>0.0015</D>
          <min>-5</min>
          <max>5</max>
       </X>
       <Y>
          <type>PID</type>
-         <P>0.7</P>
-         <I>0.002</I>
-         <D>0.015</D>
+         <P>0.6</P>
+         <I>0.000002</I>
+         <D>0.0015</D>
          <min>-5</min>
          <max>5</max>
       </Y>
       <Z>
          <type>PID</type>
-         <P>1.122</P>
+         <P>2.122</P>
          <I>0.0035</I>
-         <D>0.387</D>
-         <min>-5</min>
-         <max>4</max>
+         <D>-0.387</D>
+         <min>-3</min>
+         <max>2</max>
       </Z>
       <U>
          <type>PID</type>
-         <P>-0.35</P>
+         <P>-0.2</P>
          <I>-0.0005</I>
-         <D>-0.01</D>
-         <min>-0.4</min>
-         <max>0.4</max>
+         <D>-0.0</D>
+         <min>-0.3</min>
+         <max>0.3</max>
       </U>
       <V>
          <type>PID</type>
-         <P>0.35</P>
+         <P>0.2</P>
          <I>0.0005</I>
-         <D>0.01</D>
-         <min>-0.4</min>
-         <max>0.4</max>
+         <D>0.0</D>
+         <min>-0.3</min>
+         <max>0.3</max>
       </V>
       <W>
          <type>PID</type>
-         <P>-2556.149</P>
+         <P>-3556.149</P>
          <I>-338.572</I>
-         <D>-112.917</D>
+         <D>-52.917</D>
          <min>0</min>
-         <max>1000</max>
+         <max>750</max>
       </W>
       <Fi>
          <type>PID</type>
@@ -225,8 +225,8 @@
          <P>7.288</P>
          <I>0.230</I>
          <D>-0.151</D>
-         <min>-500</min>
-         <max>500</max>
+         <min>-200</min>
+         <max>200</max>
       </Psi>
       <Roll>
          <type>PID</type>
