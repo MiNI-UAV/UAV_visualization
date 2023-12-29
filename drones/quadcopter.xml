@@ -322,7 +322,7 @@
          <radius>0.003</radius>
          <C0>0.47</C0>
          <mass>0.003</mass>
-         <ammount>100</ammount>
+         <ammount>10</ammount>
       </paintball>
       <bullet9mm>
          <model>9mm</model>
@@ -332,7 +332,7 @@
          <radius>0.0045</radius>
          <C0>0.47</C0>
          <mass>0.008</mass>
-         <ammount>20</ammount>
+         <ammount>5</ammount>
       </bullet9mm>
    </ammo>
    <cargo no='1'>
@@ -346,7 +346,7 @@
          <radius>0.1</radius>
          <C0>0.47</C0>
          <mass>0.1</mass>
-         <ammount>2</ammount>
+         <ammount>1</ammount>
       </parcel>
    </cargo>
 </params>
