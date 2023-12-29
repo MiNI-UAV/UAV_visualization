@@ -32,6 +32,7 @@ org.uav.presentation.entity.light
 org.uav.presentation.entity.outline
 org.uav.presentation.entity.projectile
 org.uav.presentation.entity.rope
+org.uav.presentation.entity.skybox
 org.uav.presentation.entity.sprite
 org.uav.presentation.entity.text
 org.uav.presentation.entity.vector
