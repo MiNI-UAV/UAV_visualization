@@ -35,7 +35,7 @@ public class ArtificialHorizonWidget extends Widget {
         backgroundLayer = new ArtificialHorizonBackgroundLayer(horizonTexture, distanceToMax, horizonScreenX, horizonScreenY, spriteShader, vectorShader);
         compassLayer = new ArtificialHorizonCompassLayer(compassTexture, horizonScreenX, spriteShader, vectorShader);
         rollLayer = new ArtificialHorizonRollLayer(horizonRollTexture, spriteShader, vectorShader, getViewRatio());
-        metersLayer = new ArtificialHorizonMetersLayer(horizonScreenX, horizonScreenY, getScaledPosition(), vectorShader, textShader, config);
+        metersLayer = new ArtificialHorizonMetersLayer(horizonScreenY, getScaledPosition(), vectorShader, textShader, config);
         cursorSprite = new Sprite(cursorTexture, spriteShader);
     }
 

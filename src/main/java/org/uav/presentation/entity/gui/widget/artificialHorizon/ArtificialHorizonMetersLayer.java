@@ -24,11 +24,10 @@ public class ArtificialHorizonMetersLayer {
     private static final int Z_AXIS_INVERSION = -1;
     private static final Color BG_COLOR = new Color(0, 0, 0, 32);
     private static final float FONT_SIZE_NORM = 35f / 1080;
-    private static final float STRING_DRAWING_MARGIN = (FONT_SIZE_NORM + 1) / 2;
+    private final float stringDrawingMargin;
     private static final float METER_UNIT_HEIGHT = 15;
     private static final float METER_PRECISION = 1;
     private static final float NUMBER_PRECISION = 2 * METER_PRECISION;
-    private final int horizonScreenX;
     private final int horizonScreenY;
     private Vector2f position;
     private float velocity;
@@ -39,38 +38,33 @@ public class ArtificialHorizonMetersLayer {
     private boolean drawDemandedHeight;
     private float demandedVelocityX;
     private boolean drawDemandedVelocityX;
-
-
-    // New GUI
-    private VectorRectangle meterBackgroundShape;
-    private VectorRectangle meterStripeShape;
-    private VectorRectangle meterBarsShape;
-    private VectorTriangle meterCursorShape;
-    private VectorTriangle demandedMeterCursorShape;
+    private final float fontSizeNorm;
+    private final VectorRectangle meterBackgroundShape;
+    private final VectorRectangle meterStripeShape;
+    private final VectorRectangle meterBarsShape;
+    private final VectorTriangle meterCursorShape;
+    private final VectorTriangle demandedMeterCursorShape;
 
     // Meter Data
 
     float meterHeightNorm;
     float meterWidthNorm;
     private final float stripeWidthNorm;
-    private final float barHeightNorm;
     private final float barWidthNorm;
-    private final float cursorHeightNorm;
     private final float cursorWidthNorm;
     private final float demandedCursorWidthNorm;
-    private final float demandedCursorHeightNorm;
     private final TextEngine textEngine;
 
     public ArtificialHorizonMetersLayer(
-            int horizonScreenX,
             int horizonScreenY,
             Vector4f widgetPosition,
             Shader vectorShader,
             Shader textShader,
             Config config
     ) {
-        this.horizonScreenX = horizonScreenX;
         this.horizonScreenY = horizonScreenY;
+        fontSizeNorm = FONT_SIZE_NORM * config.getGraphicsSettings().getGuiScale();
+        stringDrawingMargin = (fontSizeNorm + 1) / 2;
         meterHeightNorm = 1f / 2 * OPENGL_CANVAS_SIZE;
         meterWidthNorm = 1f / 8 * OPENGL_CANVAS_SIZE;
         position = new Vector2f();
@@ -79,7 +73,7 @@ public class ArtificialHorizonMetersLayer {
         height = 0;
         drawDemandedHeight = false;
         drawDemandedVelocityX = false;
-        textEngine = new TextEngine(widgetPosition, FONT_SIZE_NORM, textShader, config);
+        textEngine = new TextEngine(widgetPosition, fontSizeNorm, textShader, config);
 
         var rectangle = List.of(
                 new VectorVertex(0.0f - meterWidthNorm/ 2, 0.0f + meterHeightNorm / 2),
@@ -100,7 +94,7 @@ public class ArtificialHorizonMetersLayer {
         meterStripeShape = new VectorRectangle(rectangle, vectorShader);
 
         barWidthNorm = 8f / 480 * OPENGL_CANVAS_SIZE;
-        barHeightNorm = 2f / 360 * OPENGL_CANVAS_SIZE;
+        float barHeightNorm = 2f / 360 * OPENGL_CANVAS_SIZE;
         rectangle = List.of(
                 new VectorVertex(0.0f - barWidthNorm/ 2, 0.0f + barHeightNorm / 2),
                 new VectorVertex(0.0f + barWidthNorm/ 2, 0.0f + barHeightNorm / 2),
@@ -110,7 +104,7 @@ public class ArtificialHorizonMetersLayer {
         meterBarsShape = new VectorRectangle(rectangle, vectorShader);
 
         cursorWidthNorm = barWidthNorm * 2;
-        cursorHeightNorm = barHeightNorm * 4;
+        float cursorHeightNorm = barHeightNorm * 4;
         var triangle = List.of(
                 new VectorVertex(0.0f + cursorWidthNorm / 2, 0.0f),
                 new VectorVertex(0.0f - cursorWidthNorm / 2, 0.0f + cursorHeightNorm / 2),
@@ -119,7 +113,7 @@ public class ArtificialHorizonMetersLayer {
         meterCursorShape = new VectorTriangle(triangle , vectorShader);
 
         demandedCursorWidthNorm = cursorWidthNorm / 2;
-        demandedCursorHeightNorm = cursorHeightNorm / 1.5f;
+        float demandedCursorHeightNorm = cursorHeightNorm / 1.5f;
         triangle = List.of(
                 new VectorVertex(0.0f + demandedCursorWidthNorm / 2, 0.0f),
                 new VectorVertex(0.0f - demandedCursorWidthNorm / 2, 0.0f + demandedCursorHeightNorm / 2),
@@ -241,14 +235,14 @@ public class ArtificialHorizonMetersLayer {
         int numberCount = (int) (meterHeightNorm / (METER_UNIT_HEIGHT / horizonScreenY * OPENGL_CANVAS_SIZE) / NUMBER_PRECISION) + 1;
 
         float fraction = meterValue % METER_PRECISION;
-        float topMeterValue = ((meterHeightNorm + (STRING_DRAWING_MARGIN / horizonScreenY * OPENGL_CANVAS_SIZE)) / ( (METER_UNIT_HEIGHT / horizonScreenY * OPENGL_CANVAS_SIZE) / METER_PRECISION)) / 2.f + meterValue;
+        float topMeterValue = ((meterHeightNorm + (stringDrawingMargin / horizonScreenY * OPENGL_CANVAS_SIZE)) / ( (METER_UNIT_HEIGHT / horizonScreenY * OPENGL_CANVAS_SIZE) / METER_PRECISION)) / 2.f + meterValue;
         int topMeterNumber = (int) ((int) (topMeterValue / NUMBER_PRECISION) * NUMBER_PRECISION);
         int number = topMeterNumber;
         float numberFraction = topMeterValue - number;
 
         for(int i= 0; i < numberCount; i++) {
             textEngine.setCropRectangle(cropRectangle);
-            textEngine.setPosition(meterLeftNorm + 0.075f, meterBottomNorm + 2*(STRING_DRAWING_MARGIN - i * METER_UNIT_HEIGHT / horizonScreenY * NUMBER_PRECISION - ((float) (int) (numberFraction * METER_UNIT_HEIGHT) / horizonScreenY) - FONT_SIZE_NORM));
+            textEngine.setPosition(meterLeftNorm + 0.075f, meterBottomNorm + 2*(stringDrawingMargin - i * METER_UNIT_HEIGHT / horizonScreenY * NUMBER_PRECISION - ((float) (int) (numberFraction * METER_UNIT_HEIGHT) / horizonScreenY) - fontSizeNorm));
             textEngine.renderText(String.valueOf(number));
             textEngine.setCropRectangle(new Vector4f(-1, -1, 2, 2));
             number -= (int) NUMBER_PRECISION;

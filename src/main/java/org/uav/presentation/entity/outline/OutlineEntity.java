@@ -63,7 +63,7 @@ public class OutlineEntity {
         flatShader.setMatrix4f("projection", projectionBuffer);
 
         glBindFramebuffer(GL_FRAMEBUFFER, droneMaskFBO);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
         drawOutline(droneEntity, simulationState, flatShader, time);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

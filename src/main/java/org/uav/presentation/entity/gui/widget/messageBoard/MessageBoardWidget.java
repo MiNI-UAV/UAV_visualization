@@ -18,12 +18,12 @@ public class MessageBoardWidget extends Widget {
     private static final float FONT_SIZE_NORM = 30f / 1080;
     private static final float FADING_TIME_LEFT_S = 0.5f;
     MessageBoard messageBoard;
-    private TextEngine textEngine;
+    private final TextEngine textEngine;
 
     public MessageBoardWidget(Shader textShader, Config config, MessageBoard messageBoard) {
         super(getWidgetPosition(), GuiAnchorPoint.BOTTOM_LEFT, config);
         this.messageBoard = messageBoard;
-        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM, textShader, config);
+        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM * config.getGraphicsSettings().getGuiScale(), textShader, config);
     }
 
     private static Vector4f getWidgetPosition() {

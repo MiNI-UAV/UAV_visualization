@@ -15,13 +15,13 @@ import java.awt.*;
 public class CriticalMessageBoardWidget extends Widget {
     private static final float FONT_SIZE_NORM = 100f / 1080;
     private static final float FADING_TIME_LEFT_S = 0.5f;
-    private MessageBoard messageBoard;
-    private TextEngine textEngine;
+    private final MessageBoard messageBoard;
+    private final TextEngine textEngine;
 
     public CriticalMessageBoardWidget(Shader textShader, Config config, MessageBoard messageBoard) {
         super(getWidgetPosition(), GuiAnchorPoint.CENTER, config);
         this.messageBoard = messageBoard;
-        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM, textShader, config);
+        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM * config.getGraphicsSettings().getGuiScale(), textShader, config);
     }
 
     private static Vector4f getWidgetPosition() {

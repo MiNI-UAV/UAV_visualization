@@ -33,7 +33,7 @@ public class ProjectileWidget extends Widget {
         super(getWidgetPosition(), GuiAnchorPoint.TOP_RIGHT, config);
         backgroundSprite = new Sprite(background, spriteShader);
         reloadShape = new VectorCircleArc(new Vector2f(), 0.1f, RELOAD_CIRCLE_POINT_COUNT, vectorShader, circleArcShader);
-        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM, textShader, config);
+        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM * config.getGraphicsSettings().getGuiScale(), textShader, config);
     }
 
     private static Vector4f getWidgetPosition() {

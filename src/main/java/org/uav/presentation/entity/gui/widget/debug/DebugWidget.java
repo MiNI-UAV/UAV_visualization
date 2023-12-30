@@ -24,7 +24,7 @@ public class DebugWidget extends Widget {
         super(getWidgetPosition(), GuiAnchorPoint.TOP_LEFT, config);
         this.simulationState = simulationState;
         backgroundSprite = new Sprite(background, spriteShader);
-        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM, textShader, config);
+        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM * config.getGraphicsSettings().getGuiScale(), textShader, config);
         textEngine.setPosition(-0.95f, 0.2f);
     }
 

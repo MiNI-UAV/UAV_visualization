@@ -25,7 +25,6 @@ public class PropellersDisplayLayer {
     private final List<Integer> rotationDirection;
     private List<Vector2i> scaledPropellers;
     private int propellerRadius;
-    private final Vector2i displayMargin;
     private final Vector2i propellerPanelPadding;
     private final int textHeight;
     private final float textHeightNorm;
@@ -43,12 +42,12 @@ public class PropellersDisplayLayer {
     public PropellersDisplayLayer(Vector2i canvasSize, Vector4f widgetPosition, DroneParameters droneParameters, Shader vectorShader, Shader circleArcShader, Shader textShader, Config config) {
         this.canvasSize = canvasSize;
         textHeight = 30;
-        textHeightNorm = (float) textHeight / 1080;
+        textHeightNorm = (float) textHeight / 1080 * config.getGraphicsSettings().getGuiScale();
         textEngine = new TextEngine(widgetPosition, textHeightNorm, textShader, config);
-        displayMargin = new Vector2i((int) (0.025 * canvasSize.x), (int) (0.025 * canvasSize.y));
-        noMarginCanvasSize = new Vector2i(canvasSize.x - 2*displayMargin.x, canvasSize.y - 2*displayMargin.y);
+        Vector2i displayMargin = new Vector2i((int) (0.025 * canvasSize.x), (int) (0.025 * canvasSize.y));
+        noMarginCanvasSize = new Vector2i(canvasSize.x - 2* displayMargin.x, canvasSize.y - 2* displayMargin.y);
         propellerPanelPadding = new Vector2i((int) (0.0125 * canvasSize.x), (int) (0.0125 * canvasSize.y));
-        minimalTextWidth = 0;
+        minimalTextWidth = 80;
         if(droneParameters.getRotors() != null && droneParameters.getRotors().getRotor() != null && !droneParameters.getRotors().getRotor().isEmpty()) {
             rotors = droneParameters.getRotors().getRotor().stream()
                     .map(r -> new Vector3f(r.getPosition().x, r.getPosition().y, r.getPosition().z)).toList();
@@ -73,7 +72,6 @@ public class PropellersDisplayLayer {
             propellerCenterShape = null;
             propellerArcShape = null;
         }
-
     }
 
     private void initRadius() {
@@ -99,7 +97,7 @@ public class PropellersDisplayLayer {
     private List<Vector2i> getScaledRotorsForRadius(int radius) {
         Vector2i noPanelCanvasSize = new Vector2i(
                 noMarginCanvasSize.x - Math.max(2 * radius, minimalTextWidth) - 2 * propellerPanelPadding.x,
-                noMarginCanvasSize.y - Math.max(2 * radius, minimalTextWidth) - 2 * propellerPanelPadding.y - textHeight
+                noMarginCanvasSize.y - 2 * radius - 2 * propellerPanelPadding.y - textHeight
         );
         float xMax = rotors.stream().max((Vector3f v1, Vector3f v2) -> Float.compare(v1.x,v2.x)).orElseThrow(noRotors).x;
         float yMax = rotors.stream().max((Vector3f v1, Vector3f v2) -> Float.compare(v1.y,v2.y)).orElseThrow(noRotors).y;

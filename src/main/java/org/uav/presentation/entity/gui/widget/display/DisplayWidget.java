@@ -17,7 +17,7 @@ public class DisplayWidget extends Widget {
     public DisplayWidget(Shader textShader, Config config) {
         super(getWidgetPosition(), GuiAnchorPoint.NONE, config);
         text = "";
-        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM, textShader, config);
+        textEngine = new TextEngine(getScaledPosition(), FONT_SIZE_NORM * config.getGraphicsSettings().getGuiScale(), textShader, config);
         textEngine.setPosition(-0.8f, 0.8f);
     }
 
