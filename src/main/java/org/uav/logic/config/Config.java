@@ -86,7 +86,6 @@ public class Config {
         Float fov;
         Boolean useGammaCorrection;
         Float gammaCorrection;
-        Boolean useShadows;
         Integer shadowsTextureResolution;
         Integer shadowsRenderingDistance;
         Boolean showDebugInfo;

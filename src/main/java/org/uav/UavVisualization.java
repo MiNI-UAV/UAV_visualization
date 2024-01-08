@@ -122,6 +122,7 @@ public class UavVisualization {
         audioManager = new AudioManager(simulationState, droneParameters, config);
         audioManager.play();
         inputHandler = new InputHandler(simulationStateProcessor, simulationState, config, bindingConfig, musicPlayer);
+        inputHandler.subscribe(messageBoard.produceSubscriber());
         openGlScene = new OpenGlScene(simulationState, config, loadingScreen, droneParameters, messageBoard);
         simulationStateProcessor.saveDroneModelChecksum(config.getDroneSettings().getDroneConfig());
         // Request drone for the player.

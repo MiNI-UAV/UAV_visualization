@@ -70,7 +70,7 @@ public class SimulationStateProcessor implements AutoCloseable, Publisher {
         var droneComm = simulationState.getCurrentlyControlledDrone();
         if(droneComm.isEmpty()) return;
         if(droneComm.get().getFlightStatus() == DroneCommunication.FlightStatus.INIT && simulationState.getDronesInAir().containsKey(droneComm.get().getId())) {
-            notifySubscriber(new Message("TAKE OFF", "takeoff",1, Color.GREEN, true));
+            notifySubscribers(new Message("TAKE OFF", "takeoff",1, Color.GREEN, true));
             droneComm.get().setFlightStatus(DroneCommunication.FlightStatus.FLIGHT);
         }
         else if(droneComm.get().getFlightStatus() == DroneCommunication.FlightStatus.FLIGHT && !simulationState.getDronesInAir().containsKey(droneComm.get().getId())) {
@@ -102,7 +102,7 @@ public class SimulationStateProcessor implements AutoCloseable, Publisher {
             oldDrone = simulationState.getCurrentlyControlledDrone().get();
         var newDrone = requestNewDrone();
         if(newDrone.isEmpty()) {
-            notifySubscriber(new Message("Server denied request for a new UAV", "droneRequest", 10, Color.ORANGE, false));
+            notifySubscribers(new Message("Server denied request for a new UAV", "droneRequest", 10, Color.ORANGE, false));
             return;
         }
         simulationState.setCurrentlyControlledDrone(newDrone.get());

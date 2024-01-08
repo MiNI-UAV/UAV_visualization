@@ -130,8 +130,6 @@ public class RopeEntity {
         glBindVertexArray(0);
     }
 
-    static final float EPSILON = 0.001f;
-
     private void recalculateCatenary() {
         float s = ropeLength;
         float h = (float)Math.sqrt(Math.pow(pointB.x - pointA.x,2) + Math.pow(pointB.y - pointA.y,2));
@@ -157,19 +155,23 @@ public class RopeEntity {
 
     private void calculateOffsets(float a) {
         var pivotPoint = new Vector3f(pointB).sub(pointA);
-        var pivotPoint2D = new Vector2f((float)Math.sqrt(pivotPoint.x*pivotPoint.x + pivotPoint.y*pivotPoint.y), -pivotPoint.z);
+        var pivotPoint2D = new Vector2f((float)Math.sqrt(pivotPoint.x*pivotPoint.x + pivotPoint.y*pivotPoint.y), pivotPoint.z);
         xOffset = newtonRaphson(
-                x -> (float)(a * (Math.cosh((pivotPoint2D.x+x)/a) - Math.cosh(x/a)) - pivotPoint2D.y),
+                x -> (float)(a * (Math.cosh((pivotPoint2D.x+x)/a) - Math.cosh(x/a)) + pivotPoint2D.y),
                 x -> (float)(Math.sinh((pivotPoint2D.x+x)/a) - Math.sinh(x/a)),
                 pivotPoint2D.x/2
         );
         yOffset = (float) (-a * Math.cosh((xOffset)/a));
     }
 
+    static final float EPSILON = 0.001f;
+    private static final int ITERATION_LIMIT = 1000;
+
     static float newtonRaphson(Function<Float, Float> func, Function<Float, Float> derivFunc, float x)
     {
         float h = func.apply(x) / derivFunc.apply(x);
-        while (Math.abs(h) >= EPSILON)
+        int n = 0;
+        while (Math.abs(h) >= EPSILON && ++n < ITERATION_LIMIT)
         {
             h = func.apply(x) / derivFunc.apply(x);
             x = x - h;

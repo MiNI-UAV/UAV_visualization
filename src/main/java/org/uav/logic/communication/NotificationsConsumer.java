@@ -68,7 +68,7 @@ public class NotificationsConsumer extends Thread implements Publisher {
         if(drone.isEmpty()) return;
         Message notification = parseServerNotification(message, drone.get().droneStatus.id);
         if(notification != null)
-            notifySubscriber(notification);
+            notifySubscribers(notification);
     }
 
     private Message parseServerNotification(String message, int drone) {

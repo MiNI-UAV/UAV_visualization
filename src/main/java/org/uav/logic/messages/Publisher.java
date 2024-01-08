@@ -11,7 +11,7 @@ public interface Publisher {
         getSubscribers().add(subscriber);
     }
 
-    default void notifySubscriber(Message message)
+    default void notifySubscribers(Message message)
     {
         for (Consumer<Message> subscriber : getSubscribers()) {
             subscriber.accept(message);

@@ -31,7 +31,7 @@ sceneSettings:
   skyColor: [0.529f, 0.808f, 0.922f]
   drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
-  sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
+  sunAngleYearCycle: 60 # 15 Winter, 60 Summer (90 is not allowed)
   fogDensity: 0.001
   cameraFPP: [1, 0, 0]
   cameraTPP: [-.95, 0, -.375] # Close camera
@@ -46,8 +46,7 @@ graphicsSettings:
   fov: 100 # 0 < fov < 180
   useGammaCorrection: true
   gammaCorrection: 2.2
-  useShadows: true
-  shadowsTextureResolution: 6072
+  shadowsTextureResolution: 8096
   shadowsRenderingDistance: 300
   showDebugInfo: true
 miscSettings:

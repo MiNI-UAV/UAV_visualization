@@ -151,15 +151,13 @@ public class OpenGlScene {
         float deltaTimeS = simulationState.getSimulationTimeS() - simulationState.getLastSimulationTimeS();
 
         // Shading pass
-        if(config.getGraphicsSettings().getUseShadows()) {
-            glViewport(0, 0, config.getGraphicsSettings().getShadowsTextureResolution(), config.getGraphicsSettings().getShadowsTextureResolution());
-            glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-            glClear(GL_DEPTH_BUFFER_BIT);
-            prepareShadingShader(getShadowShaderViewMatrix(), getShadowShaderProjectionMatrix());
-            renderSceneShadows(shadingShader);
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
-            glViewport(0, 0, config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
-        }
+        glViewport(0, 0, config.getGraphicsSettings().getShadowsTextureResolution(), config.getGraphicsSettings().getShadowsTextureResolution());
+        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        prepareShadingShader(getShadowShaderViewMatrix(), getShadowShaderProjectionMatrix());
+        renderSceneShadows(shadingShader);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, config.getGraphicsSettings().getWindowWidth(), config.getGraphicsSettings().getWindowHeight());
 
         // Drone Mask
         outlineEntity.generateDroneMask(droneEntity, simulationState, deltaTimeS, getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix());

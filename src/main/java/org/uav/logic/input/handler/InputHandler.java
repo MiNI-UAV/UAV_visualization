@@ -7,21 +7,27 @@ import org.uav.logic.config.Config;
 import org.uav.logic.input.binding.AxisBinding;
 import org.uav.logic.input.binding.ButtonBinding;
 import org.uav.logic.input.binding.KeyboardBinding;
+import org.uav.logic.messages.Message;
+import org.uav.logic.messages.Publisher;
+import org.uav.logic.state.projectile.Projectile;
 import org.uav.logic.state.simulation.SimulationState;
 import org.uav.logic.state.simulation.SimulationStateProcessor;
 import org.uav.presentation.entity.camera.CameraMode;
 
+import java.awt.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.lang.Math.min;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class InputHandler {
+public class InputHandler implements Publisher {
 
+    private static final String MESSAGE_CATEGORY_PROJECTILES = "Projectiles";
     private final SimulationState simulationState;
     private final List<BindingConfig.SteeringAxis> steeringAxisBindings;
     private final List<AxisBinding> axisBindings;
@@ -31,6 +37,7 @@ public class InputHandler {
     private final Config config;
     private final JoystickProducer joystickProducer;
     private final MusicPlayer musicPlayer;
+    private final List<Consumer<Message>> subscribers;
 
 
     public InputHandler(
@@ -38,8 +45,7 @@ public class InputHandler {
             SimulationState simulationState,
             Config config,
             BindingConfig bindingConfig,
-            MusicPlayer musicPlayer
-    ) throws IOException {
+            MusicPlayer musicPlayer) throws IOException {
         this.config = config;
         this.simulationState = simulationState;
         this.simulationStateProcessor = simulationStateProcessor;
@@ -49,6 +55,7 @@ public class InputHandler {
         buttonBindings = new ArrayList<>();
         keyboardBindings = new ArrayList<>();
         steeringAxisBindings = new ArrayList<>();
+        subscribers = new ArrayList<>();
         initBindings(bindingConfig);
     }
 
@@ -75,8 +82,15 @@ public class InputHandler {
             else simulationState.setMapZoom(simulationState.getMapZoom() * 1.1f);
         });
         initAction(actions.getRespawn(), simulationStateProcessor::respawnDrone);
-        initAction(actions.getNextAmmo(), () -> simulationState.setCurrentlyChosenAmmo((simulationState.getCurrentlyChosenAmmo() == simulationState.getAmmos().size()-1)? 0: simulationState.getCurrentlyChosenAmmo()+1));
-        initAction(actions.getNextCargo(), () -> simulationState.setCurrentlyChosenCargo((simulationState.getCurrentlyChosenCargo() == simulationState.getCargos().size()-1)? 0: simulationState.getCurrentlyChosenCargo()+1));
+        initAction(actions.getNextAmmo(), () -> {
+            simulationState.setCurrentlyChosenAmmo((simulationState.getCurrentlyChosenAmmo() == simulationState.getAmmos().size()-1)? 0: simulationState.getCurrentlyChosenAmmo()+1);
+            listProjectiles(simulationState.getAmmos(), simulationState.getCurrentlyChosenAmmo());
+
+        });
+        initAction(actions.getNextCargo(), () -> {
+            simulationState.setCurrentlyChosenCargo((simulationState.getCurrentlyChosenCargo() == simulationState.getCargos().size()-1)? 0: simulationState.getCurrentlyChosenCargo()+1);
+            listProjectiles(simulationState.getCargos(), simulationState.getCurrentlyChosenCargo());
+        });
         initAction(actions.getFreeCamera(), () -> simulationState.setCurrentCameraMode(CameraMode.FreeCamera));
         initAction(actions.getDroneCamera(), () -> simulationState.setCurrentCameraMode(CameraMode.DroneCamera));
         initAction(actions.getObserverCamera(), () -> simulationState.setCurrentCameraMode(CameraMode.ObserverCamera));
@@ -89,6 +103,14 @@ public class InputHandler {
         initAction(actions.getNextSong(), musicPlayer::nextSong);
 
         initAction(actions.getToggleSpotLight(), () -> simulationState.setSpotLightOn(!simulationState.isSpotLightOn()));
+    }
+
+    private void listProjectiles(List<Projectile> projectiles, int currentProjectile) {
+        for (int i = 0; i < projectiles.size(); i++) {
+            if (i == currentProjectile)
+                notifySubscribers(new Message(" - " + projectiles.get(i).name + " x" + projectiles.get(i).currentAmount, MESSAGE_CATEGORY_PROJECTILES, 1, Color.ORANGE, false));
+            else notifySubscribers(new Message(" - " + projectiles.get(i).name + " x" + projectiles.get(i).currentAmount, MESSAGE_CATEGORY_PROJECTILES, 1));
+        }
     }
 
     private void initAction(List<BindingConfig.Binding> actionBindings, Runnable action) throws IOException {
@@ -164,5 +186,10 @@ public class InputHandler {
             normalizedValue = (inversedValue - (steeringAxis.getTrim() - steeringAxis.getDeadzone())) /
                     ((steeringAxis.getTrim() - steeringAxis.getDeadzone()) - steeringAxis.getMin());
         return Math.max(-1, min(normalizedValue, 1));
+    }
+
+    @Override
+    public List<Consumer<Message>> getSubscribers() {
+        return subscribers;
     }
 }

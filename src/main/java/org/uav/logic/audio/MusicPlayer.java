@@ -34,14 +34,14 @@ public class MusicPlayer implements Publisher {
         File musicFolder = new File(path);
 
         if (!musicFolder.isDirectory()) {
-            notifySubscriber(new Message("Invalid music folder.", MESSAGE_CATEGORY_MUSIC, 100));
+            notifySubscribers(new Message("Invalid music folder.", MESSAGE_CATEGORY_MUSIC, 100));
             return -1;
         }
 
         musicFiles = musicFolder.listFiles((dir, name) -> name.toLowerCase().endsWith(".ogg"));
 
         if (musicFiles == null || musicFiles.length == 0) {
-            notifySubscriber(new Message("No OGG files found in the music folder.", MESSAGE_CATEGORY_MUSIC, 100));
+            notifySubscribers(new Message("No OGG files found in the music folder.", MESSAGE_CATEGORY_MUSIC, 100));
             return 0;
         }
 
@@ -86,10 +86,10 @@ public class MusicPlayer implements Publisher {
 
         if (isRunning) {
             stop();
-            notifySubscriber(new Message("Music turned OFF", MESSAGE_CATEGORY_MUSIC, 4));
+            notifySubscribers(new Message("Music turned OFF", MESSAGE_CATEGORY_MUSIC, 4));
         } else {
             returnValue = play();
-            notifySubscriber(new Message("Music turned ON", MESSAGE_CATEGORY_MUSIC, 4));
+            notifySubscribers(new Message("Music turned ON", MESSAGE_CATEGORY_MUSIC, 4));
             notifyOfPlaying(returnValue);
         }
         isRunning = !isRunning;
@@ -97,7 +97,7 @@ public class MusicPlayer implements Publisher {
     }
 
     private void notifyOfPlaying(String returnValue) {
-        notifySubscriber(new Message(MessageFormat.format("Playing now: {0}", returnValue), MESSAGE_CATEGORY_MUSIC, 6));
+        notifySubscribers(new Message(MessageFormat.format("Playing now: {0}", returnValue), MESSAGE_CATEGORY_MUSIC, 6));
     }
 
     public String nextSong()

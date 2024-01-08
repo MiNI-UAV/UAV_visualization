@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
 public class MessageBoardWidget extends Widget {
-    private static final float FONT_SIZE_NORM = 30f / 1080;
+    private static final float FONT_SIZE_NORM = 35f / 1080;
     private static final float FADING_TIME_LEFT_S = 0.5f;
     MessageBoard messageBoard;
     private final TextEngine textEngine;

@@ -30,7 +30,7 @@ void main()
 
 vec3 calcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 objectColor)
 {
-    vec3 lightDir = normalize(-light.direction);
+    vec3 lightDir = normalize(light.direction);
     float diff = max(dot(normal, lightDir), 0.0);
     float kPi = 3.14159265;
     float kEnergyConservation = ( 8.0 + 1.2/*material.shininess*/ ) / ( 8.0 * kPi );
