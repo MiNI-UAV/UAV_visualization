@@ -188,6 +188,11 @@ public class OpenGlScene {
 
         glStencilMask(0x00);
 
+        skyboxEntity.draw(
+                getSceneShaderViewMatrixNoTranslation(),
+                getSceneShaderProjectionMatrix()
+        );
+
         environmentEntity.draw(simulationState, shader);
         projectileEntity.draw(shader, simulationState.getCurrPassProjectileStatuses().map.values());
         if(config.getSceneSettings().getDrawInWorldDemandedPositionalCoords())
@@ -212,10 +217,6 @@ public class OpenGlScene {
                 simulationState.getCurrPassProjectileStatuses().map);
         bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
 
-        skyboxEntity.draw(
-                getSceneShaderViewMatrixNoTranslation(),
-                getSceneShaderProjectionMatrix()
-        );
     }
 
     private void renderSceneShadows(Shader shader) {
