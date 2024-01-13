@@ -1,6 +1,6 @@
 bindingsConfig:
-  generateOnStartUp: false
-  source: bindings/bindings_xbox_1.yaml
+  generateOnStartUp: true
+  source: controller_bindings.yaml
 serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/

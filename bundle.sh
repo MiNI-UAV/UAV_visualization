@@ -29,16 +29,15 @@ echo 'ok.'
 
 # Windows
 echo 'Bundling Windows package...'
-gradle createExe
-tempWindows=$temp/windows 
-mkdir $tempWindows
-cp -r build/launch4j/* $tempWindows
-cp -r drones $tempWindows
-cp -r music $tempWindows
-cp config.yaml $tempWindows
-cp icon.ico $tempWindows
+gradle shadowJar
+tempWindows=$temp/windows
+mkdir tempWindows
+cp build/libs/MiniUAV.jar tempWindows
+cp -r drones tempWindows
+cp config.yaml tempWindows
+cp icon.ico tempWindows
 cp lib/* $tempWindows
-cd $tempWindows
+cd tempWindows
 tar -czvf mini-uav-$version-windows.tar.gz *
 rm -R -- !(mini-uav-$version-windows.tar.gz)
 cd ../../../
