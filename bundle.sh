@@ -13,15 +13,15 @@ echo 'Bundling Linux package...'
 gradle shadowJar
 tempLinux=$temp/linux 
 mkdir $tempLinux
-cd $tempLinux
-cp build/libs/MiniUAV.jar .
+cp build/libs/MiniUAV.jar $tempLinux
 echo '#!/bin/bash 
-java -jar MiniUAV.jar $@' > ./MiniUAV.sh
-chmod +x ./MiniUAV.sh
-cp -r drones .
-cp -r music .
-cp config.yaml .
-cp icon.ico .
+java -jar MiniUAV.jar $@' > $tempLinux/MiniUAV.sh
+chmod +x $tempLinux/MiniUAV.sh
+cp -r drones $tempLinux
+cp -r music $tempLinux
+cp config.yaml $tempLinux
+cp icon.ico $tempLinux
+cd $tempLinux
 tar -czvf mini-uav-$version-linux.tar.gz *
 rm -R -- !(mini-uav-$version-linux.tar.gz)
 cd ../../../
@@ -31,13 +31,13 @@ echo 'ok.'
 echo 'Bundling Windows package...'
 gradle shadowJar
 tempWindows=$temp/windows
-mkdir $tempWindows
-cd $tempWindows
-cp build/libs/MiniUAV.jar .
-cp -r drones .
-cp config.yaml .
-cp icon.ico .
-cp lib/* .
+mkdir tempWindows
+cp build/libs/MiniUAV.jar tempWindows
+cp -r drones tempWindows
+cp config.yaml tempWindows
+cp icon.ico tempWindows
+cp lib/* $tempWindows
+cd tempWindows
 tar -czvf mini-uav-$version-windows.tar.gz *
 rm -R -- !(mini-uav-$version-windows.tar.gz)
 cd ../../../
