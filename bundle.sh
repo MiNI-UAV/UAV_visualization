@@ -31,13 +31,13 @@ echo 'ok.'
 echo 'Bundling Windows package...'
 gradle shadowJar
 tempWindows=$temp/windows
-mkdir tempWindows
-cp build/libs/MiniUAV.jar tempWindows
-cp -r drones tempWindows
-cp config.yaml tempWindows
-cp icon.ico tempWindows
+mkdir $tempWindows
+cp build/libs/MiniUAV.jar $tempWindows
+cp -r drones $tempWindows
+cp config.yaml $tempWindows
+cp icon.ico $tempWindows
 cp lib/* $tempWindows
-cd tempWindows
+cd $tempWindows
 tar -czvf mini-uav-$version-windows.tar.gz *
 rm -R -- !(mini-uav-$version-windows.tar.gz)
 cd ../../../
