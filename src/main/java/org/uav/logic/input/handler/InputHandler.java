@@ -101,8 +101,6 @@ public class InputHandler implements Publisher {
 
         initAction(actions.getToggleRadio(), musicPlayer::playOrStop);
         initAction(actions.getNextSong(), musicPlayer::nextSong);
-
-        initAction(actions.getToggleSpotLight(), () -> simulationState.setSpotLightOn(!simulationState.isSpotLightOn()));
     }
 
     private void listProjectiles(List<Projectile> projectiles, int currentProjectile) {

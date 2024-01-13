@@ -54,8 +54,6 @@ actions:
     - key: 82
   nextSong:
     - key: 78
-  toggleSpotLight:
-    - key: 67
   nextCamera_or_mapZoomIn:
   - button: 5
     inverse: false
