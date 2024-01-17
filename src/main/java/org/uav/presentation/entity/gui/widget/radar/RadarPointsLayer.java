@@ -31,10 +31,10 @@ public class RadarPointsLayer {
         radarPoints.forEach(point -> {
             // X and Y adjusted
             float x = point.coordinates.x / radarRange;
-            float y = -point.coordinates.y / radarRange;
+            float y = point.coordinates.y / radarRange;
             float strength = (float) point.traceStrength / startingTraceStrength;
             var transform = new Matrix3x2f();
-            transform.translate(x, y);
+            transform.translate(y, x);
             pointShape.setTransform(transform);
             pointShape.setColor(new Color(0, 1, 0, strength));
             pointShape.draw();

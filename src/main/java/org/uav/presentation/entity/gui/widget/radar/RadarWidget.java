@@ -70,10 +70,12 @@ public class RadarWidget extends Widget {
         // Test for drone position between (currentSectorAngle - radarSectorLength/2) and (currentSectorAngle+- radarSectorLength/2)
         radarPoints.forEach(point -> point.traceStrength--);
         radarPoints.removeIf(point -> point.traceStrength <= 0);
-
         var drones = simulationState.getDronesInAir();
         var radarDrone = simulationState.getPlayerDrone();
-        if(radarDrone.isEmpty()) return;
+        if(radarDrone.isEmpty())
+        {    
+            return;
+        }
         List<RadarPoint> newPoints = drones.values().stream()
                 .filter(drone -> drone != radarDrone.get())
                 .map(drone -> getRelativePoints(drone.droneStatus, radarDrone.get().droneStatus))
@@ -86,8 +88,8 @@ public class RadarWidget extends Widget {
     private static Vector2f getRelativePoints(DroneStatus drone, DroneStatus radarDrone) {
         float relX = drone.position.x - radarDrone.position.x;
         float relY = drone.position.y - radarDrone.position.y;
-        var rotation = Convert.toEuler(drone.rotation);
-        return rotatePoint(rotation.z, new Vector2f(relX, relY));
+        var rotation = Convert.toEuler(radarDrone.rotation);
+        return rotatePoint(-rotation.z, new Vector2f(relX, relY));
     }
 
     private static Vector2f rotatePoint(float angle, Vector2f point) {
@@ -104,8 +106,8 @@ public class RadarWidget extends Widget {
             angleToDrone += 2 * (float) Math.PI;
 
 
-        return sectorStartAngle < angleToDrone &&
-                angleToDrone < sectorEndAngle &&
+        return sectorStartAngle <= angleToDrone &&
+                angleToDrone <= sectorEndAngle &&
                 isWithinRadius(relPoint, radarRangeRadiusSquared);
     }
 
