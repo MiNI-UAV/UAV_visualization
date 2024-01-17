@@ -5,9 +5,10 @@ serverSettings:
   serverAddress: 127.0.0.1
   assetsSourceUrl: https://github.com/MiNI-UAV/UAV_aggregator/releases/download/
   downloadMissingAssets: true
-#  assetsToUse:  # Comment out if above is true.
+  #assetsToUse: acda6e01 # Comment out if above is true.
   heartBeatIntervalMs: 500
-  serverTimoutMs: 10000
+  serverTimeoutMs: 10000
+  droneTimeoutMs: 1000
 droneSettings:
   droneName: Maurice
   droneConfig: testcopter.xml
@@ -17,31 +18,41 @@ droneSettings:
     - QANGLE
     - QACRO
 #    - FMANUAL
+#    - FANGLE
+#    - FACRO
 #    - RMANUAL
+#    - RANGLE
+#    - RGUIDED
+    - NONE
+audioSettings:
+  soundVolume: 0.5
+  musicVolume: 0.5
 sceneSettings:
+  skyColor: [0.529f, 0.808f, 0.922f]
   drawInWorldDemandedPositionalCoords: true
   sunAngleDayCycle: 38 # -45 Sunrise, 45 Sunset
-  sunAngleYearCycle: 124 # 15 Winter, 60 Summer (90 is not allowed)
+  sunAngleYearCycle: 60 # 15 Winter, 60 Summer (90 is not allowed)
   fogDensity: 0.001
-  cameraFPP: [1, 0, 0.1]
-  cameraTPP: [-3, 0, -1.5]
+  cameraFPP: [1, 0, 0]
+  cameraTPP: [-.95, 0, -.375] # Close camera
+#  cameraTPP: [-5, 0, -2] # Far camera
 graphicsSettings:
   windowWidth: 1920
   windowHeight: 1080
-  fullScreenMode: Borderless
+  fullScreenMode: FullScreen
   monitor: 0
-  guiScale: 0.7
+  guiScale: .7
+  enableGui: true
   fov: 100 # 0 < fov < 180
   useGammaCorrection: true
   gammaCorrection: 2.2
-  useShadows: true
-  shadowsTextureResolution: 6072
+  shadowsTextureResolution: 8096
   shadowsRenderingDistance: 300
   showDebugInfo: true
 miscSettings:
   enableMusic: false
-  musicDirectory: .
-  musicOnStartup: true
+  musicDirectory: music
+  musicOnStartup: false
 ports:
   notifications: 8000
   droneRequester: 9000
