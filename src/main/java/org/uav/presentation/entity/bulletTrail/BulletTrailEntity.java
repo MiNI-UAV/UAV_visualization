@@ -4,7 +4,6 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.uav.UavVisualization;
 import org.uav.logic.state.projectile.ProjectileStatus;
-import org.uav.logic.state.simulation.SimulationState;
 import org.uav.presentation.rendering.Shader;
 
 import java.io.IOException;
@@ -30,7 +29,7 @@ public class BulletTrailEntity {
         bulletTrailShader.setFloat("startingOpacity", 1f);
     }
 
-    public void draw(FloatBuffer viewBuffer, FloatBuffer projectionBuffer, Collection<ProjectileStatus> projectiles, SimulationState simulationState) {
+    public void draw(FloatBuffer viewBuffer, FloatBuffer projectionBuffer, Collection<ProjectileStatus> projectiles) {
         bulletTrailShader.use();
         bulletTrailShader.setMatrix4f("view", viewBuffer);
         bulletTrailShader.setMatrix4f("projection", projectionBuffer);
@@ -43,7 +42,6 @@ public class BulletTrailEntity {
                     bt = bulletTrails.get(status.id);
                 } else {
                     bt = new BulletTrail(bulletTrailShader);
-                    simulationState.getPlayerDrone().ifPresent(drone-> bt.addPoint(drone.droneStatus.position));
                 }
                 bt.addPoint(status.position);
                 newBulletTrails.put(status.id, bt);

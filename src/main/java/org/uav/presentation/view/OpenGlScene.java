@@ -215,7 +215,7 @@ public class OpenGlScene {
                 simulationState.getNotifications().ropes,
                 simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
-        bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
+        bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values());
 
     }
 
@@ -236,7 +236,7 @@ public class OpenGlScene {
                 simulationState.getNotifications().ropes,
                 simulationState.getDronesInAir(),
                 simulationState.getCurrPassProjectileStatuses().map);
-        bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values(), simulationState);
+        bulletTrailEntity.draw(getSceneShaderViewMatrix(), getSceneShaderProjectionMatrix(), simulationState.getCurrPassProjectileStatuses().map.values());
     }
 
     private void prepareShadingShader(FloatBuffer view, FloatBuffer projection) {
