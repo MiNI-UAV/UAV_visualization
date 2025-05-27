@@ -20,6 +20,8 @@ Install [Gradle](https://gradle.org/).
 
 Run `gradle run` in the root directory.
 
+Make sure the [UAV-Server](https://github.com/MiNI-UAV/UAV_server) is running and server addres `serverSettings.serverAddress` is set correctly in `config.yaml`.
+
 ## Video demo
 
 [![Mini-UAV trailer](http://img.youtube.com/vi/NdrdWuIZauQ/0.jpg)](http://www.youtube.com/watch?v=NdrdWuIZauQ "Mini-UAV Trailer")
