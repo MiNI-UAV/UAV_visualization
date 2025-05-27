@@ -1,6 +1,18 @@
 ## Description
 
-Visualization for the Mini UAV BEng thesis project using OpenGL.
+Visualization for the Mini UAV BEng thesis project. It is a feature-rich physics engine for UAV research with accompanying multi-player graphics engine built from the ground up in OpenGL.
+
+## Abstract
+
+The following program is a system designed to simulate flight dynamics of unmanned aerial vehicles. The system allows real-time flight simulation as well
+as three-dimensional visualization. During the flight we log the simulation data, allowing for
+flight analysis. A universal dynamics model has been developed to allow highly customizable
+aircraft parameters. Those include its mechanical and aerodynamic properties as well as the
+configuration of propulsion units and the influence of external factors. The dynamics simulation
+was extended to include the control system. The system has been designed in a way to make
+it easy to change ship and simulation parameters, create new configurations, and create and
+tune control systems. Examples of models that can be simulated include fixed-wind aircraft,
+multicopters and rockets.
 
 ## Compilation
 
