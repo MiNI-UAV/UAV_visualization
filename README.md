@@ -8,6 +8,7 @@ Visualization for the Mini UAV BEng thesis project. It is a feature-rich physics
  - Wide variety of UAV parameters. It is possible to design multicopters, planes or rockets with programmable control systems.
  - Compatible with any connectible controller. From gamepads to professional ones.
  - PBR graphics.
+ - Exhaustive UI including radar, artificial horizon and a map.
 
 ## Abstract
 
