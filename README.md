@@ -28,7 +28,7 @@ Install [Gradle](https://gradle.org/).
 
 Run `gradle run` in the root directory.
 
-Make sure the [UAV-Server](https://github.com/MiNI-UAV/UAV_server) is running and server addres `serverSettings.serverAddress` is set correctly in `config.yaml`.
+Make sure the [UAV-Server](https://github.com/MiNI-UAV/UAV_server) is running and server address `serverSettings.serverAddress` is set correctly in `config.yaml`.
 
 ## Video demo
 
