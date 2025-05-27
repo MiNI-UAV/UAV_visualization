@@ -2,6 +2,13 @@
 
 Visualization for the Mini UAV BEng thesis project. It is a feature-rich physics engine for UAV research with accompanying multi-player graphics engine built from the ground up in OpenGL.
 
+### Features
+ - Multi-player functionality with standalone server and multiple clients connecting through TCP.
+ - It is possible to upload 3D drone models and custom maps.
+ - Wide variety of UAV parameters. It is possible to design multicopters, planes or rockets with programmable control systems.
+ - Compatible with any connectible controller. From gamepads to professional ones.
+ - PBR graphics.
+
 ## Abstract
 
 The following program is a system designed to simulate flight dynamics of unmanned aerial vehicles. The system allows real-time flight simulation as well
